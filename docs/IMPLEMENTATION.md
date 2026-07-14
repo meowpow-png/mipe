@@ -72,7 +72,7 @@ Unlike the home directory and workspace, it is part of the container image and t
 
 The workspace is mounted at `/workspace` and contains the project being developed. It is provided by the consuming project and serves as the primary working directory throughout development.
 
-During project initialization, the runtime prepares Devkit-managed resources within the workspace before invoking any project-specific initialization. Aside from these managed resources, the workspace is treated as project-owned.
+During project initialization, the workspace is treated as project-owned before invoking any project-specific initialization.
 
 ## Initialization
 
@@ -95,7 +95,7 @@ flowchart TD
 
 `codex.sh` prepares the Codex runtime, while `permissions.sh` updates ownership of the home directory before switching to the local developer user.
 
-`project.sh` orchestrates project initialization by invoking `workspace.sh` to prepare Devkit-managed workspace resources and `dependencies.sh` to invoke `/workspace/.codex/init/dependencies.sh` when provided by the consuming project.
+`project.sh` orchestrates project initialization by invoking `workspace.sh` for shared workspace initialization and `dependencies.sh` to invoke `/workspace/.codex/init/dependencies.sh` when provided by the consuming project.
 
 ## Configuration
 
