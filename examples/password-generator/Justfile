@@ -1,0 +1,25 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+# Start interactive Codex CLI
+run:
+    @just exec "$(id -u):$(id -g)" codex
+
+# Open a shell inside Devkit container
+[arg("user", help="User to run the shell as")]
+shell user='root':
+    @just exec {{user}} bash
+
+# Run Docker Compose
+[arg("args", help="Arguments passed to docker compose")]
+compose *args:
+    @LOCAL_UID=$(id -u) LOCAL_GID=$(id -g) \
+        docker compose {{args}}
+
+[private]
+exec user *args:
+    echo 'exec ' + {{user}}
+    @just compose up -d
+    @just compose exec \
+            --user {{user}} \
+            devkit \
+            {{args}}
