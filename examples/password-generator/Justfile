@@ -17,7 +17,6 @@ compose *args:
 
 [private]
 exec user *args:
-    echo 'exec ' + {{user}}
     @just compose up -d
     @just compose exec \
             --user {{user}} \
