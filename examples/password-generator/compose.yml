@@ -1,0 +1,18 @@
+services:
+  devkit:
+    image: codex-devkit:21-java
+    pull_policy: never
+    working_dir: /workspace
+    environment:
+      LOCAL_UID: ${LOCAL_UID}
+      LOCAL_GID: ${LOCAL_GID}
+      HOME: /home/codex
+    volumes:
+      - codex-home:/home/codex
+      - .:/workspace:Z
+    stdin_open: true
+    tty: true
+    init: true
+
+volumes:
+  codex-home:
