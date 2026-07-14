@@ -1,0 +1,8 @@
+# IntelliJ IDEA
+.idea/
+
+# Obsidian
+.obsidian/
+
+# Module files
+*.iml
