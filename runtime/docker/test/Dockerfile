@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY ["cmd/", "cmd/"]
-COPY ["internal/", "internal/"]
+COPY internal/ internal/
 
 RUN go build \
     -trimpath \
@@ -19,15 +19,14 @@ FROM debian:bookworm-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         bash \
-        ca-certificates \
         gosu && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /workspace
-
 COPY --from=builder /out/mipe /usr/local/bin/mipe
-COPY docker/test /test
+COPY docker/test/bin/ /bin/
+COPY docker/test/config/ /opt/mipe/config
 
 RUN chown -R 1000:1000 /test
 
-CMD ["/test/bin/integration-test"]
+ENTRYPOINT ["mipe"]
+CMD ["/bin/integration-test"]
