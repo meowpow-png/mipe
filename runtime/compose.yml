@@ -1,0 +1,11 @@
+services:
+  mipe-test:
+    image: mipe-runtime:test
+    build:
+      context: .
+      dockerfile: docker/test/Dockerfile
+    working_dir: /workspace
+    environment:
+      HOME: /test/home
+      LOCAL_UID: "1000"
+      LOCAL_GID: "1000"

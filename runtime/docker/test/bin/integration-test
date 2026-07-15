@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+rm -f /test/agent.txt /test/workspace/dependencies.txt
+
+mipe --config /test/config.json /test/bin/agent
+
+assert_file_contains() {
+  local path="$1"
+  local expected="$2"
+  local label="$3"
+
+  if [[ ! -f "$path" ]]; then
+    echo "✗ $label"
+    echo "  missing file: $path"
+    exit 1
+  fi
+
+  local actual
+  actual="$(<"$path")"
+
+  if [[ "$actual" != "$expected" ]]; then
+    echo "✗ $label"
+    echo "  expected: $expected"
+    echo "  actual:   $actual"
+    exit 1
+  fi
+
+  echo "✓ $label"
+}
+
+echo "Running integration tests:"
+
+assert_file_contains /test/workspace/dependencies.txt initialized "Dependencies initialized"
+assert_file_contains /test/agent.txt executed "Agent executed"
+
+echo "✓ Integration tests passed"
