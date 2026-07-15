@@ -88,3 +88,75 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 		t.Fatalf("Command = %#v, want %#v", cfg.Command, want)
 	}
 }
+
+func TestLoad_LoadsDefaultConfigFromRuntimeHome(t *testing.T) {
+	runtimeHome := t.TempDir()
+	t.Setenv("RUNTIME_HOME", runtimeHome)
+	t.Setenv("HOME", "/home/file")
+
+	path := filepath.Join(runtimeHome, "config.json")
+	content := `{
+		"agent_name": "file-agent",
+		"home": "/home/file",
+		"workspace": "/workspace/file",
+		"local_uid": "1000",
+		"local_gid": "1001"
+	}`
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	cfg, err := Load([]string{"bash", "-lc", "echo ok"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.AgentName != "file-agent" {
+		t.Fatalf("AgentName = %q, want file-agent", cfg.AgentName)
+	}
+	if cfg.RuntimeHome != runtimeHome {
+		t.Fatalf("RuntimeHome = %q, want %q", cfg.RuntimeHome, runtimeHome)
+	}
+	if cfg.AgentHome != filepath.Join("/home/file", ".file-agent") {
+		t.Fatalf("AgentHome = %q, want /home/file/.file-agent", cfg.AgentHome)
+	}
+	if want := []string{"bash", "-lc", "echo ok"}; !reflect.DeepEqual(cfg.Command, want) {
+		t.Fatalf("Command = %#v, want %#v", cfg.Command, want)
+	}
+}
+
+func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
+	runtimeHome := t.TempDir()
+	t.Setenv("RUNTIME_HOME", runtimeHome)
+
+	defaultContent := `{
+		"agent_name": "default-agent",
+		"home": "/home/default",
+		"workspace": "/workspace/default",
+		"local_uid": "1000",
+		"local_gid": "1001"
+	}`
+	if err := os.WriteFile(filepath.Join(runtimeHome, "config.json"), []byte(defaultContent), 0o600); err != nil {
+		t.Fatalf("write default config: %v", err)
+	}
+
+	explicitPath := filepath.Join(t.TempDir(), "config.json")
+	explicitContent := `{
+		"agent_name": "explicit-agent",
+		"home": "/home/explicit",
+		"workspace": "/workspace/explicit",
+		"local_uid": "2000",
+		"local_gid": "2001"
+	}`
+	if err := os.WriteFile(explicitPath, []byte(explicitContent), 0o600); err != nil {
+		t.Fatalf("write explicit config: %v", err)
+	}
+	cfg, err := Load([]string{"--config", explicitPath, "bash"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.AgentName != "explicit-agent" {
+		t.Fatalf("AgentName = %q, want explicit-agent", cfg.AgentName)
+	}
+	if cfg.LocalUID != "2000" || cfg.LocalGID != "2001" {
+		t.Fatalf("uid/gid = %q/%q, want 2000/2001", cfg.LocalUID, cfg.LocalGID)
+	}
+}

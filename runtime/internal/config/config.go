@@ -1,8 +1,11 @@
 package config
 
 import (
+	"os"
 	"path/filepath"
 )
+
+const defaultConfigFile = "config.json"
 
 type Config struct {
 	AgentName   string
@@ -21,11 +24,22 @@ func Load(args []string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	values, err := LoadFile(flags.ConfigPath)
+	values, err := LoadFile(configPath(flags.ConfigPath))
 	if err != nil {
 		return Config{}, err
 	}
 	return New(LoadEnvironment(values), flags.Command), nil
+}
+
+func configPath(path string) string {
+	if path != "" {
+		return path
+	}
+	runtimeHome := os.Getenv("RUNTIME_HOME")
+	if runtimeHome == "" {
+		return ""
+	}
+	return filepath.Join(runtimeHome, defaultConfigFile)
 }
 
 // New constructs a bootstrap configuration
