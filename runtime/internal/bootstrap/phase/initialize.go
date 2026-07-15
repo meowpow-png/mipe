@@ -18,7 +18,7 @@ var (
 
 // Initialize initializes the project
 func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
-	script := filepath.Join(cfg.Workspace, ".codex", "init", "dependencies.sh")
+	script := filepath.Join(cfg.Workspace, ".mipe", "init", "dependencies.sh")
 
 	logger.Info("checking project dependency initialization",
 		zap.String("script", script),
@@ -33,20 +33,20 @@ func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) erro
 	logger.Info("project dependency initialization started",
 		zap.String("script", script),
 	)
-	if err := runProcess(
-		ctx,
-		"gosu",
+	args := []string{
 		fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID),
 		"env",
-		"HOME="+cfg.Home,
-		"CODEX_HOME="+cfg.AgentHome,
-		"RUNTIME_HOME="+cfg.RuntimeHome,
+	}
+	args = append(args, runtimeEnvironment(cfg,
 		"WORKSPACE="+cfg.Workspace,
 		"DEPENDENCIES_SCRIPT="+script,
+	)...)
+	args = append(args,
 		"bash",
 		"-c",
 		`set -euo pipefail; source "$DEPENDENCIES_SCRIPT"; install_dependencies`,
-	); err != nil {
+	)
+	if err := runProcess(ctx, "gosu", args...); err != nil {
 		return fmt.Errorf("initialize project dependencies: %w", err)
 	}
 	logger.Info("project dependency initialization completed",

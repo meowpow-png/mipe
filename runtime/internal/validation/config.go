@@ -13,7 +13,6 @@ func Config(cfg config.Config) error {
 		value string
 	}{
 		{name: "agent_name", value: cfg.AgentName},
-		{name: "agent_home", value: cfg.AgentHome},
 		{name: "home", value: cfg.Home},
 		{name: "runtime_home", value: cfg.RuntimeHome},
 		{name: "workspace", value: cfg.Workspace},

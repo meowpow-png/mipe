@@ -22,29 +22,31 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 	if err != nil {
 		return err
 	}
-	logger.Info("creating agent home",
-		zap.String("agent", cfg.AgentName),
-		zap.String("path", cfg.AgentHome),
-	)
-	if err := createDirectory(cfg.AgentHome); err != nil {
-		return fmt.Errorf("create agent home %q: %w", cfg.AgentHome, err)
+	if cfg.AgentHome != "" {
+		logger.Info("creating agent home",
+			zap.String("path", cfg.AgentHome),
+		)
+		if err := createDirectory(cfg.AgentHome); err != nil {
+			return fmt.Errorf("create agent home %q: %w", cfg.AgentHome, err)
+		}
+		logger.Info("agent home created",
+			zap.String("path", cfg.AgentHome),
+		)
+		source := filepath.Join(cfg.RuntimeHome, "config")
+		logger.Info("copying shared runtime configuration",
+			zap.String("source", source),
+			zap.String("destination", cfg.AgentHome),
+		)
+		if err := copyContents(source, cfg.AgentHome); err != nil {
+			return fmt.Errorf("copy shared runtime configuration from %q to %q: %w", source, cfg.AgentHome, err)
+		}
+		logger.Info("shared runtime configuration copied",
+			zap.String("source", source),
+			zap.String("destination", cfg.AgentHome),
+		)
+	} else {
+		logger.Info("agent home not configured; shared runtime configuration skipped")
 	}
-	logger.Info("agent home created",
-		zap.String("agent", cfg.AgentName),
-		zap.String("path", cfg.AgentHome),
-	)
-	source := filepath.Join(cfg.RuntimeHome, "config")
-	logger.Info("copying shared runtime configuration",
-		zap.String("source", source),
-		zap.String("destination", cfg.AgentHome),
-	)
-	if err := copyContents(source, cfg.AgentHome); err != nil {
-		return fmt.Errorf("copy shared runtime configuration from %q to %q: %w", source, cfg.AgentHome, err)
-	}
-	logger.Info("shared runtime configuration copied",
-		zap.String("source", source),
-		zap.String("destination", cfg.AgentHome),
-	)
 	logger.Info("updating home ownership",
 		zap.String("path", cfg.Home),
 		zap.Int("uid", uid),

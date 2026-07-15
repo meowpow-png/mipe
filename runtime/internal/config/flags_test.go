@@ -58,9 +58,10 @@ func TestLoadFile_LoadsConfigFileValues(t *testing.T) {
 
 		path := filepath.Join(t.TempDir(), "config.json")
 		content := `{
-			"environment": {"EXTRA": "value", "AGENT_NAME": "from-env-map"},
-			"agent_name": "agent",
+			"environment": {"EXTRA": "value", "AGENT_NAME": "nested-agent", "AGENT_HOME": "/agent/nested"},
+			"agent_name": "file-agent",
 			"home": "/home/agent",
+			"agent_home": "/agent/home",
 			"runtime_home": "/runtime",
 			"workspace": "/workspace",
 			"local_uid": "1000",
@@ -75,8 +76,9 @@ func TestLoadFile_LoadsConfigFileValues(t *testing.T) {
 		}
 		want := map[string]string{
 			"EXTRA":        "value",
-			"AGENT_NAME":   "agent",
+			"AGENT_NAME":   "file-agent",
 			"HOME":         "/home/agent",
+			"AGENT_HOME":   "/agent/home",
 			"RUNTIME_HOME": "/runtime",
 			"WORKSPACE":    "/workspace",
 			"LOCAL_UID":    "1000",
@@ -125,11 +127,13 @@ func TestFileConfigEnvironmentValues_MergesNestedAndTopLevelValues(t *testing.T)
 
 	cfg := fileConfig{
 		Environment: map[string]string{
-			"AGENT_NAME": "nested",
+			"AGENT_NAME": "nested-agent",
+			"AGENT_HOME": "/agent/nested",
 			"KEEP":       "yes",
 		},
-		AgentName:   "top",
+		AgentName:   "top-agent",
 		Home:        "/home/top",
+		AgentHome:   "/agent/top",
 		RuntimeHome: "",
 		Workspace:   "/workspace",
 		LocalUID:    "1000",
@@ -137,7 +141,8 @@ func TestFileConfigEnvironmentValues_MergesNestedAndTopLevelValues(t *testing.T)
 	}
 	values := cfg.EnvironmentValues()
 	want := map[string]string{
-		"AGENT_NAME": "top",
+		"AGENT_NAME": "top-agent",
+		"AGENT_HOME": "/agent/top",
 		"KEEP":       "yes",
 		"HOME":       "/home/top",
 		"WORKSPACE":  "/workspace",

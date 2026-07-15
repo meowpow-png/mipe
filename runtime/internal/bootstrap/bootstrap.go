@@ -29,7 +29,7 @@ func Run(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
 func run(ctx context.Context, cfg config.Config, logger *zap.Logger, phases phases) error {
 	logger.Info("Welcome to Mipe")
 	logger.Debug("bootstrap configuration",
-		zap.String("agent", cfg.AgentName),
+		zap.String("agent_name", cfg.AgentName),
 		zap.String("home", cfg.Home),
 		zap.String("agent_home", cfg.AgentHome),
 		zap.String("runtime_home", cfg.RuntimeHome),

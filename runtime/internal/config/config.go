@@ -47,14 +47,10 @@ func configPath(path string) string {
 
 // New constructs a bootstrap configuration
 func New(env Environment, command []string) Config {
-	agentHome := ""
-	if env.Home != "" && env.AgentName != "" {
-		agentHome = filepath.Join(env.Home, "."+env.AgentName)
-	}
 	return Config{
 		AgentName:   env.AgentName,
 		Home:        env.Home,
-		AgentHome:   agentHome,
+		AgentHome:   env.AgentHome,
 		RuntimeHome: env.RuntimeHome,
 		Workspace:   env.Workspace,
 		LocalUID:    env.LocalUID,

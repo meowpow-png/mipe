@@ -12,9 +12,9 @@ import (
 
 func testConfig() config.Config {
 	return config.Config{
-		AgentName:   "code-agent",
+		AgentName:   "test-agent",
 		Home:        "/home/user",
-		AgentHome:   "/home/user/.code-agent",
+		AgentHome:   "/agent/home",
 		RuntimeHome: "/runtime",
 		Workspace:   "/workspace",
 		LocalUID:    "1000",
@@ -89,10 +89,39 @@ func TestPrepare_CreatesCopiesAndChownsInOrder(t *testing.T) {
 		t.Fatalf("Prepare() error = %v", err)
 	}
 	want := []string{
-		"create:/home/user/.code-agent",
-		"copy:/runtime/config->/home/user/.code-agent",
+		"create:/agent/home",
+		"copy:/runtime/config->/agent/home",
 		"chown:/home/user",
 	}
+	if !reflect.DeepEqual(calls, want) {
+		t.Fatalf("calls = %#v, want %#v", calls, want)
+	}
+}
+
+func TestPrepare_SkipsAgentHomeWhenUnset(t *testing.T) {
+	restore := replacePrepareSeams(t)
+	defer restore()
+
+	cfg := testConfig()
+	cfg.AgentHome = ""
+
+	var calls []string
+	createDirectory = func(path string) error {
+		calls = append(calls, "create:"+path)
+		return nil
+	}
+	copyContents = func(source string, destination string) error {
+		calls = append(calls, "copy:"+source+"->"+destination)
+		return nil
+	}
+	chownRecursive = func(path string, uid int, gid int) error {
+		calls = append(calls, "chown:"+path)
+		return nil
+	}
+	if err := Prepare(cfg, zap.NewNop()); err != nil {
+		t.Fatalf("Prepare() error = %v", err)
+	}
+	want := []string{"chown:/home/user"}
 	if !reflect.DeepEqual(calls, want) {
 		t.Fatalf("calls = %#v, want %#v", calls, want)
 	}

@@ -14,11 +14,11 @@ func TestRun_ExecutesPhasesInOrder(t *testing.T) {
 	t.Parallel()
 
 	var calls []string
-	cfg := config.Config{AgentName: "codex"}
+	cfg := config.Config{Home: "/home/user"}
 	testPhases := phases{
 		validate: func(got config.Config, logger *zap.Logger) error {
 			calls = append(calls, "validate")
-			if got.AgentName != cfg.AgentName {
+			if got.Home != cfg.Home {
 				t.Fatalf("cfg = %#v, want %#v", got, cfg)
 			}
 			return nil

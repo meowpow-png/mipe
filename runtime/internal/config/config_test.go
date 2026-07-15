@@ -7,59 +7,51 @@ import (
 	"testing"
 )
 
-func TestNew_DerivesAgentHomeAndPreservesCommand(t *testing.T) {
+func TestNew_PreservesConfiguredAgentHomeAndCommand(t *testing.T) {
 	t.Parallel()
 
 	command := []string{"bash", "-lc", "echo ok"}
 	cfg := New(Environment{
 		AgentName:   "codex",
 		Home:        "/home/user",
+		AgentHome:   "/agent/home",
 		RuntimeHome: "/runtime",
 		Workspace:   "/workspace",
 		LocalUID:    "1000",
 		LocalGID:    "1001",
 	}, command)
 
-	if cfg.AgentHome != filepath.Join("/home/user", ".codex") {
-		t.Fatalf("AgentHome = %q, want /home/user/.codex", cfg.AgentHome)
+	if cfg.AgentName != "codex" {
+		t.Fatalf("AgentName = %q, want codex", cfg.AgentName)
+	}
+	if cfg.AgentHome != "/agent/home" {
+		t.Fatalf("AgentHome = %q, want /agent/home", cfg.AgentHome)
 	}
 	if !reflect.DeepEqual(cfg.Command, command) {
 		t.Fatalf("Command = %#v, want %#v", cfg.Command, command)
 	}
 }
 
-func TestNew_LeavesAgentHomeEmptyWithoutHomeOrAgentName(t *testing.T) {
+func TestNew_LeavesAgentHomeEmptyWhenUnset(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name string
-		env  Environment
-	}{
-		{name: "missing home", env: Environment{AgentName: "codex"}},
-		{name: "missing agent", env: Environment{Home: "/home/user"}},
-	}
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			cfg := New(tt.env, nil)
-			if cfg.AgentHome != "" {
-				t.Fatalf("AgentHome = %q, want empty", cfg.AgentHome)
-			}
-		})
+	cfg := New(Environment{Home: "/home/user"}, nil)
+	if cfg.AgentHome != "" {
+		t.Fatalf("AgentHome = %q, want empty", cfg.AgentHome)
 	}
 }
 
 func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 	t.Setenv("AGENT_NAME", "process-agent")
 	t.Setenv("HOME", "/home/process")
+	t.Setenv("AGENT_HOME", "/agent/process")
 	t.Setenv("LOCAL_UID", "2000")
 
 	path := filepath.Join(t.TempDir(), "config.json")
 	content := `{
 		"agent_name": "file-agent",
 		"home": "/home/file",
+		"agent_home": "/agent/file",
 		"runtime_home": "/runtime/file",
 		"workspace": "/workspace/file",
 		"local_uid": "1000",
@@ -81,8 +73,8 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 	if cfg.LocalGID != "1001" {
 		t.Fatalf("LocalGID = %q, want 1001", cfg.LocalGID)
 	}
-	if cfg.AgentHome != filepath.Join("/home/process", ".process-agent") {
-		t.Fatalf("AgentHome = %q, want /home/process/.process-agent", cfg.AgentHome)
+	if cfg.AgentHome != "/agent/process" {
+		t.Fatalf("AgentHome = %q, want /agent/process", cfg.AgentHome)
 	}
 	if want := []string{"bash", "-lc", "echo ok"}; !reflect.DeepEqual(cfg.Command, want) {
 		t.Fatalf("Command = %#v, want %#v", cfg.Command, want)
@@ -98,6 +90,7 @@ func TestLoad_LoadsDefaultConfigFromRuntimeHome(t *testing.T) {
 	content := `{
 		"agent_name": "file-agent",
 		"home": "/home/file",
+		"agent_home": "/agent/file",
 		"workspace": "/workspace/file",
 		"local_uid": "1000",
 		"local_gid": "1001"
@@ -109,14 +102,14 @@ func TestLoad_LoadsDefaultConfigFromRuntimeHome(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Load() error = %v", err)
 	}
-	if cfg.AgentName != "file-agent" {
-		t.Fatalf("AgentName = %q, want file-agent", cfg.AgentName)
-	}
 	if cfg.RuntimeHome != runtimeHome {
 		t.Fatalf("RuntimeHome = %q, want %q", cfg.RuntimeHome, runtimeHome)
 	}
-	if cfg.AgentHome != filepath.Join("/home/file", ".file-agent") {
-		t.Fatalf("AgentHome = %q, want /home/file/.file-agent", cfg.AgentHome)
+	if cfg.AgentName != "file-agent" {
+		t.Fatalf("AgentName = %q, want file-agent", cfg.AgentName)
+	}
+	if cfg.AgentHome != "/agent/file" {
+		t.Fatalf("AgentHome = %q, want /agent/file", cfg.AgentHome)
 	}
 	if want := []string{"bash", "-lc", "echo ok"}; !reflect.DeepEqual(cfg.Command, want) {
 		t.Fatalf("Command = %#v, want %#v", cfg.Command, want)
@@ -130,6 +123,7 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 	defaultContent := `{
 		"agent_name": "default-agent",
 		"home": "/home/default",
+		"agent_home": "/agent/default",
 		"workspace": "/workspace/default",
 		"local_uid": "1000",
 		"local_gid": "1001"
@@ -142,6 +136,7 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 	explicitContent := `{
 		"agent_name": "explicit-agent",
 		"home": "/home/explicit",
+		"agent_home": "/agent/explicit",
 		"workspace": "/workspace/explicit",
 		"local_uid": "2000",
 		"local_gid": "2001"
@@ -152,6 +147,9 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 	cfg, err := Load([]string{"--config", explicitPath, "bash"})
 	if err != nil {
 		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.AgentHome != "/agent/explicit" {
+		t.Fatalf("AgentHome = %q, want /agent/explicit", cfg.AgentHome)
 	}
 	if cfg.AgentName != "explicit-agent" {
 		t.Fatalf("AgentName = %q, want explicit-agent", cfg.AgentName)

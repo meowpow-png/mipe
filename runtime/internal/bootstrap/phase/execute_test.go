@@ -8,15 +8,33 @@ import (
 	"go.uber.org/zap"
 )
 
-func TestAgentHomeEnvironment_ConvertsAgentNameToEnvironmentVariable(t *testing.T) {
+func TestRuntimeEnvironment_IncludesAgentHomeWhenConfigured(t *testing.T) {
 	t.Parallel()
 
 	cfg := testConfig()
-	cfg.AgentName = "code-agent"
-	cfg.AgentHome = "/home/user/.code-agent"
 
-	if got, want := agentHomeEnvironment(cfg), "CODE_AGENT_HOME=/home/user/.code-agent"; got != want {
-		t.Fatalf("agentHomeEnvironment() = %q, want %q", got, want)
+	want := []string{
+		"HOME=/home/user",
+		"RUNTIME_HOME=/runtime",
+		"AGENT_HOME=/agent/home",
+	}
+	if got := runtimeEnvironment(cfg); !reflect.DeepEqual(got, want) {
+		t.Fatalf("runtimeEnvironment() = %#v, want %#v", got, want)
+	}
+}
+
+func TestRuntimeEnvironment_SkipsAgentHomeWhenUnset(t *testing.T) {
+	t.Parallel()
+
+	cfg := testConfig()
+	cfg.AgentHome = ""
+
+	want := []string{
+		"HOME=/home/user",
+		"RUNTIME_HOME=/runtime",
+	}
+	if got := runtimeEnvironment(cfg); !reflect.DeepEqual(got, want) {
+		t.Fatalf("runtimeEnvironment() = %#v, want %#v", got, want)
 	}
 }
 
@@ -41,8 +59,8 @@ func TestExecute_BuildsGosuExecInvocation(t *testing.T) {
 		"1000:1001",
 		"env",
 		"HOME=/home/user",
-		"CODE_AGENT_HOME=/home/user/.code-agent",
 		"RUNTIME_HOME=/runtime",
+		"AGENT_HOME=/agent/home",
 		"bash",
 	}
 	if !reflect.DeepEqual(gotArgs, wantArgs) {

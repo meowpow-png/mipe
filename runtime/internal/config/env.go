@@ -9,6 +9,7 @@ type Environment struct {
 	Values      map[string]string
 	AgentName   string
 	Home        string
+	AgentHome   string
 	RuntimeHome string
 	Workspace   string
 	LocalUID    string
@@ -32,6 +33,7 @@ func LoadEnvironment(defaults map[string]string) Environment {
 	}
 	agentName := values["AGENT_NAME"]
 	home := values["HOME"]
+	agentHome := values["AGENT_HOME"]
 	runtimeHome := values["RUNTIME_HOME"]
 	workspace := values["WORKSPACE"]
 
@@ -39,6 +41,7 @@ func LoadEnvironment(defaults map[string]string) Environment {
 		Values:      values,
 		AgentName:   agentName,
 		Home:        home,
+		AgentHome:   agentHome,
 		RuntimeHome: runtimeHome,
 		Workspace:   workspace,
 		LocalUID:    values["LOCAL_UID"],

@@ -17,6 +17,7 @@ type fileConfig struct {
 	Environment map[string]string `json:"environment"`
 	AgentName   string            `json:"agent_name"`
 	Home        string            `json:"home"`
+	AgentHome   string            `json:"agent_home"`
 	RuntimeHome string            `json:"runtime_home"`
 	Workspace   string            `json:"workspace"`
 	LocalUID    string            `json:"local_uid"`
@@ -69,6 +70,7 @@ func (cfg fileConfig) EnvironmentValues() map[string]string {
 	}
 	setIfPresent(values, "AGENT_NAME", cfg.AgentName)
 	setIfPresent(values, "HOME", cfg.Home)
+	setIfPresent(values, "AGENT_HOME", cfg.AgentHome)
 	setIfPresent(values, "RUNTIME_HOME", cfg.RuntimeHome)
 	setIfPresent(values, "WORKSPACE", cfg.Workspace)
 	setIfPresent(values, "LOCAL_UID", cfg.LocalUID)

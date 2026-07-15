@@ -11,7 +11,7 @@ func validConfig() config.Config {
 	return config.Config{
 		AgentName:   "codex",
 		Home:        "/home/user",
-		AgentHome:   "/home/user/.codex",
+		AgentHome:   "/agent/home",
 		RuntimeHome: "/runtime",
 		Workspace:   "/workspace",
 		LocalUID:    "1000",
@@ -37,7 +37,6 @@ func TestConfig_ReturnsMissingValueErrorForRequiredFields(t *testing.T) {
 		edit  func(*config.Config)
 	}{
 		{name: "agent name", field: "agent_name", edit: func(cfg *config.Config) { cfg.AgentName = "" }},
-		{name: "agent home", field: "agent_home", edit: func(cfg *config.Config) { cfg.AgentHome = "" }},
 		{name: "home", field: "home", edit: func(cfg *config.Config) { cfg.Home = "" }},
 		{name: "runtime home", field: "runtime_home", edit: func(cfg *config.Config) { cfg.RuntimeHome = "" }},
 		{name: "workspace", field: "workspace", edit: func(cfg *config.Config) { cfg.Workspace = "" }},

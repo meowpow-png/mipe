@@ -2,7 +2,6 @@ package phase
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/meowpow-png/mipe/runtime/internal/bootstrap/process"
 	"github.com/meowpow-png/mipe/runtime/internal/config"
@@ -23,16 +22,8 @@ func Execute(cfg config.Config, logger *zap.Logger) error {
 	args := append([]string{
 		fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID),
 		"env",
-		"HOME=" + cfg.Home,
-		agentHomeEnvironment(cfg),
-		"RUNTIME_HOME=" + cfg.RuntimeHome,
-	}, cfg.Command...)
+	}, runtimeEnvironment(cfg)...)
+	args = append(args, cfg.Command...)
 
 	return execProcess("gosu", args...)
-}
-
-func agentHomeEnvironment(cfg config.Config) string {
-	name := strings.ToUpper(strings.ReplaceAll(cfg.AgentName, "-", "_"))
-
-	return name + "_HOME=" + cfg.AgentHome
 }
