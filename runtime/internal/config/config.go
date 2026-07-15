@@ -15,6 +15,7 @@ type Config struct {
 	Workspace   string
 	LocalUID    string
 	LocalGID    string
+	Debug       bool
 	Command     []string
 }
 
@@ -28,7 +29,9 @@ func Load(args []string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	return New(LoadEnvironment(values), flags.Command), nil
+	cfg := New(LoadEnvironment(values), flags.Command)
+	cfg.Debug = flags.Debug
+	return cfg, nil
 }
 
 func configPath(path string) string {

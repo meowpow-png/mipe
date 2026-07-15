@@ -160,3 +160,13 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 		t.Fatalf("uid/gid = %q/%q, want 2000/2001", cfg.LocalUID, cfg.LocalGID)
 	}
 }
+
+func TestLoad_SetsDebugFromFlag(t *testing.T) {
+	cfg, err := Load([]string{"-debug", "bash"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if !cfg.Debug {
+		t.Fatal("Debug = false, want true")
+	}
+}

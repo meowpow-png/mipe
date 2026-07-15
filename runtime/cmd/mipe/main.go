@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	logger, err := zap.NewProduction()
+	logger, err := newLogger(false)
 	if err != nil {
 		panic(err)
 	}
@@ -20,6 +20,10 @@ func main() {
 		logConfigError(logger, err)
 		_ = logger.Sync()
 		os.Exit(1)
+	}
+	logger, err = newLogger(cfg.Debug)
+	if err != nil {
+		panic(err)
 	}
 	if err := bootstrap.Run(context.Background(), cfg, logger); err != nil {
 		if isConfigError(err) {
@@ -32,6 +36,14 @@ func main() {
 		os.Exit(1)
 	}
 	_ = logger.Sync()
+}
+
+func newLogger(debug bool) (*zap.Logger, error) {
+	cfg := zap.NewProductionConfig()
+	if debug {
+		cfg.Level.SetLevel(zap.DebugLevel)
+	}
+	return cfg.Build()
 }
 
 func logConfigError(logger *zap.Logger, err error) {

@@ -11,12 +11,15 @@ import (
 func TestParseFlags_ReadsConfigAndCommand(t *testing.T) {
 	t.Parallel()
 
-	flags, err := ParseFlags([]string{"--config", "/config.json", "bash", "-lc", "echo ok"})
+	flags, err := ParseFlags([]string{"--config", "/config.json", "-debug", "bash", "-lc", "echo ok"})
 	if err != nil {
 		t.Fatalf("ParseFlags() error = %v", err)
 	}
 	if flags.ConfigPath != "/config.json" {
 		t.Fatalf("ConfigPath = %q, want /config.json", flags.ConfigPath)
+	}
+	if !flags.Debug {
+		t.Fatal("Debug = false, want true")
 	}
 	if want := []string{"bash", "-lc", "echo ok"}; !reflect.DeepEqual(flags.Command, want) {
 		t.Fatalf("Command = %#v, want %#v", flags.Command, want)

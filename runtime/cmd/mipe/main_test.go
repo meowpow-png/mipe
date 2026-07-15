@@ -106,3 +106,30 @@ func TestLogConfigError_LogsDistinctMessagesAndFields(t *testing.T) {
 		})
 	}
 }
+
+func TestNewLogger_ConfiguresDebugLevel(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		debug bool
+		want  bool
+	}{
+		{name: "production", debug: false, want: false},
+		{name: "debug", debug: true, want: true},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			logger, err := newLogger(tt.debug)
+			if err != nil {
+				t.Fatalf("newLogger() error = %v", err)
+			}
+			if got := logger.Core().Enabled(zapcore.DebugLevel); got != tt.want {
+				t.Fatalf("debug enabled = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
