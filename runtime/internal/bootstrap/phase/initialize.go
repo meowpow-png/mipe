@@ -11,6 +11,11 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	statFile   = os.Stat
+	runProcess = process.Run
+)
+
 // Initialize initializes the project
 func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
 	script := filepath.Join(cfg.Workspace, ".codex", "init", "dependencies.sh")
@@ -18,7 +23,7 @@ func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) erro
 	logger.Info("checking project dependency initialization",
 		zap.String("script", script),
 	)
-	if _, err := os.Stat(script); err != nil {
+	if _, err := statFile(script); err != nil {
 		if os.IsNotExist(err) {
 			logger.Info("project dependency initialization skipped", zap.String("script", script))
 			return nil
@@ -28,7 +33,7 @@ func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) erro
 	logger.Info("project dependency initialization started",
 		zap.String("script", script),
 	)
-	if err := process.Run(
+	if err := runProcess(
 		ctx,
 		"gosu",
 		fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID),

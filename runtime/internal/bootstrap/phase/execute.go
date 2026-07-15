@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var execProcess = process.Exec
+
 // Execute executes the requested process
 func Execute(cfg config.Config, logger *zap.Logger) error {
 	logger.Info(
@@ -26,7 +28,7 @@ func Execute(cfg config.Config, logger *zap.Logger) error {
 		"RUNTIME_HOME=" + cfg.RuntimeHome,
 	}, cfg.Command...)
 
-	return process.Exec("gosu", args...)
+	return execProcess("gosu", args...)
 }
 
 func agentHomeEnvironment(cfg config.Config) string {

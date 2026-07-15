@@ -10,6 +10,12 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	createDirectory = files.CreateDirectory
+	copyContents    = files.CopyContents
+	chownRecursive  = files.ChownRecursive
+)
+
 // Prepare prepares the runtime
 func Prepare(cfg config.Config, logger *zap.Logger) error {
 	uid, gid, err := parseOwnership(cfg)
@@ -20,7 +26,7 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 		zap.String("agent", cfg.AgentName),
 		zap.String("path", cfg.AgentHome),
 	)
-	if err := files.CreateDirectory(cfg.AgentHome); err != nil {
+	if err := createDirectory(cfg.AgentHome); err != nil {
 		return fmt.Errorf("create agent home %q: %w", cfg.AgentHome, err)
 	}
 	logger.Info("agent home created",
@@ -32,7 +38,7 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 		zap.String("source", source),
 		zap.String("destination", cfg.AgentHome),
 	)
-	if err := files.CopyContents(source, cfg.AgentHome); err != nil {
+	if err := copyContents(source, cfg.AgentHome); err != nil {
 		return fmt.Errorf("copy shared runtime configuration from %q to %q: %w", source, cfg.AgentHome, err)
 	}
 	logger.Info("shared runtime configuration copied",
@@ -44,7 +50,7 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 		zap.Int("uid", uid),
 		zap.Int("gid", gid),
 	)
-	if err := files.ChownRecursive(cfg.Home, uid, gid); err != nil {
+	if err := chownRecursive(cfg.Home, uid, gid); err != nil {
 		return fmt.Errorf("update ownership for %q: %w", cfg.Home, err)
 	}
 	logger.Info("home ownership updated",

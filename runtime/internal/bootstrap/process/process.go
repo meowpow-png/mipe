@@ -8,6 +8,12 @@ import (
 	"syscall"
 )
 
+var (
+	lookPath    = exec.LookPath
+	environ     = os.Environ
+	execProcess = syscall.Exec
+)
+
 // Run runs a process and forwards its output to the current process
 func Run(ctx context.Context, name string, args ...string) error {
 	command := exec.CommandContext(ctx, name, args...)
@@ -20,11 +26,11 @@ func Run(ctx context.Context, name string, args ...string) error {
 
 // Exec replaces the current process
 func Exec(name string, args ...string) error {
-	path, err := exec.LookPath(name)
+	path, err := lookPath(name)
 	if err != nil {
 		return fmt.Errorf("locate %s: %w", name, err)
 	}
 	argv := append([]string{path}, args...)
 
-	return syscall.Exec(path, argv, os.Environ())
+	return execProcess(path, argv, environ())
 }
