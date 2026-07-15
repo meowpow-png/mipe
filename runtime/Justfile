@@ -1,0 +1,50 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+# List available recipes
+default:
+    @just --list
+
+# Build bootstrap binary
+build:
+    @mkdir -p build
+    @go build -o build/bin/mipe ./cmd/mipe
+
+# Build production binary
+build-production:
+    @mkdir -p build
+    @go build \
+        -trimpath \
+        -ldflags="-s -w -buildid=" \
+        -o build/bin/mipe \
+        ./cmd/mipe
+
+# Build and run bootstrap
+[arg("args", help="Arguments passed to the bootstrap")]
+run *args: build
+    @./build/bin/mipe {{args}}
+
+# Clean build artifacts
+clean:
+    @rm -rf build
+
+# Run docker compose stack
+[arg("args", help="Arguments passed to docker compose")]
+compose *args:
+    @docker compose {{args}}
+
+# Run Go tests
+[arg("args", help="Arguments passed to go test")]
+test *args:
+    @go test {{args}} ./...
+
+# Run Go tests with coverage
+[arg("args", help="Arguments passed to go test")]
+test-coverage *args:
+    @mkdir -p build/report
+    @go test -coverprofile=build/report/coverage.out {{args}} ./...
+    @go tool cover -func=build/report/coverage.out
+
+# Run integration test with docker
+[arg("args", help="Arguments passed to docker compose")]
+integration-test *args:
+    @just compose run --rm --build mipe-test {{args}}
