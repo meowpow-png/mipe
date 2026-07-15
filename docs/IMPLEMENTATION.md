@@ -101,8 +101,9 @@ flowchart TD
 
 The runtime provides a shared Codex configuration that is installed during runtime initialization and applied consistently across all projects.
 
-- **`config.toml`** establishes the default Codex configuration.
-- **`hooks/`** provides runtime hooks that extend Codex with Devkit-specific behavior and are registered through the shared configuration.
+- **`AGENTS.md`** establishes the shared identity and behavior for Codex
+- **`config.toml`** establishes the default Codex configuration
+- **`hooks/`** provides runtime hooks that extend Codex with Devkit-specific behavior and are registered through the shared configuration
 
 ## Handoff
 

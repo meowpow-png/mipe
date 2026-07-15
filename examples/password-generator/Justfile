@@ -1,8 +1,9 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
 # Start interactive Codex CLI
-run:
-    @just exec "$(id -u):$(id -g)" codex
+[arg("args", help="Arguments passed to Codex")]
+run *args:
+    @just exec "$(id -u):$(id -g)" codex {{args}}
 
 # Open a shell inside Devkit container
 [arg("user", help="User to run the shell as")]

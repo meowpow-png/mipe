@@ -7,7 +7,7 @@ init_codex() {
 
     mkdir -p "$CODEX_HOME"
 
-    cp \
-        "$RUNTIME_HOME/config/config.toml" \
-        "$CODEX_HOME/config.toml"
+    cp -r \
+        "$RUNTIME_HOME/config/." \
+        "$CODEX_HOME/"
 }
