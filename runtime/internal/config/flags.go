@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io"
 	"os"
 )
@@ -32,7 +31,7 @@ func ParseFlags(args []string) (Flags, error) {
 	flags.StringVar(&parsed.ConfigPath, "config", "", "path to bootstrap config file")
 
 	if err := flags.Parse(args); err != nil {
-		return Flags{}, err
+		return Flags{}, &FlagError{Err: err}
 	}
 	parsed.Command = flags.Args()
 
@@ -47,17 +46,14 @@ func LoadFile(path string) (map[string]string, error) {
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("open %q: %w", path, err)
+		return nil, &FileError{Path: path, Operation: "open", Err: err}
 	}
-	defer func() {
-		if closeErr := file.Close(); err == nil {
-			err = closeErr
-		}
-	}()
+	//goland:noinspection GoUnhandledErrorResult
+	defer file.Close()
 
 	var cfg fileConfig
 	if err := json.NewDecoder(file).Decode(&cfg); err != nil {
-		return nil, fmt.Errorf("parse %q: %w", path, err)
+		return nil, &FileError{Path: path, Operation: "parse", Err: err}
 	}
 	return cfg.EnvironmentValues(), nil
 }

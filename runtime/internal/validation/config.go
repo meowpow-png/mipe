@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/meowpow-png/mipe/runtime/internal/config"
@@ -23,17 +22,17 @@ func Config(cfg config.Config) error {
 	}
 	for _, field := range required {
 		if field.value == "" {
-			return fmt.Errorf("required configuration value %s is missing", field.name)
+			return &config.MissingValueError{Field: field.name}
 		}
 	}
 	if len(cfg.Command) == 0 {
-		return fmt.Errorf("required configuration value command is missing")
+		return &config.MissingValueError{Field: "command"}
 	}
 	if _, err := strconv.Atoi(cfg.LocalUID); err != nil {
-		return fmt.Errorf("local_uid must be a numeric user id: %w", err)
+		return &config.InvalidValueError{Field: "local_uid", Reason: "must be a numeric user id", Err: err}
 	}
 	if _, err := strconv.Atoi(cfg.LocalGID); err != nil {
-		return fmt.Errorf("local_gid must be a numeric group id: %w", err)
+		return &config.InvalidValueError{Field: "local_gid", Reason: "must be a numeric group id", Err: err}
 	}
 	return nil
 }

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"path/filepath"
 )
 
@@ -24,7 +23,7 @@ func Load(args []string) (Config, error) {
 	}
 	values, err := LoadFile(flags.ConfigPath)
 	if err != nil {
-		return Config{}, fmt.Errorf("load config file: %w", err)
+		return Config{}, err
 	}
 	return New(LoadEnvironment(values), flags.Command), nil
 }
