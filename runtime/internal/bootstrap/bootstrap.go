@@ -27,6 +27,17 @@ func Run(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
 }
 
 func run(ctx context.Context, cfg config.Config, logger *zap.Logger, phases phases) error {
+	logger.Info("Welcome to Mipe")
+	logger.Debug("bootstrap configuration",
+		zap.String("agent", cfg.AgentName),
+		zap.String("home", cfg.Home),
+		zap.String("agent_home", cfg.AgentHome),
+		zap.String("runtime_home", cfg.RuntimeHome),
+		zap.String("workspace", cfg.Workspace),
+		zap.String("local_uid", cfg.LocalUID),
+		zap.String("local_gid", cfg.LocalGID),
+		zap.Strings("command", cfg.Command),
+	)
 	logger.Info("validation started")
 	if err := phases.validate(cfg, logger); err != nil {
 		return err
