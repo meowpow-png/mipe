@@ -1,112 +1,125 @@
 # Implementation
 
-## Lifecycle
+## Runtime
 
-The runtime initializes itself, prepares the project, and then hands control over to the requested process.
+### Configuration
+
+The bootstrap is configured before execution begins. Its configuration describes the environment in which the bootstrap will run, including where the runtime is installed, where the project workspace is located, which agent is being initialized, and which user should own the resulting files.
+
+Configuration can be provided through a configuration file and overridden by environment variables. This allows a single bootstrap binary to be reused across different environments while still supporting environment-specific customization.
+
+Example configuration file:
+
+```json
+{
+  "agent_name": "codex",
+  "home": "/home/dev",
+  "runtime_home": "/opt/codex-runtime",
+  "workspace": "/workspace",
+  "local_uid": "1000",
+  "local_gid": "1000"
+}
+```
+
+The bootstrap itself is invoked with configuration flags followed by the command that should be executed once initialization is complete.
+
+```bash
+mipe --config /opt/codex-runtime/config.json codex
+```
+
+Configuration from the file is loaded first, then overridden by matching environment variables. The resulting configuration is validated before the bootstrap lifecycle begins. If any required values are missing or invalid, execution terminates immediately without modifying the runtime environment.
+
+### Bootstrap Lifecycle
+
+The bootstrap follows a fixed sequence of phases. Each phase receives the validated configuration and must complete before the next phase starts.
 
 ```mermaid
 flowchart TD
-    A[Container Started]
+    A[Load configuration]
+    B[Validate configuration]
+    C[Prepare runtime]
+    D[Initialize project]
+    E[Execute command]
 
-    A --> B[Entrypoint]
-
-    subgraph Runtime Initialization
-        B --> C[codex.sh]
-        C --> D[permissions.sh]
-    end
-
-    D --> E[Switch to Local Developer User]
-
-    subgraph Project Initialization
-        E --> F[project.sh]
-        F --> G[workspace.sh]
-        G --> H[dependencies.sh]
-    end
-
-    H --> I[Execute Requested Process]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
 ```
 
-## Environment
+If any phase fails, the bootstrap terminates immediately.
 
-The runtime uses three directories, each with a distinct responsibility.
+### Runtime Preparation
 
-```mermaid
-flowchart TB
-    subgraph Home["/home/codex"]
-        H1[".codex/"]
-        H2["config.toml"]
-        H1 --> H2
-    end
+The runtime consists of the shared files that Mipe provides to every project. These files define the agent's behavior and configuration independently of the consuming project.
 
-    subgraph Runtime["/opt/codex-runtime"]
-        R1["bin/"]
-        R2["config/"]
-        R3["hooks/"]
-        R4["init/"]
-    end
+The bootstrap begins execution as the container's root user so it can perform privileged operations such as creating directories, copying the shared runtime, and updating file ownership. Once preparation is complete, project initialization and the final command execute as the local developer user, ensuring that project code never runs with elevated privileges.
 
-    subgraph Workspace["/workspace"]
-        W1[".codex/"]
-        W2["Project Files"]
-    end
+During preparation, the bootstrap creates the agent home directory, which is derived from the configured home directory and agent name:
 
-    Runtime -->|Initializes| Home
-    Runtime -->|Prepares| Workspace
+```text
+<home>/.<agent_name>
 ```
 
-### Home Directory
+It then copies the shared runtime from:
 
-The runtime uses `/home/codex` as the home directory for the developer process. It is backed by a persistent Docker volume so that Codex configuration, authentication state, and other user data survive container recreation.
-
-The home directory is provided through the `HOME` environment variable. During runtime initialization, Mipe prepares `~/.codex` and installs the shared runtime configuration.
-
-Codex state paths are derived from `HOME`, making it the single source of truth for persistent runtime state.
-
-### Runtime Directory
-
-The runtime is installed under `/opt/codex-runtime` and contains Mipe implementation, including the entrypoint, initialization scripts, shared configuration, and runtime hooks.
-
-Unlike the home directory and workspace, it is part of the container image and treated as read-only during normal operation.
-
-### Workspace
-
-The workspace is mounted at `/workspace` and contains the project being developed. It is provided by the consuming project and serves as the primary working directory throughout development.
-
-During project initialization, the workspace is treated as project-owned before invoking any project-specific initialization.
-
-## Initialization
-
-Initialization consists of two phases. Runtime initialization executes as the container's root user, while project initialization executes as the local developer user.
-
-```mermaid
-flowchart TD
-    A[Initialization]
-
-    A --> B[Runtime]
-    A --> C[Project]
-
-    B --> D["codex.sh"]
-    B --> E["permissions.sh"]
-
-    C --> F["project.sh"]
-    F --> G["workspace.sh"]
-    F --> H["dependencies.sh"]
+```text
+<runtime_home>/config
 ```
 
-`codex.sh` prepares the Codex runtime, while `permissions.sh` updates ownership of the home directory before switching to the local developer user.
+into the agent home, making it available to the agent before execution begins.
 
-`project.sh` orchestrates project initialization by invoking `workspace.sh` for shared workspace initialization and `dependencies.sh` to invoke `/workspace/.codex/init/dependencies.sh` when provided by the consuming project.
+Finally, the bootstrap updates ownership of the configured home directory using the configured user and group identifiers. Without this step, the local developer user would not be able to modify files created during preparation, preventing both project initialization and normal development.
 
-## Configuration
+### Project Initialization
 
-The runtime provides a shared Codex configuration that is installed during runtime initialization and applied consistently across all projects.
+Project initialization allows the consuming project to perform its own setup after the shared runtime has been prepared. Unlike the runtime itself, this step is entirely project-specific and remains local to the workspace.
 
-- **`AGENTS.md`** establishes the shared identity and behavior for Codex
-- **`config.toml`** establishes the default Codex configuration
-- **`hooks/`** provides runtime hooks registered through the shared configuration
+The bootstrap looks for the following initialization script:
 
-## Handoff
+```text
+<workspace>/.codex/init/dependencies.sh
+```
 
-Once initialization is complete, the runtime switches to the local developer user and executes the requested process.
+If the script is present, it is executed as the local developer user. If it is absent, the bootstrap simply continues to the next phase.
 
-From this point onward, the runtime performs no additional work. All commands, including the Codex CLI, execute with access to the prepared home directory, project workspace, and shared runtime configuration.
+The script is expected to define an `install_dependencies` function, allowing each project to install its own dependencies without the runtime needing to understand project-specific tooling or package managers.
+
+### Process Execution
+
+Process execution marks the end of the bootstrap lifecycle. At this point, the runtime has been prepared and the project has completed any required initialization. The bootstrap's responsibility is complete.
+
+Before launching the requested command, the bootstrap constructs the environment expected by the agent. This includes the standard home directory, the runtime location, and an agent-specific home directory.
+
+The agent home is where the agent stores its own persistent state, such as configuration, authentication, caches, and other runtime-managed files. This is distinct from the workspace, which contains the project being developed together with any project-specific configuration. By separating these responsibilities, the same agent can be reused across multiple projects while maintaining a consistent runtime environment.
+
+The agent home environment variable is derived from the configured agent name. For example, the agent name `codex` produces `CODEX_HOME`, while `test-agent` produces `TEST_AGENT_HOME`.
+
+Once the environment has been prepared, the bootstrap replaces itself with the requested command. From this point onward, the requested application becomes the primary process and the bootstrap no longer participates in execution.
+
+### Runtime Layout
+
+The bootstrap works with three distinct locations, each serving a different purpose.
+
+```text
+<runtime_home>/
+  config/
+    AGENTS.md
+    config.toml
+
+<home>/
+  .<agent_name>/
+    AGENTS.md
+    config.toml
+
+<workspace>/
+  .codex/
+    init/
+      dependencies.sh
+```
+
+- **Runtime** contains the shared configuration provided by Mipe. It is read-only from the perspective of the bootstrap and serves as the source for agent initialization
+- **Agent home** contains the prepared runtime for a specific agent together with any persistent state managed by that agent
+- **Workspace** contains the project being developed and any project-specific initialization provided by the consuming project
+
+During preparation, the bootstrap copies the shared runtime configuration from `<runtime_home>/config` into agent home. The workspace is never modified by runtime itself, except through optional project initialization.
