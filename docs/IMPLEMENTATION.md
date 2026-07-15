@@ -58,13 +58,13 @@ flowchart TB
 
 The runtime uses `/home/codex` as the home directory for the developer process. It is backed by a persistent Docker volume so that Codex configuration, authentication state, and other user data survive container recreation.
 
-The home directory is provided through the `HOME` environment variable. During runtime initialization, the Devkit prepares `~/.codex` and installs the shared runtime configuration.
+The home directory is provided through the `HOME` environment variable. During runtime initialization, Mipe prepares `~/.codex` and installs the shared runtime configuration.
 
 Codex state paths are derived from `HOME`, making it the single source of truth for persistent runtime state.
 
 ### Runtime Directory
 
-The runtime is installed under `/opt/codex-runtime` and contains the Devkit implementation, including the entrypoint, initialization scripts, shared configuration, and runtime hooks.
+The runtime is installed under `/opt/codex-runtime` and contains Mipe implementation, including the entrypoint, initialization scripts, shared configuration, and runtime hooks.
 
 Unlike the home directory and workspace, it is part of the container image and treated as read-only during normal operation.
 
@@ -103,7 +103,7 @@ The runtime provides a shared Codex configuration that is installed during runti
 
 - **`AGENTS.md`** establishes the shared identity and behavior for Codex
 - **`config.toml`** establishes the default Codex configuration
-- **`hooks/`** provides runtime hooks that extend Codex with Devkit-specific behavior and are registered through the shared configuration
+- **`hooks/`** provides runtime hooks registered through the shared configuration
 
 ## Handoff
 

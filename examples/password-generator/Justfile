@@ -5,7 +5,7 @@ set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 run *args:
     @just exec "$(id -u):$(id -g)" codex {{args}}
 
-# Open a shell inside Devkit container
+# Open a shell inside Mipe container
 [arg("user", help="User to run the shell as")]
 shell user='root':
     @just exec {{user}} bash
@@ -21,5 +21,5 @@ exec user *args:
     @just compose up -d
     @just compose exec \
             --user {{user}} \
-            devkit \
+            mipe \
             {{args}}

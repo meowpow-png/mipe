@@ -1,12 +1,12 @@
 services:
-  java:
-    image: codex-devkit:21-java
+  mipe-java:
+    image: mipe-codex:21-java
     build:
       context: .
       dockerfile: docker/java/Dockerfile
 
-  node:
-    image: codex-devkit:26-node
+  mipe-node:
+    image: mipe-codex:26-node
     build:
       context: .
       dockerfile: docker/node/Dockerfile

@@ -13,8 +13,8 @@ compose-java *args:
 compose-node *args:
     @just compose {{args}} node
 
-# Remove all Devkit images
+# Remove all Mipe images
 docker-clean:
     @docker image rm -f \
-        codex-devkit:21-java \
-        codex-devkit:26-node 2>/dev/null || true
+        mipe-codex:21-java \
+        mipe-codex:26-node 2>/dev/null || true

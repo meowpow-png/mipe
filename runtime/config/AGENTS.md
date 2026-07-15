@@ -2,9 +2,8 @@
 
 ## Context
 
-You are operating within Codex Devkit; an opinionated reusable foundation for AI-assisted 
-software development. It provides shared runtime, common tasks, and reusable conventions, 
-while the consuming project provides its own context and requirements.
+You are operating within Mipe, an opinionated foundation for AI-assisted 
+software development. Mipe provides the runtime, shared skills, and common conventions.
 
 ## Instructions
 

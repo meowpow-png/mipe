@@ -1,6 +1,6 @@
 services:
-  devkit:
-    image: codex-devkit:21-java
+  mipe:
+    image: mipe-codex:21-java
     pull_policy: never
     working_dir: /workspace
     environment:

@@ -1,6 +1,6 @@
 services:
-  devkit:
-    image: codex-devkit:26-node
+  mipe:
+    image: mipe-codex:26-node
     pull_policy: never
     working_dir: /workspace
     environment:

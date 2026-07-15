@@ -2,7 +2,7 @@
 
 ## Context
 
-While implementing the shared Devkit runtime, I wanted Codex to use a persistent home directory mounted at `/home/codex`. The goal was to keep the runtime configuration, authentication state, and caches inside a durable Docker volume that survives container recreation. During testing, however, Codex ignored the prepared configuration and reported its home directory as `/home/ubuntu`.
+While implementing shared runtime, I wanted Codex to use a persistent home directory mounted at `/home/codex`. The goal was to keep the runtime configuration, authentication state, and caches inside a durable Docker volume that survives container recreation. During testing, however, Codex ignored the prepared configuration and reported its home directory as `/home/ubuntu`.
 
 ## Observations
 
@@ -31,7 +31,7 @@ The runtime now derives `CODEX_HOME` from `HOME` rather than defining the home d
 
 ## Next Steps
 
-Keep `HOME=/home/codex` as part of the runtime container configuration for all Devkit images.
+Keep `HOME=/home/codex` as part of the runtime container configuration for all project images.
 
 Continue treating the entrypoint as a consumer of the runtime environment rather than the component responsible for defining it. Future runtime paths should be derived from `HOME` instead of hardcoding `/home/codex`.
 

@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Examples demonstrate how Codex Devkit is intended to be used in real projects.
+Examples demonstrate how Mipe is intended to be used in real projects.
 
 Each example serves three purposes:
 
-- Validate that Devkit can be used to develop a project from start to finish
+- Validate that Mipe can be used to develop a project from start to finish
 - Provide a complete reference implementation
 - Teach the recommended development workflow through a curated transcript
 
