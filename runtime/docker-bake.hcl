@@ -2,10 +2,10 @@ group "default" {
   targets = ["codex", "claude"]
 }
 
-target "runtime" {
+target "runtime-base" {
   context = "."
   dockerfile = "docker/base/Dockerfile"
-  tags = ["mipe-runtime:latest"]
+  tags = ["mipe-runtime-base:latest"]
 }
 
 target "codex" {
@@ -14,7 +14,7 @@ target "codex" {
   tags = ["mipe-runtime-codex:latest"]
 
   contexts = {
-    runtime = "target:runtime"
+    runtime = "target:runtime-base"
   }
 }
 
@@ -24,6 +24,6 @@ target "claude" {
   tags = ["mipe-runtime-claude:latest"]
 
   contexts = {
-    runtime = "target:runtime"
+    runtime = "target:runtime-base"
   }
 }
