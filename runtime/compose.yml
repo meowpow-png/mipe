@@ -3,7 +3,7 @@ services:
     image: mipe-runtime-codex:latest
     build:
       context: .
-      dockerfile: docker/codex/Dockerfile
+      dockerfile: docker/runtime/codex/Dockerfile
     working_dir: /workspace
     environment:
       LOCAL_UID: "1000"
@@ -17,13 +17,13 @@ services:
     image: mipe-runtime-claude:latest
     build:
       context: .
-      dockerfile: docker/claude/Dockerfile
+      dockerfile: docker/runtime/claude/Dockerfile
     working_dir: /workspace
     environment:
       LOCAL_UID: "1000"
       LOCAL_GID: "1000"
     volumes:
-      - claude-home:/home/dev/
+      - claude-home:/home/dev
       - .:/workspace:Z
     command: mipe -debug claude
 
