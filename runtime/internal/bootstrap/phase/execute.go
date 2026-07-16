@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var execProcess = process.Exec
+var execProcess = process.ExecInDir
 
 // Execute executes the requested process
 func Execute(cfg config.Config, logger *zap.Logger) error {
@@ -25,5 +25,5 @@ func Execute(cfg config.Config, logger *zap.Logger) error {
 	}, runtimeEnvironment(cfg)...)
 	args = append(args, cfg.Command...)
 
-	return execProcess("gosu", args...)
+	return execProcess(cfg.Workspace, "gosu", args...)
 }

@@ -27,8 +27,8 @@ func Validate(cfg config.Config, logger *zap.Logger) error {
 
 func checkWorkspaceWritable(cfg config.Config) error {
 	user := fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID)
-	if err := runProcess(context.Background(), "gosu", user, "test", "-w", cfg.Workspace); err != nil {
-		return fmt.Errorf("workspace %q is not writable by %s: %w", cfg.Workspace, user, err)
+	if err := runProcess(context.Background(), "gosu", user, "test", "-d", cfg.Workspace, "-a", "-w", cfg.Workspace); err != nil {
+		return fmt.Errorf("workspace %q is not a writable directory for %s: %w", cfg.Workspace, user, err)
 	}
 	return nil
 }

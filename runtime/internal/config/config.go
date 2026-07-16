@@ -1,11 +1,6 @@
 package config
 
-import (
-	"os"
-	"path/filepath"
-)
-
-const defaultConfigFile = "config.json"
+const defaultConfigPath = "/opt/mipe/config.json"
 
 type Config struct {
 	AgentName   string
@@ -38,11 +33,7 @@ func configPath(path string) string {
 	if path != "" {
 		return path
 	}
-	runtimeHome := os.Getenv("RUNTIME_HOME")
-	if runtimeHome == "" {
-		return ""
-	}
-	return filepath.Join(runtimeHome, defaultConfigFile)
+	return defaultConfigPath
 }
 
 // New constructs a bootstrap configuration

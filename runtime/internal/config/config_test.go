@@ -85,60 +85,15 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 	}
 }
 
-func TestLoad_LoadsDefaultConfigFromRuntimeHome(t *testing.T) {
-	runtimeHome := t.TempDir()
-	t.Setenv("RUNTIME_HOME", runtimeHome)
-	t.Setenv("HOME", "/home/ignored")
+func TestConfigPath_UsesFixedDefaultIndependentOfRuntimeHome(t *testing.T) {
+	t.Setenv("RUNTIME_HOME", "/ignored/runtime")
 
-	path := filepath.Join(runtimeHome, "config.json")
-	content := `{
-		"agent_name": "file-agent",
-		"user_home": "/home/file",
-		"agent_home": "/agent/file",
-		"workspace": "/workspace/file",
-		"local_uid": "1000",
-		"local_gid": "1001"
-	}`
-	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-		t.Fatalf("write config: %v", err)
-	}
-	cfg, err := Load([]string{"bash", "-lc", "echo ok"})
-	if err != nil {
-		t.Fatalf("Load() error = %v", err)
-	}
-	if cfg.RuntimeHome != runtimeHome {
-		t.Fatalf("RuntimeHome = %q, want %q", cfg.RuntimeHome, runtimeHome)
-	}
-	if cfg.AgentName != "file-agent" {
-		t.Fatalf("AgentName = %q, want file-agent", cfg.AgentName)
-	}
-	if cfg.UserHome != "/home/file" {
-		t.Fatalf("UserHome = %q, want /home/file", cfg.UserHome)
-	}
-	if cfg.AgentHome != "/agent/file" {
-		t.Fatalf("AgentHome = %q, want /agent/file", cfg.AgentHome)
-	}
-	if want := []string{"bash", "-lc", "echo ok"}; !reflect.DeepEqual(cfg.Command, want) {
-		t.Fatalf("Command = %#v, want %#v", cfg.Command, want)
+	if got := configPath(""); got != "/opt/mipe/config.json" {
+		t.Fatalf("configPath() = %q, want /opt/mipe/config.json", got)
 	}
 }
 
-func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
-	runtimeHome := t.TempDir()
-	t.Setenv("RUNTIME_HOME", runtimeHome)
-
-	defaultContent := `{
-		"agent_name": "default-agent",
-		"user_home": "/home/default",
-		"agent_home": "/agent/default",
-		"workspace": "/workspace/default",
-		"local_uid": "1000",
-		"local_gid": "1001"
-	}`
-	if err := os.WriteFile(filepath.Join(runtimeHome, "config.json"), []byte(defaultContent), 0o600); err != nil {
-		t.Fatalf("write default config: %v", err)
-	}
-
+func TestLoad_UsesExplicitConfigPath(t *testing.T) {
 	explicitPath := filepath.Join(t.TempDir(), "config.json")
 	explicitContent := `{
 		"agent_name": "explicit-agent",
@@ -167,7 +122,11 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 }
 
 func TestLoad_SetsDebugFromFlag(t *testing.T) {
-	cfg, err := Load([]string{"-debug", "bash"})
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	cfg, err := Load([]string{"--config", path, "-debug", "bash"})
 	if err != nil {
 		t.Fatalf("Load() error = %v", err)
 	}

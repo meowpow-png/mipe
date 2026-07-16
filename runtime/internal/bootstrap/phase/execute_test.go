@@ -43,8 +43,10 @@ func TestExecute_BuildsGosuExecInvocation(t *testing.T) {
 	defer func() { execProcess = originalExec }()
 
 	var gotName string
+	var gotDir string
 	var gotArgs []string
-	execProcess = func(name string, args ...string) error {
+	execProcess = func(dir string, name string, args ...string) error {
+		gotDir = dir
 		gotName = name
 		gotArgs = append([]string(nil), args...)
 		return nil
@@ -54,6 +56,9 @@ func TestExecute_BuildsGosuExecInvocation(t *testing.T) {
 	}
 	if gotName != "gosu" {
 		t.Fatalf("name = %q, want gosu", gotName)
+	}
+	if gotDir != "/workspace" {
+		t.Fatalf("dir = %q, want /workspace", gotDir)
 	}
 	wantArgs := []string{
 		"1000:1001",
@@ -73,7 +78,7 @@ func TestExecute_ReturnsExecError(t *testing.T) {
 	defer func() { execProcess = originalExec }()
 
 	sentinel := errors.New("exec failed")
-	execProcess = func(name string, args ...string) error {
+	execProcess = func(dir string, name string, args ...string) error {
 		return sentinel
 	}
 	if err := Execute(testConfig(), zap.NewNop()); !errors.Is(err, sentinel) {

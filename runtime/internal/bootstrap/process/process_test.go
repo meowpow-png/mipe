@@ -108,16 +108,56 @@ func TestExec_ReturnsExecError(t *testing.T) {
 	}
 }
 
+func TestExecInDir_ChangesDirectoryBeforeExec(t *testing.T) {
+	restore := replaceExecSeams(t)
+	defer restore()
+
+	lookPath = func(name string) (string, error) { return "/usr/bin/gosu", nil }
+	var gotDir string
+	changeDir = func(dir string) error {
+		gotDir = dir
+		return nil
+	}
+	execProcess = func(path string, argv []string, envv []string) error { return nil }
+
+	if err := ExecInDir("/work", "gosu"); err != nil {
+		t.Fatalf("ExecInDir() error = %v", err)
+	}
+	if gotDir != "/work" {
+		t.Fatalf("directory = %q, want /work", gotDir)
+	}
+}
+
+func TestExecInDir_ReturnsChangeDirectoryError(t *testing.T) {
+	restore := replaceExecSeams(t)
+	defer restore()
+
+	lookPath = func(name string) (string, error) { return "/usr/bin/gosu", nil }
+	sentinel := errors.New("missing workspace")
+	changeDir = func(dir string) error { return sentinel }
+	execProcess = func(path string, argv []string, envv []string) error {
+		t.Fatal("execProcess called after change directory failed")
+		return nil
+	}
+
+	err := ExecInDir("/work", "gosu")
+	if !errors.Is(err, sentinel) {
+		t.Fatalf("ExecInDir() error = %v, want sentinel", err)
+	}
+}
+
 func replaceExecSeams(t *testing.T) func() {
 	t.Helper()
 
 	originalLookPath := lookPath
 	originalEnviron := environ
+	originalChangeDir := changeDir
 	originalExecProcess := execProcess
 
 	return func() {
 		lookPath = originalLookPath
 		environ = originalEnviron
+		changeDir = originalChangeDir
 		execProcess = originalExecProcess
 	}
 }

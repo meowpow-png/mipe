@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	statFile   = os.Stat
-	runProcess = process.Run
+	statFile        = os.Stat
+	runProcess      = process.Run
+	runProcessInDir = process.RunInDir
 )
 
 // Initialize initializes the project
@@ -46,7 +47,7 @@ func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) erro
 		"-c",
 		`set -euo pipefail; source "$DEPENDENCIES_SCRIPT"; install_dependencies`,
 	)
-	if err := runProcess(ctx, "gosu", args...); err != nil {
+	if err := runProcessInDir(ctx, cfg.Workspace, "gosu", args...); err != nil {
 		return fmt.Errorf("initialize project dependencies: %w", err)
 	}
 	logger.Info("project dependency initialization completed",

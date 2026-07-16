@@ -83,7 +83,7 @@ func TestCheckWorkspaceWritable_RunsAsConfiguredUser(t *testing.T) {
 	if gotName != "gosu" {
 		t.Fatalf("name = %q, want gosu", gotName)
 	}
-	want := []string{"1000:1001", "test", "-w", "/workspace"}
+	want := []string{"1000:1001", "test", "-d", "/workspace", "-a", "-w", "/workspace"}
 	if !reflect.DeepEqual(gotArgs, want) {
 		t.Fatalf("args = %#v, want %#v", gotArgs, want)
 	}
@@ -102,7 +102,7 @@ func TestCheckWorkspaceWritable_ReturnsClearError(t *testing.T) {
 	if !errors.Is(err, sentinel) {
 		t.Fatalf("checkWorkspaceWritable() error = %v, want sentinel", err)
 	}
-	if !strings.Contains(err.Error(), `workspace "/workspace" is not writable by 1000:1001`) {
+	if !strings.Contains(err.Error(), `workspace "/workspace" is not a writable directory for 1000:1001`) {
 		t.Fatalf("error = %q, want writable workspace message", err)
 	}
 }

@@ -17,7 +17,7 @@ func TestInitialize_SkipsMissingDependencyScript(t *testing.T) {
 	statFile = func(path string) (os.FileInfo, error) {
 		return nil, os.ErrNotExist
 	}
-	runProcess = func(ctx context.Context, name string, args ...string) error {
+	runProcessInDir = func(ctx context.Context, dir string, name string, args ...string) error {
 		t.Fatal("runProcess was called for missing script")
 		return nil
 	}
@@ -48,8 +48,10 @@ func TestInitialize_RunsExistingDependencyScript(t *testing.T) {
 		return nil, nil
 	}
 	var gotName string
+	var gotDir string
 	var gotArgs []string
-	runProcess = func(ctx context.Context, name string, args ...string) error {
+	runProcessInDir = func(ctx context.Context, dir string, name string, args ...string) error {
+		gotDir = dir
 		gotName = name
 		gotArgs = append([]string(nil), args...)
 		return nil
@@ -59,6 +61,9 @@ func TestInitialize_RunsExistingDependencyScript(t *testing.T) {
 	}
 	if gotName != "gosu" {
 		t.Fatalf("name = %q, want gosu", gotName)
+	}
+	if gotDir != "/workspace" {
+		t.Fatalf("dir = %q, want /workspace", gotDir)
 	}
 	wantArgs := []string{
 		"1000:1001",
@@ -85,7 +90,7 @@ func TestInitialize_ReturnsProcessRunError(t *testing.T) {
 	statFile = func(path string) (os.FileInfo, error) {
 		return nil, nil
 	}
-	runProcess = func(ctx context.Context, name string, args ...string) error {
+	runProcessInDir = func(ctx context.Context, dir string, name string, args ...string) error {
 		return sentinel
 	}
 	err := Initialize(context.Background(), testConfig(), zap.NewNop())
@@ -99,9 +104,11 @@ func replaceInitializeSeams(t *testing.T) func() {
 
 	originalStat := statFile
 	originalRun := runProcess
+	originalRunInDir := runProcessInDir
 
 	return func() {
 		statFile = originalStat
 		runProcess = originalRun
+		runProcessInDir = originalRunInDir
 	}
 }
