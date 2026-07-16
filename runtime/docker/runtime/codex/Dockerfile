@@ -1,4 +1,4 @@
-FROM runtime-base
+FROM runtime
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
