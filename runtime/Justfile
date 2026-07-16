@@ -18,6 +18,11 @@ build-production:
         -o build/bin/mipe \
         ./cmd/mipe
 
+# Build docker images
+[arg("targets", help="Bake targets to build")]
+build-images *targets='default':
+    @docker buildx bake {{targets}}
+
 # Clean build artifacts
 clean:
     @rm -rf build
