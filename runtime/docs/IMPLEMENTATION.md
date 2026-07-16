@@ -1,8 +1,6 @@
 # Implementation
 
-## Runtime
-
-### Configuration
+## Configuration
 
 The bootstrap is configured before execution begins. Its configuration describes the environment in which the bootstrap will run, including where the runtime is installed, where the project workspace is located, which agent is being initialized, and which user should own the resulting files.
 
@@ -34,7 +32,7 @@ Configuration from the file is loaded first, then overridden by matching environ
 
 The user home is configured through `user_home` or the `USER_HOME` environment variable. The bootstrap ignores its own `HOME` environment variable when resolving this value, preventing the container environment from implicitly changing the agent home directory.
 
-### Bootstrap Lifecycle
+## Bootstrap Lifecycle
 
 The bootstrap follows a fixed sequence of phases. Each phase receives the validated configuration and must complete before the next phase starts.
 
@@ -54,7 +52,7 @@ flowchart TD
 
 If any phase fails, the bootstrap terminates immediately.
 
-### Runtime Preparation
+## Runtime Preparation
 
 The runtime consists of the shared files that Mipe provides to every project. These files define the agent's behavior and configuration independently of the consuming project.
 
@@ -78,7 +76,7 @@ If agent home is not configured, this directory creation and shared runtime copy
 
 Finally, the bootstrap updates ownership of the configured user home directory using the configured user and group identifiers. Without this step, the local developer user would not be able to modify files created during preparation, preventing both project initialization and normal development.
 
-### Project Initialization
+## Project Initialization
 
 Project initialization allows the consuming project to perform its own setup after the shared runtime has been prepared. Unlike the runtime itself, this step is entirely project-specific and remains local to the workspace.
 
@@ -94,7 +92,7 @@ The configured workspace must already exist as a writable directory for the loca
 
 The script is expected to define an `install_dependencies` function, allowing each project to install its own dependencies without the runtime needing to understand project-specific tooling or package managers.
 
-### Process Execution
+## Process Execution
 
 Process execution marks the end of the bootstrap lifecycle. At this point, the runtime has been prepared and the project has completed any required initialization. The bootstrap's responsibility is complete.
 
@@ -106,7 +104,7 @@ The agent home environment variable is `AGENT_HOME` when agent home is configure
 
 Once the environment has been prepared, the bootstrap changes to the configured workspace and replaces itself with the requested command. From this point onward, the requested application becomes the primary process and the bootstrap no longer participates in execution.
 
-### Runtime Layout
+## Runtime Layout
 
 The bootstrap works with three distinct locations, each serving a different purpose.
 
