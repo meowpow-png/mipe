@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["codex"]
+  targets = ["codex", "claude"]
 }
 
 target "runtime" {
@@ -12,6 +12,16 @@ target "codex" {
   context = "."
   dockerfile = "docker/codex/Dockerfile"
   tags = ["mipe-runtime-codex:latest"]
+
+  contexts = {
+    runtime = "target:runtime"
+  }
+}
+
+target "claude" {
+  context = "."
+  dockerfile = "docker/claude/Dockerfile"
+  tags = ["mipe-runtime-claude:latest"]
 
   contexts = {
     runtime = "target:runtime"

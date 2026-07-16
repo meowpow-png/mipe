@@ -62,3 +62,12 @@ codex-run *args:
 # Start a Bash shell in Codex container
 codex-shell:
     @just compose run --rm --entrypoint bash codex
+
+# Run Claude in a disposable container
+[arg("args", help="Arguments passed to container")]
+claude-run *args:
+    @just compose run --rm claude {{args}}
+
+# Start a Bash shell in Claude container
+claude-shell:
+    @just compose run --rm --entrypoint bash claude

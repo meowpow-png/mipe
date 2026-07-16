@@ -13,5 +13,20 @@ services:
       - .:/workspace:Z
     command: mipe -debug codex
 
+  claude:
+    image: mipe-runtime-claude:latest
+    build:
+      context: .
+      dockerfile: docker/claude/Dockerfile
+    working_dir: /workspace
+    environment:
+      LOCAL_UID: "1000"
+      LOCAL_GID: "1000"
+    volumes:
+      - claude-home:/home/dev/
+      - .:/workspace:Z
+    command: mipe -debug claude
+
 volumes:
   codex-home:
+  claude-home:
