@@ -1,51 +1,41 @@
+x-codex: &codex
+  pull_policy: never
+  working_dir: /workspace
+  environment:
+    LOCAL_UID: "1000"
+    LOCAL_GID: "1000"
+  volumes:
+    - codex-home:/home/dev/.codex
+    - .:/workspace:Z
+  command: mipe -debug codex
+
+x-claude: &claude
+  pull_policy: never
+  working_dir: /workspace
+  environment:
+    LOCAL_UID: "1000"
+    LOCAL_GID: "1000"
+  volumes:
+    - claude-home:/home/dev
+    - .:/workspace:Z
+  command: mipe -debug claude
+
 services:
   codex:
+    <<: *codex
     image: mipe-runtime-codex:latest
-    pull_policy: never
-    working_dir: /workspace
-    environment:
-      LOCAL_UID: "1000"
-      LOCAL_GID: "1000"
-    volumes:
-      - codex-home:/home/dev/.codex
-      - .:/workspace:Z
-    command: mipe -debug codex
-
-  claude:
-    image: mipe-runtime-claude:latest
-    pull_policy: never
-    working_dir: /workspace
-    environment:
-      LOCAL_UID: "1000"
-      LOCAL_GID: "1000"
-    volumes:
-      - claude-home:/home/dev
-      - .:/workspace:Z
-    command: mipe -debug claude
 
   codex-java:
+    <<: *codex
     image: mipe-runtime-codex-java:latest
-    pull_policy: never
-    working_dir: /workspace
-    environment:
-      LOCAL_UID: "1000"
-      LOCAL_GID: "1000"
-    volumes:
-      - codex-home:/home/dev/.codex
-      - .:/workspace:Z
-    command: mipe -debug codex
+
+  claude:
+    <<: *claude
+    image: mipe-runtime-claude:latest
 
   claude-java:
+    <<: *claude
     image: mipe-runtime-claude-java:latest
-    pull_policy: never
-    working_dir: /workspace
-    environment:
-      LOCAL_UID: "1000"
-      LOCAL_GID: "1000"
-    volumes:
-      - claude-home:/home/dev
-      - .:/workspace:Z
-    command: mipe -debug claude
 
 volumes:
   codex-home:
