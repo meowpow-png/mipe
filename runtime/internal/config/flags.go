@@ -2,7 +2,9 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 )
@@ -28,12 +30,21 @@ type fileConfig struct {
 func ParseFlags(args []string) (Flags, error) {
 	flags := flag.NewFlagSet("mipe", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
-
+	flags.Usage = func() {
+		_, _ = fmt.Fprintln(os.Stdout, "Usage: mipe [flags] <command>")
+		_, _ = fmt.Fprintln(os.Stdout)
+		flags.SetOutput(os.Stdout)
+		flags.PrintDefaults()
+	}
 	var parsed Flags
 	flags.StringVar(&parsed.ConfigPath, "config", "", "path to bootstrap config file")
 	flags.BoolVar(&parsed.Debug, "debug", false, "enable debug logging")
 
 	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			flags.Usage()
+			return Flags{}, err
+		}
 		return Flags{}, &FlagError{Err: err}
 	}
 	parsed.Command = flags.Args()

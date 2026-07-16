@@ -31,4 +31,4 @@ COPY hooks/ /opt/mipe/hooks/
 COPY docker/base/entrypoint.sh /usr/local/bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
-CMD ["bash"]
+CMD ["mipe", "--help"]

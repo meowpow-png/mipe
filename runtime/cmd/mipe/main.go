@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"os"
 
 	"github.com/meowpow-png/mipe/runtime/internal/bootstrap"
@@ -17,6 +18,9 @@ func main() {
 	}
 	cfg, err := config.Load(os.Args[1:])
 	if err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			os.Exit(0)
+		}
 		logConfigError(logger, err)
 		_ = logger.Sync()
 		os.Exit(1)
