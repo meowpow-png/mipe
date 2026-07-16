@@ -8,6 +8,16 @@ target "runtime-base" {
   tags = ["mipe-runtime-base:latest"]
 }
 
+target "test" {
+  context = "."
+  dockerfile = "docker/runtime/test/Dockerfile"
+  tags = ["mipe-runtime-test:latest"]
+
+  contexts = {
+    runtime = "target:runtime-base"
+  }
+}
+
 target "codex" {
   context = "."
   dockerfile = "docker/runtime/codex/Dockerfile"

@@ -1,4 +1,4 @@
-FROM mipe-runtime
+FROM runtime
 
 ARG LOCAL_UID=1000
 ARG LOCAL_GID=1000
