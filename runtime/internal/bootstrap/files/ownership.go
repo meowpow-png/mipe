@@ -14,6 +14,11 @@ func ChownRecursive(root string, uid int, gid int) error {
 		if err != nil {
 			return err
 		}
-		return chown(path, uid, gid)
+		err = chown(path, uid, gid)
+		if err != nil && os.IsNotExist(err) {
+			// ignore entries removed while traversing directory tree
+			return nil
+		}
+		return err
 	})
 }
