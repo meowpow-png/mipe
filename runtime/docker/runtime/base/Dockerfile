@@ -28,7 +28,7 @@ COPY --from=builder /out/mipe /usr/local/bin/mipe
 COPY config/base/ /opt/mipe/config/
 COPY hooks/ /opt/mipe/hooks/
 
-COPY docker/base/entrypoint.sh /usr/local/bin/entrypoint
+COPY docker/runtime/base/entrypoint.sh /usr/local/bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
 CMD ["mipe", "--help"]
