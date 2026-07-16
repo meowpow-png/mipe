@@ -10,5 +10,8 @@ services:
       LOCAL_UID: "1000"
       LOCAL_GID: "1000"
     volumes:
-      - ~/.codex:/home/dev/.codex:Z
+      - codex-home:/home/dev/.codex
       - .:/workspace:Z
+
+volumes:
+  codex-home:
