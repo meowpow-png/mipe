@@ -35,5 +35,4 @@ else
         dev
 fi
 
-# Hand control over to the bootstrap
-exec mipe "$@"
+exec "$@"
