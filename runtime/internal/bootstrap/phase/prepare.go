@@ -48,15 +48,15 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 		logger.Info("agent home not configured; shared runtime configuration skipped")
 	}
 	logger.Info("updating home ownership",
-		zap.String("path", cfg.Home),
+		zap.String("path", cfg.UserHome),
 		zap.Int("uid", uid),
 		zap.Int("gid", gid),
 	)
-	if err := chownRecursive(cfg.Home, uid, gid); err != nil {
-		return fmt.Errorf("update ownership for %q: %w", cfg.Home, err)
+	if err := chownRecursive(cfg.UserHome, uid, gid); err != nil {
+		return fmt.Errorf("update ownership for %q: %w", cfg.UserHome, err)
 	}
 	logger.Info("home ownership updated",
-		zap.String("path", cfg.Home),
+		zap.String("path", cfg.UserHome),
 		zap.Int("uid", uid),
 		zap.Int("gid", gid),
 	)

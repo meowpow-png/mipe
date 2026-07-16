@@ -4,7 +4,8 @@ import "testing"
 
 func TestLoadEnvironment_MergesDefaultsAndProcessEnvironment(t *testing.T) {
 	t.Setenv("AGENT_NAME", "process-agent")
-	t.Setenv("HOME", "/process-home")
+	t.Setenv("HOME", "/ignored-process-home")
+	t.Setenv("USER_HOME", "/process-home")
 	t.Setenv("AGENT_HOME", "/process-agent-home")
 	t.Setenv("RUNTIME_HOME", "/process-runtime")
 	t.Setenv("WORKSPACE", "/process-workspace")
@@ -15,15 +16,15 @@ func TestLoadEnvironment_MergesDefaultsAndProcessEnvironment(t *testing.T) {
 	env := LoadEnvironment(map[string]string{
 		"AGENT_NAME": "default-agent",
 		"AGENT_HOME": "/default-agent-home",
-		"HOME":       "/default-home",
+		"USER_HOME":  "/default-home",
 		"LOCAL_UID":  "1000",
 		"DEFAULT":    "kept",
 	})
 	if env.AgentName != "process-agent" {
 		t.Fatalf("AgentName = %q, want process-agent", env.AgentName)
 	}
-	if env.Home != "/process-home" {
-		t.Fatalf("Home = %q, want /process-home", env.Home)
+	if env.UserHome != "/process-home" {
+		t.Fatalf("UserHome = %q, want /process-home", env.UserHome)
 	}
 	if env.AgentHome != "/process-agent-home" {
 		t.Fatalf("AgentHome = %q, want /process-agent-home", env.AgentHome)

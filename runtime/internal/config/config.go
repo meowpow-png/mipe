@@ -9,7 +9,7 @@ const defaultConfigFile = "config.json"
 
 type Config struct {
 	AgentName   string
-	Home        string
+	UserHome    string
 	AgentHome   string
 	RuntimeHome string
 	Workspace   string
@@ -49,7 +49,7 @@ func configPath(path string) string {
 func New(env Environment, command []string) Config {
 	return Config{
 		AgentName:   env.AgentName,
-		Home:        env.Home,
+		UserHome:    env.UserHome,
 		AgentHome:   env.AgentHome,
 		RuntimeHome: env.RuntimeHome,
 		Workspace:   env.Workspace,

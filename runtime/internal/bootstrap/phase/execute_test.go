@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func TestRuntimeEnvironment_IncludesAgentHomeWhenConfigured(t *testing.T) {
+func TestRuntimeEnvironment_ExportsUserHomeAsHomeWithoutExposingUserHome(t *testing.T) {
 	t.Parallel()
 
 	cfg := testConfig()

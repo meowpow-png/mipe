@@ -6,7 +6,6 @@ services:
       dockerfile: docker/codex/Dockerfile
     working_dir: /workspace
     environment:
-      HOME: /home/dev
       AGENT_HOME: /home/dev/.codex
       RUNTIME_HOME: /opt/mipe
       WORKSPACE: /workspace

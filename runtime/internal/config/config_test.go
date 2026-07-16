@@ -13,7 +13,7 @@ func TestNew_PreservesConfiguredAgentHomeAndCommand(t *testing.T) {
 	command := []string{"bash", "-lc", "echo ok"}
 	cfg := New(Environment{
 		AgentName:   "codex",
-		Home:        "/home/user",
+		UserHome:    "/home/user",
 		AgentHome:   "/agent/home",
 		RuntimeHome: "/runtime",
 		Workspace:   "/workspace",
@@ -35,7 +35,7 @@ func TestNew_PreservesConfiguredAgentHomeAndCommand(t *testing.T) {
 func TestNew_LeavesAgentHomeEmptyWhenUnset(t *testing.T) {
 	t.Parallel()
 
-	cfg := New(Environment{Home: "/home/user"}, nil)
+	cfg := New(Environment{UserHome: "/home/user"}, nil)
 	if cfg.AgentHome != "" {
 		t.Fatalf("AgentHome = %q, want empty", cfg.AgentHome)
 	}
@@ -43,14 +43,15 @@ func TestNew_LeavesAgentHomeEmptyWhenUnset(t *testing.T) {
 
 func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 	t.Setenv("AGENT_NAME", "process-agent")
-	t.Setenv("HOME", "/home/process")
+	t.Setenv("HOME", "/home/ignored")
+	t.Setenv("USER_HOME", "/home/process")
 	t.Setenv("AGENT_HOME", "/agent/process")
 	t.Setenv("LOCAL_UID", "2000")
 
 	path := filepath.Join(t.TempDir(), "config.json")
 	content := `{
 		"agent_name": "file-agent",
-		"home": "/home/file",
+		"user_home": "/home/file",
 		"agent_home": "/agent/file",
 		"runtime_home": "/runtime/file",
 		"workspace": "/workspace/file",
@@ -66,6 +67,9 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 	}
 	if cfg.AgentName != "process-agent" {
 		t.Fatalf("AgentName = %q, want process-agent", cfg.AgentName)
+	}
+	if cfg.UserHome != "/home/process" {
+		t.Fatalf("UserHome = %q, want /home/process", cfg.UserHome)
 	}
 	if cfg.LocalUID != "2000" {
 		t.Fatalf("LocalUID = %q, want 2000", cfg.LocalUID)
@@ -84,12 +88,12 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 func TestLoad_LoadsDefaultConfigFromRuntimeHome(t *testing.T) {
 	runtimeHome := t.TempDir()
 	t.Setenv("RUNTIME_HOME", runtimeHome)
-	t.Setenv("HOME", "/home/file")
+	t.Setenv("HOME", "/home/ignored")
 
 	path := filepath.Join(runtimeHome, "config.json")
 	content := `{
 		"agent_name": "file-agent",
-		"home": "/home/file",
+		"user_home": "/home/file",
 		"agent_home": "/agent/file",
 		"workspace": "/workspace/file",
 		"local_uid": "1000",
@@ -108,6 +112,9 @@ func TestLoad_LoadsDefaultConfigFromRuntimeHome(t *testing.T) {
 	if cfg.AgentName != "file-agent" {
 		t.Fatalf("AgentName = %q, want file-agent", cfg.AgentName)
 	}
+	if cfg.UserHome != "/home/file" {
+		t.Fatalf("UserHome = %q, want /home/file", cfg.UserHome)
+	}
 	if cfg.AgentHome != "/agent/file" {
 		t.Fatalf("AgentHome = %q, want /agent/file", cfg.AgentHome)
 	}
@@ -122,7 +129,7 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 
 	defaultContent := `{
 		"agent_name": "default-agent",
-		"home": "/home/default",
+		"user_home": "/home/default",
 		"agent_home": "/agent/default",
 		"workspace": "/workspace/default",
 		"local_uid": "1000",
@@ -135,7 +142,7 @@ func TestLoad_ExplicitConfigOverridesDefaultConfigPath(t *testing.T) {
 	explicitPath := filepath.Join(t.TempDir(), "config.json")
 	explicitContent := `{
 		"agent_name": "explicit-agent",
-		"home": "/home/explicit",
+		"user_home": "/home/explicit",
 		"agent_home": "/agent/explicit",
 		"workspace": "/workspace/explicit",
 		"local_uid": "2000",

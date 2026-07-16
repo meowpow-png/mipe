@@ -30,7 +30,7 @@ func run(ctx context.Context, cfg config.Config, logger *zap.Logger, phases phas
 	logger.Info("Welcome to Mipe")
 	logger.Debug("bootstrap configuration",
 		zap.String("agent_name", cfg.AgentName),
-		zap.String("home", cfg.Home),
+		zap.String("user_home", cfg.UserHome),
 		zap.String("agent_home", cfg.AgentHome),
 		zap.String("runtime_home", cfg.RuntimeHome),
 		zap.String("workspace", cfg.Workspace),

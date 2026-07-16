@@ -4,7 +4,7 @@ import "github.com/meowpow-png/mipe/runtime/internal/config"
 
 func runtimeEnvironment(cfg config.Config, extra ...string) []string {
 	env := []string{
-		"HOME=" + cfg.Home,
+		"HOME=" + cfg.UserHome,
 		"RUNTIME_HOME=" + cfg.RuntimeHome,
 	}
 	if cfg.AgentHome != "" {

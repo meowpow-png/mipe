@@ -8,7 +8,7 @@ import (
 type Environment struct {
 	Values      map[string]string
 	AgentName   string
-	Home        string
+	UserHome    string
 	AgentHome   string
 	RuntimeHome string
 	Workspace   string
@@ -32,7 +32,7 @@ func LoadEnvironment(defaults map[string]string) Environment {
 		values[key] = value
 	}
 	agentName := values["AGENT_NAME"]
-	home := values["HOME"]
+	userHome := values["USER_HOME"]
 	agentHome := values["AGENT_HOME"]
 	runtimeHome := values["RUNTIME_HOME"]
 	workspace := values["WORKSPACE"]
@@ -40,7 +40,7 @@ func LoadEnvironment(defaults map[string]string) Environment {
 	return Environment{
 		Values:      values,
 		AgentName:   agentName,
-		Home:        home,
+		UserHome:    userHome,
 		AgentHome:   agentHome,
 		RuntimeHome: runtimeHome,
 		Workspace:   workspace,

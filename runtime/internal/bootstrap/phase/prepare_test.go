@@ -13,7 +13,7 @@ import (
 func testConfig() config.Config {
 	return config.Config{
 		AgentName:   "test-agent",
-		Home:        "/home/user",
+		UserHome:    "/home/user",
 		AgentHome:   "/agent/home",
 		RuntimeHome: "/runtime",
 		Workspace:   "/workspace",
