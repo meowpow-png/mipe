@@ -8,7 +8,7 @@ RUN apt-get update && \
         nodejs \
         npm \
         python3 && \
-    npm install --global @openai/codex@0.143.0 && \
+    npm install --global @openai/codex@0.144.5 && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
