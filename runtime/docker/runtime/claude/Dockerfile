@@ -16,4 +16,4 @@ WORKDIR /workspace
 COPY config/claude/ /opt/mipe/config/
 COPY docker/runtime/claude/config.json /opt/mipe/config.json
 
-CMD ["mipe", "--config", "/opt/mipe/config.json", "claude", "--dangerously-skip-permissions"]
+CMD ["mipe", "claude", "--dangerously-skip-permissions"]

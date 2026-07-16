@@ -16,4 +16,4 @@ WORKDIR /workspace
 COPY config/codex/ /opt/mipe/config/
 COPY docker/runtime/codex/config.json /opt/mipe/config.json
 
-CMD ["mipe", "--config", "/opt/mipe/config.json", "codex"]
+CMD ["mipe", "codex"]
