@@ -53,3 +53,12 @@ test-coverage *args:
 [arg("args", help="Arguments passed to docker compose")]
 integration-test *args:
     @just compose-test run --rm --build runtime-test {{args}}
+
+# Run Codex in a disposable container
+[arg("args", help="Arguments passed to container")]
+codex-run *args:
+    @just compose run --rm codex {{args}}
+
+# Start a Bash shell in Codex container
+codex-shell:
+    @just compose run --rm --entrypoint bash codex
