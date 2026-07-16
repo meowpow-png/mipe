@@ -8,8 +8,10 @@ RUN apt-get update && \
         nodejs \
         npm \
         python3 && \
-    npm install --global @anthropic-ai/claude-code@2.1.211 && \
     rm -rf /var/lib/apt/lists/*
+
+ARG CLAUDE_VERSION
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
 
 WORKDIR /workspace
 

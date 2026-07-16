@@ -8,6 +8,14 @@ group "default" {
   ]
 }
 
+variable "CODEX_VERSION" {
+  default = "0.144.5"
+}
+
+variable "CLAUDE_VERSION" {
+  default = "2.1.211"
+}
+
 target "runtime-base" {
   context = "."
   dockerfile = "docker/runtime/base/Dockerfile"
@@ -33,6 +41,10 @@ target "codex" {
   dockerfile = "docker/runtime/codex/Dockerfile"
   tags = ["mipe-runtime-codex:latest"]
 
+  args = {
+    CODEX_VERSION = CODEX_VERSION
+  }
+
   contexts = {
     runtime = "target:runtime-base"
   }
@@ -42,6 +54,19 @@ target "claude" {
   context = "."
   dockerfile = "docker/runtime/claude/Dockerfile"
   tags = ["mipe-runtime-claude:latest"]
+
+  args = {
+    CLAUDE_VERSION = CLAUDE_VERSION
+  }
+
+  contexts = {
+    runtime = "target:runtime-base"
+  }
+}
+
+target "java-base" {
+  context = "."
+  dockerfile = "docker/toolchain/java/base/Dockerfile"
 
   contexts = {
     runtime = "target:runtime-base"
@@ -53,8 +78,12 @@ target "codex-java" {
   dockerfile = "docker/toolchain/java/codex/Dockerfile"
   tags = ["mipe-runtime-codex-java:latest"]
 
+  args = {
+    CODEX_VERSION = CODEX_VERSION
+  }
+
   contexts = {
-    runtime = "target:codex"
+    runtime = "target:java-base"
   }
 }
 
@@ -63,7 +92,11 @@ target "claude-java" {
   dockerfile = "docker/toolchain/java/claude/Dockerfile"
   tags = ["mipe-runtime-claude-java:latest"]
 
+  args = {
+    CLAUDE_VERSION = CLAUDE_VERSION
+  }
+
   contexts = {
-    runtime = "target:claude"
+    runtime = "target:java-base"
   }
 }
