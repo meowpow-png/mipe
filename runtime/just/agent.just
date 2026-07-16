@@ -4,8 +4,9 @@ codex-run *args:
     @just compose run --rm codex {{args}}
 
 # Start a Bash shell in Codex container
-codex-shell:
-    @just compose run --rm --entrypoint bash codex
+[arg("args", help="Arguments passed to Bash")]
+codex-shell *args:
+    @just compose run --rm codex mipe bash {{args}}
 
 # Run Claude in a disposable container
 [arg("args", help="Arguments passed to container")]
@@ -13,8 +14,9 @@ claude-run *args:
     @just compose run --rm claude {{args}}
 
 # Start a Bash shell in Claude container
-claude-shell:
-    @just compose run --rm --entrypoint bash claude
+[arg("args", help="Arguments passed to Bash")]
+claude-shell *args:
+    @just compose run --rm claude mipe bash {{args}}
 
 # Run Codex Java in a disposable container
 [arg("args", help="Arguments passed to container")]
