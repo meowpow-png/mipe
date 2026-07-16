@@ -27,10 +27,15 @@ run *args: build
 clean:
     @rm -rf build
 
+# Run base docker compose stack
+[arg("args", help="Arguments passed to docker compose")]
+compose *args:
+    @docker compose {{args}}
+
 # Run test docker compose stack
 [arg("args", help="Arguments passed to docker compose")]
 compose-test *args:
-    @docker compose -f compose.test.yml {{args}}
+    @just compose -f compose.test.yml {{args}}
 
 # Run Go tests
 [arg("args", help="Arguments passed to go test")]
@@ -47,4 +52,4 @@ test-coverage *args:
 # Run integration test with docker
 [arg("args", help="Arguments passed to docker compose")]
 integration-test *args:
-    @just compose-test run --rm --build mipe-test {{args}}
+    @just compose-test run --rm --build runtime-test {{args}}
