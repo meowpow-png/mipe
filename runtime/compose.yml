@@ -1,3 +1,5 @@
+name: mipe
+
 x-codex: &codex
   pull_policy: never
   working_dir: /workspace
