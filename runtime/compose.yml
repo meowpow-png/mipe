@@ -1,0 +1,13 @@
+services:
+  runtime:
+    image: mipe-runtime:latest
+    build:
+      context: .
+      dockerfile: docker/base/Dockerfile
+    working_dir: /workspace
+    environment:
+      HOME: /home/dev
+      RUNTIME_HOME: /opt/mipe
+      WORKSPACE: /workspace
+      LOCAL_UID: "1000"
+      LOCAL_GID: "1000"
