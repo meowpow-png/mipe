@@ -19,7 +19,8 @@ FROM debian:bookworm-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         bash \
-        gosu && \
+        gosu \
+        passwd && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /out/mipe /usr/local/bin/mipe
