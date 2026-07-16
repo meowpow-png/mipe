@@ -1,108 +1,119 @@
-# Roadmap — v0.1.0
+# Roadmap
 
-This roadmap defines the implementation plan for **Mipe 0.1.0**.
+This roadmap outlines the planned evolution of Mipe toward its first stable release.
 
-The objective of this release is not to deliver the complete long-term vision, but to establish a working foundation while exploring how Codex behaves in practice. Each milestone is intentionally small and answers one architectural question before introducing additional complexity.
-
-## M1 — Bootstrap
+## M1 — Foundation
 
 **Goal**
 
-Replace the current shell-based runtime with a dedicated Go bootstrap application.
+Establish Mipe as a reusable runtime for AI-assisted development.
 
-**Questions**
+**Focus**
 
-- Can Go fully replace the current initialization scripts?
-- What is the minimum responsibility of the bootstrap?
-- Which responsibilities belong elsewhere?
+- Ready-to-use development runtime
+- Project customization
+- Official toolchains
+- Documentation and examples
 
 **Success Criteria**
 
-- Bootstrap initializes development environment
-- Codex launches successfully
+- Developers can start AI-assisted development with minimal setup
+- The same runtime can be reused across multiple projects
+- Projects can extend the runtime without modifying it
+- Official Java and Node.js toolchains are available
 
-## M2 — Session Detection
+---
+
+## M2 — Discovery
 
 **Goal**
 
-Determine how Mipe identifies the lifecycle of a development session.
+Enable Mipe to discover development sessions.
 
-**Questions**
+**Focus**
 
-- What defines the beginning of a session?
-- What defines the end of a session?
-- Which source should be considered authoritative?
-- Can sessions be detected without explicit registration?
+- Backend API
+- Session lifecycle
+- Session API
 
 **Success Criteria**
 
-- Active sessions are detected
-- Completed sessions are detected
+- Mipe identifies the active development session
+- Mipe detects completed sessions
+- Current session information is available through the backend API
 
-## M3 — Transcript
+---
+
+## M3 — Observation
 
 **Goal**
 
-Understand how Codex stores conversations and expose them through the backend.
+Enable developers to observe the current development session in real time.
 
-**Questions**
+**Focus**
 
-- Where are transcripts stored?
-- Can they be streamed while a session is running?
-- How should they be persisted?
+- Current session view
+- Backend integration
+- Live session data
 
 **Success Criteria**
 
-- Session transcripts are captured
-- Transcript is available through the backend
+- The current session is displayed in the web application
+- Session status and usage metrics are updated while the session is running
+- The transcript is updated in real time
 
-## M4 — Usage
+## M4 — Persistence
 
 **Goal**
 
-Capture session usage metrics.
+Enable developers to revisit completed development sessions.
 
-**Questions**
+**Focus**
 
-- Where are token statistics available?
-- How frequently are they updated?
-- How should they be associated with sessions?
+- Session persistence
+- Session history
+- Session browsing
 
 **Success Criteria**
 
-- Input and output tokens are captured
-- Usage is associated with sessions
+- Completed sessions are persisted
+- Previous sessions are listed in the web application
+- Session details, including transcript and usage metrics, are available
 
-## M5 — Knowledge Extraction
+## M5 — Automation
 
 **Goal**
 
-Generate useful information from completed sessions.
+Enable automated post-session processing through built-in skills.
 
-**Questions**
+**Focus**
 
-- What prompt produces useful summaries?
-- What constitutes a useful note?
-- When should extraction occur?
+- Skill execution
+- Artifact generation
+- Built-in summary
 
 **Success Criteria**
 
-- Session summaries are generated
-- Session notes are generated
+- Skills are executed after a session completes
+- Generated artifacts are persisted with the session
+- Session summaries are available in the web application
 
-## M6 — Developer Journal
+## M6 — Release
 
 **Goal**
 
-Provide a simple interface for exploring current and previous development sessions.
+Deliver the first stable release of Mipe.
 
-**Questions**
+**Focus**
 
-- What information is most useful during an active session?
-- What information is most valuable after a session ends?
+- Stability
+- Documentation
+- User experience
+- Release readiness
 
 **Success Criteria**
 
-- Active session is displayed
-- Session history is displayed
-- Session details are displayed
+- All previous milestones are complete
+- The platform is stable for everyday use
+- Documentation is complete
+- Mipe v1.0.0 is released
