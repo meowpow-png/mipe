@@ -12,6 +12,7 @@ services:
     volumes:
       - codex-home:/home/dev/.codex
       - .:/workspace:Z
+    command: mipe -debug codex
 
 volumes:
   codex-home:
