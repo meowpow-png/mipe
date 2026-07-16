@@ -6,9 +6,7 @@ services:
       dockerfile: docker/codex/Dockerfile
     working_dir: /workspace
     environment:
-      AGENT_HOME: /home/dev/.codex
       RUNTIME_HOME: /opt/mipe
-      WORKSPACE: /workspace
       LOCAL_UID: "1000"
       LOCAL_GID: "1000"
     volumes:
