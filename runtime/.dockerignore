@@ -3,7 +3,13 @@
 !go.sum
 !cmd/
 !cmd/**
+!config/
+!config/**
+!hooks/
+!hooks/**
 !internal/
 !internal/**
+!templates/
+!templates/**
 !docker/
 !docker/**
