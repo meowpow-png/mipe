@@ -1,11 +1,17 @@
+include:
+  - compose.yml
+
 services:
-  mipe-test:
+  runtime-test:
     image: mipe-runtime:test
+    pull_policy: never
     build:
       context: .
       dockerfile: docker/test/Dockerfile
+      args:
+        LOCAL_UID: "1000"
+        LOCAL_GID: "1000"
     working_dir: /workspace
     environment:
-      HOME: /test/home
       LOCAL_UID: "1000"
       LOCAL_GID: "1000"

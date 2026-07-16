@@ -1,6 +1,7 @@
 {
   "agent_name": "test-agent",
   "home": "/home/dev",
+  "agent_home": "/home/dev/.mipe-agent",
   "runtime_home": "/opt/mipe",
   "workspace": "/workspace",
   "local_uid": "1000",

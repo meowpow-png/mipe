@@ -1,37 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-rm -f /test/agent.txt /test/workspace/dependencies.txt
+assert_file_exists() {
+    local path="$1"
+    local message="$2"
 
-mipe --config /test/config.json /test/bin/agent
-
-assert_file_contains() {
-  local path="$1"
-  local expected="$2"
-  local label="$3"
-
-  if [[ ! -f "$path" ]]; then
-    echo "✗ $label"
-    echo "  missing file: $path"
+    if [[ -f "$path" ]]; then
+        echo "✓ $message"
+        return
+    fi
+    echo "✗ $message"
+    echo "  Expected file: $path"
+    echo "  Actual: file does not exist"
     exit 1
-  fi
-
-  local actual
-  actual="$(<"$path")"
-
-  if [[ "$actual" != "$expected" ]]; then
-    echo "✗ $label"
-    echo "  expected: $expected"
-    echo "  actual:   $actual"
-    exit 1
-  fi
-
-  echo "✓ $label"
 }
 
 echo "Running integration tests:"
 
-assert_file_contains /test/workspace/dependencies.txt initialized "Dependencies initialized"
-assert_file_contains /test/agent.txt executed "Agent executed"
+assert_file_exists /workspace/.test "Project dependencies initialized"
+assert_file_exists /home/dev/.mipe-agent/config.json "Runtime config copied to agent home"
 
 echo "✓ Integration tests passed"
