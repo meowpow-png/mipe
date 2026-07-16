@@ -13,4 +13,7 @@ RUN apt-get update && \
 
 WORKDIR /workspace
 
+COPY config/codex/ /opt/mipe/config/
+COPY docker/codex/config.json /opt/mipe/config.json
+
 CMD ["codex"]

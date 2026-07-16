@@ -1,0 +1,9 @@
+{
+  "agent_name": "codex",
+  "home": "/home/dev",
+  "agent_home": "/home/dev/.codex",
+  "runtime_home": "/opt/mipe",
+  "workspace": "/workspace",
+  "local_uid": "1000",
+  "local_gid": "1000"
+}
