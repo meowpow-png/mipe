@@ -1,5 +1,8 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
+import "just/agent.just"
+import "just/docker.just"
+
 # List available recipes
 default:
     @just --list
@@ -18,24 +21,9 @@ build-production:
         -o build/bin/mipe \
         ./cmd/mipe
 
-# Build docker images
-[arg("targets", help="Bake targets to build")]
-build-images *targets='default':
-    @docker buildx bake {{targets}}
-
 # Clean build artifacts
 clean:
     @rm -rf build
-
-# Run base docker compose stack
-[arg("args", help="Arguments passed to docker compose")]
-compose *args:
-    @docker compose {{args}}
-
-# Run test docker compose stack
-[arg("args", help="Arguments passed to docker compose")]
-compose-test *args:
-    @just compose -f compose.test.yml {{args}}
 
 # Run Go tests
 [arg("args", help="Arguments passed to go test")]
@@ -48,44 +36,3 @@ test-coverage *args:
     @mkdir -p build/report
     @go test -coverprofile=build/report/coverage.out {{args}} ./...
     @go tool cover -func=build/report/coverage.out
-
-# Run integration test with docker
-[arg("args", help="Arguments passed to docker compose")]
-integration-test *args:
-    @just compose-test run --rm --build runtime-test {{args}}
-
-# Run Codex in a disposable container
-[arg("args", help="Arguments passed to container")]
-codex-run *args:
-    @just compose run --rm codex {{args}}
-
-# Start a Bash shell in Codex container
-codex-shell:
-    @just compose run --rm --entrypoint bash codex
-
-# Run Claude in a disposable container
-[arg("args", help="Arguments passed to container")]
-claude-run *args:
-    @just compose run --rm claude {{args}}
-
-# Start a Bash shell in Claude container
-claude-shell:
-    @just compose run --rm --entrypoint bash claude
-
-# Run Codex Java in a disposable container
-[arg("args", help="Arguments passed to container")]
-codex-java-run *args:
-    @just compose run --rm codex-java {{args}}
-
-# Start a Bash shell in Codex Java container
-codex-java-shell:
-    @just compose run --rm --entrypoint bash codex-java
-
-# Run Claude Java in a disposable container
-[arg("args", help="Arguments passed to container")]
-claude-java-run *args:
-    @just compose run --rm claude-java {{args}}
-
-# Start a Bash shell in Claude Java container
-claude-java-shell:
-    @just compose run --rm --entrypoint bash claude-java
