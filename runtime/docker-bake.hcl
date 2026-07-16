@@ -1,5 +1,11 @@
 group "default" {
-  targets = ["codex", "claude"]
+  targets = [
+    "test",
+    "codex",
+    "claude",
+    "codex-java",
+    "claude-java"
+  ]
 }
 
 target "runtime-base" {
@@ -39,5 +45,25 @@ target "claude" {
 
   contexts = {
     runtime = "target:runtime-base"
+  }
+}
+
+target "codex-java" {
+  context = "."
+  dockerfile = "docker/toolchain/java/codex/Dockerfile"
+  tags = ["mipe-runtime-codex-java:latest"]
+
+  contexts = {
+    runtime = "target:codex"
+  }
+}
+
+target "claude-java" {
+  context = "."
+  dockerfile = "docker/toolchain/java/claude/Dockerfile"
+  tags = ["mipe-runtime-claude-java:latest"]
+
+  contexts = {
+    runtime = "target:claude"
   }
 }

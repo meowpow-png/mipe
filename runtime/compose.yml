@@ -23,6 +23,30 @@ services:
       - .:/workspace:Z
     command: mipe -debug claude
 
+  codex-java:
+    image: mipe-runtime-codex-java:latest
+    pull_policy: never
+    working_dir: /workspace
+    environment:
+      LOCAL_UID: "1000"
+      LOCAL_GID: "1000"
+    volumes:
+      - codex-home:/home/dev/.codex
+      - .:/workspace:Z
+    command: mipe -debug codex
+
+  claude-java:
+    image: mipe-runtime-claude-java:latest
+    pull_policy: never
+    working_dir: /workspace
+    environment:
+      LOCAL_UID: "1000"
+      LOCAL_GID: "1000"
+    volumes:
+      - claude-home:/home/dev
+      - .:/workspace:Z
+    command: mipe -debug claude
+
 volumes:
   codex-home:
   claude-home:
