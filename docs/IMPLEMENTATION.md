@@ -14,6 +14,7 @@ Example configuration file:
 {
   "agent_name": "codex",
   "home": "/home/dev",
+  "agent_home": "/home/dev/.codex",
   "runtime_home": "/opt/codex-runtime",
   "workspace": "/workspace",
   "local_uid": "1000",
@@ -55,10 +56,10 @@ The runtime consists of the shared files that Mipe provides to every project. Th
 
 The bootstrap begins execution as the container's root user so it can perform privileged operations such as creating directories, copying the shared runtime, and updating file ownership. Once preparation is complete, project initialization and the final command execute as the local developer user, ensuring that project code never runs with elevated privileges.
 
-During preparation, the bootstrap creates the agent home directory, which is derived from the configured home directory and agent name:
+During preparation, the bootstrap creates the configured agent home directory:
 
 ```text
-<home>/.<agent_name>
+<agent_home>
 ```
 
 It then copies the shared runtime from:
@@ -69,6 +70,8 @@ It then copies the shared runtime from:
 
 into the agent home, making it available to the agent before execution begins.
 
+If agent home is not configured, this directory creation and shared runtime copy are skipped.
+
 Finally, the bootstrap updates ownership of the configured home directory using the configured user and group identifiers. Without this step, the local developer user would not be able to modify files created during preparation, preventing both project initialization and normal development.
 
 ### Project Initialization
@@ -78,7 +81,7 @@ Project initialization allows the consuming project to perform its own setup aft
 The bootstrap looks for the following initialization script:
 
 ```text
-<workspace>/.codex/init/dependencies.sh
+<workspace>/.mipe/init/dependencies.sh
 ```
 
 If the script is present, it is executed as the local developer user. If it is absent, the bootstrap simply continues to the next phase.
@@ -93,7 +96,7 @@ Before launching the requested command, the bootstrap constructs the environment
 
 The agent home is where the agent stores its own persistent state, such as configuration, authentication, caches, and other runtime-managed files. This is distinct from the workspace, which contains the project being developed together with any project-specific configuration. By separating these responsibilities, the same agent can be reused across multiple projects while maintaining a consistent runtime environment.
 
-The agent home environment variable is derived from the configured agent name. For example, the agent name `codex` produces `CODEX_HOME`, while `test-agent` produces `TEST_AGENT_HOME`.
+The agent home environment variable is `AGENT_HOME` when agent home is configured.
 
 Once the environment has been prepared, the bootstrap replaces itself with the requested command. From this point onward, the requested application becomes the primary process and the bootstrap no longer participates in execution.
 
@@ -108,12 +111,12 @@ The bootstrap works with three distinct locations, each serving a different purp
     config.toml
 
 <home>/
-  .<agent_name>/
+  <agent_home>/
     AGENTS.md
     config.toml
 
 <workspace>/
-  .codex/
+  .mipe/
     init/
       dependencies.sh
 ```
