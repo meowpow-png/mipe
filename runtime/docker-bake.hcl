@@ -13,6 +13,10 @@ target "test" {
   dockerfile = "docker/runtime/test/Dockerfile"
   tags = ["mipe-runtime-test:latest"]
 
+  args = {
+    LOCAL_UID = "1000"
+    LOCAL_GID = "1000"
+  }
   contexts = {
     runtime = "target:runtime-base"
   }

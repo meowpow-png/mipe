@@ -1,9 +1,7 @@
 services:
   codex:
     image: mipe-runtime-codex:latest
-    build:
-      context: .
-      dockerfile: docker/runtime/codex/Dockerfile
+    pull_policy: never
     working_dir: /workspace
     environment:
       LOCAL_UID: "1000"
@@ -15,9 +13,7 @@ services:
 
   claude:
     image: mipe-runtime-claude:latest
-    build:
-      context: .
-      dockerfile: docker/runtime/claude/Dockerfile
+    pull_policy: never
     working_dir: /workspace
     environment:
       LOCAL_UID: "1000"
