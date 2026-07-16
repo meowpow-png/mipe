@@ -16,6 +16,10 @@ variable "CLAUDE_VERSION" {
   default = "2.1.211"
 }
 
+variable "NODE_VERSION" {
+  default = "22.23.1"
+}
+
 target "runtime-base" {
   context = "."
   dockerfile = "docker/runtime/base/Dockerfile"
@@ -46,7 +50,7 @@ target "codex" {
   }
 
   contexts = {
-    runtime = "target:runtime-base"
+    runtime = "target:node-base"
   }
 }
 
@@ -60,6 +64,19 @@ target "claude" {
   }
 
   contexts = {
+    runtime = "target:node-base"
+  }
+}
+
+target "node-base" {
+  context = "."
+  dockerfile = "docker/runtime/node/Dockerfile"
+
+  args = {
+    NODE_VERSION = NODE_VERSION
+  }
+
+  contexts = {
     runtime = "target:runtime-base"
   }
 }
@@ -69,7 +86,7 @@ target "java-base" {
   dockerfile = "docker/toolchain/java/base/Dockerfile"
 
   contexts = {
-    runtime = "target:runtime-base"
+    runtime = "target:node-base"
   }
 }
 

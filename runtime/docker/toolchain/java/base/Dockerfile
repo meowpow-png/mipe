@@ -2,15 +2,8 @@ FROM runtime
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        git \
-        gpg \
-        nodejs \
-        npm \
-        python3 \
-        wget && \
-    wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | \
+        gpg && \
+    curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | \
         gpg --dearmor -o /usr/share/keyrings/adoptium.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" \
         > /etc/apt/sources.list.d/adoptium.list && \

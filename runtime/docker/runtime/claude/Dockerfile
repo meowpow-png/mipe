@@ -1,15 +1,5 @@
 FROM runtime
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        git \
-        nodejs \
-        npm \
-        python3 && \
-    rm -rf /var/lib/apt/lists/*
-
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
 
