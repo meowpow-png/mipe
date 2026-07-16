@@ -6,4 +6,4 @@ matcher = "^Bash$"
 
 [[hooks.PreToolUse.hooks]]
 type = "command"
-command = "python3 /opt/codex-runtime/hooks/prevent_repo_scan.py"
+command = "python3 /opt/mipe/hooks/prevent_repo_scan.py"
