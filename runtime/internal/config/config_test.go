@@ -181,3 +181,72 @@ func TestLoad_RejectsInvalidDebugEnvironmentValue(t *testing.T) {
 		t.Fatalf("InvalidValueError = %#v, want MIPE_DEBUG boolean", invalidErr)
 	}
 }
+
+func TestLoad_SetsDefaultLogFormat(t *testing.T) {
+	t.Setenv("MIPE_LOG_FORMAT", "")
+
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	cfg, err := Load([]string{"--config", path, "bash"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.LogFormat != LogFormatConsole {
+		t.Fatalf("LogFormat = %q, want %q", cfg.LogFormat, LogFormatConsole)
+	}
+}
+
+func TestLoad_SetsLogFormatFromEnvironment(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	for _, format := range []string{LogFormatConsole, LogFormatJSON} {
+		t.Run(format, func(t *testing.T) {
+			t.Setenv("MIPE_LOG_FORMAT", format)
+			cfg, err := Load([]string{"--config", path, "bash"})
+			if err != nil {
+				t.Fatalf("Load() error = %v", err)
+			}
+			if cfg.LogFormat != format {
+				t.Fatalf("LogFormat = %q, want %q", cfg.LogFormat, format)
+			}
+		})
+	}
+}
+
+func TestLoad_ProcessEnvironmentOverridesFileLogFormat(t *testing.T) {
+	t.Setenv("MIPE_LOG_FORMAT", LogFormatConsole)
+
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{"environment":{"MIPE_LOG_FORMAT":"json"}}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	cfg, err := Load([]string{"--config", path, "bash"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.LogFormat != LogFormatConsole {
+		t.Fatalf("LogFormat = %q, want %q", cfg.LogFormat, LogFormatConsole)
+	}
+}
+
+func TestLoad_RejectsInvalidLogFormat(t *testing.T) {
+	t.Setenv("MIPE_LOG_FORMAT", "text")
+
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	_, err := Load([]string{"--config", path, "bash"})
+	var invalidErr *InvalidValueError
+	if !errors.As(err, &invalidErr) {
+		t.Fatalf("Load() error = %T, want *InvalidValueError", err)
+	}
+	if invalidErr.Field != "MIPE_LOG_FORMAT" || invalidErr.Reason != "must be console or json" {
+		t.Fatalf("InvalidValueError = %#v, want MIPE_LOG_FORMAT must be console or json", invalidErr)
+	}
+}

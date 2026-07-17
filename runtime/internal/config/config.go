@@ -2,6 +2,11 @@ package config
 
 const defaultConfigPath = "/opt/mipe/config.json"
 
+const (
+	LogFormatConsole = "console"
+	LogFormatJSON    = "json"
+)
+
 type Config struct {
 	AgentName   string
 	UserHome    string
@@ -11,6 +16,7 @@ type Config struct {
 	LocalUID    string
 	LocalGID    string
 	Debug       bool
+	LogFormat   string
 	Command     []string
 }
 
@@ -29,8 +35,13 @@ func Load(args []string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	logFormat, err := logFormat(env.Values)
+	if err != nil {
+		return Config{}, err
+	}
 	cfg := New(env, flags.Command)
 	cfg.Debug = flags.Debug || debug
+	cfg.LogFormat = logFormat
 	return cfg, nil
 }
 

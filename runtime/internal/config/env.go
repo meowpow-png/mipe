@@ -59,3 +59,16 @@ func debugEnabled(values map[string]string) (bool, error) {
 	}
 	return debug, nil
 }
+
+func logFormat(values map[string]string) (string, error) {
+	value := values["MIPE_LOG_FORMAT"]
+	if value == "" {
+		return LogFormatConsole, nil
+	}
+	switch value {
+	case LogFormatConsole, LogFormatJSON:
+		return value, nil
+	default:
+		return "", &InvalidValueError{Field: "MIPE_LOG_FORMAT", Reason: "must be console or json"}
+	}
+}

@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	logger, err := newLogger(false)
+	logger, err := newLogger(false, config.LogFormatConsole)
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ func main() {
 		_ = logger.Sync()
 		os.Exit(1)
 	}
-	logger, err = newLogger(cfg.Debug)
+	logger, err = newLogger(cfg.Debug, cfg.LogFormat)
 	if err != nil {
 		panic(err)
 	}
@@ -42,8 +42,11 @@ func main() {
 	_ = logger.Sync()
 }
 
-func newLogger(debug bool) (*zap.Logger, error) {
+func newLogger(debug bool, logFormat ...string) (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
+	if len(logFormat) > 0 {
+		cfg.Encoding = logFormat[0]
+	}
 	if debug {
 		cfg.Level.SetLevel(zap.DebugLevel)
 	}
