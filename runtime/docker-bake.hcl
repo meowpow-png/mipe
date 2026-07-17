@@ -83,7 +83,7 @@ target "node-base" {
 
 target "java-base" {
   context = "."
-  dockerfile = "docker/toolchain/java/base/Dockerfile"
+  dockerfile = "docker/toolchain/java/Dockerfile"
 
   contexts = {
     runtime = "target:node-base"
@@ -92,7 +92,7 @@ target "java-base" {
 
 target "codex-java" {
   context = "."
-  dockerfile = "docker/toolchain/java/codex/Dockerfile"
+  dockerfile = "docker/runtime/codex/Dockerfile"
   tags = ["mipe-runtime-codex-java:latest"]
 
   args = {
@@ -106,7 +106,7 @@ target "codex-java" {
 
 target "claude-java" {
   context = "."
-  dockerfile = "docker/toolchain/java/claude/Dockerfile"
+  dockerfile = "docker/runtime/claude/Dockerfile"
   tags = ["mipe-runtime-claude-java:latest"]
 
   args = {
