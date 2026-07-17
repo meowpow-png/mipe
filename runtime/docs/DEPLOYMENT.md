@@ -4,12 +4,14 @@ Mipe runs AI agents locally. Buildx Bake builds the images, Compose runs them ag
 
 Runnable images:
 
-| Image                             | Agent  | Toolchain                 |
-|-----------------------------------|--------|---------------------------|
-| `mipe-runtime-codex:latest`       | Codex  | Node.js 22                |
-| `mipe-runtime-claude:latest`      | Claude | Node.js 22                |
-| `mipe-runtime-codex-java:latest`  | Codex  | Node.js 22 and Temurin 21 |
-| `mipe-runtime-claude-java:latest` | Claude | Node.js 22 and Temurin 21 |
+| Image                             | Agent  | Toolchain                                |
+|-----------------------------------|--------|------------------------------------------|
+| `mipe-runtime-codex:latest`       | Codex  | Node.js 22                               |
+| `mipe-runtime-claude:latest`      | Claude | Node.js 22                               |
+| `mipe-runtime-codex-java:latest`  | Codex  | Node.js 22 and Temurin 21                |
+| `mipe-runtime-claude-java:latest` | Claude | Node.js 22 and Temurin 21                |
+| `mipe-runtime-codex-web:latest`   | Codex  | Node.js 22, Chromium, and Playwright MCP |
+| `mipe-runtime-claude-web:latest`  | Claude | Node.js 22, Chromium, and Playwright MCP |
 
 ## Building Images
 
@@ -19,7 +21,7 @@ Build the complete local image set with:
 just build-images
 ```
 
-This builds the test image and all four agent images.
+This builds the test image and all six agent images.
 
 To build only one or more agent variants, pass their Bake target names:
 
@@ -31,46 +33,60 @@ just build-images codex codex-java
 
 ### Build Architecture
 
-The hierarchy keeps agent updates scoped to the affected images.
+Base targets provide Mipe, Node.js, Java, and web tooling.
 
 ```mermaid
 flowchart TD
     runtime["runtime-base<br/>Bookworm and Mipe"]
     node["node-base<br/>Node.js 22 and shared tools"]
     java["java-base<br/>Temurin 21"]
-    test["test<br/>Integration test image"]
+    web["web-base<br/>Chromium and Playwright MCP"]
+
+    runtime --> node
+    node --> java
+    node --> web
+```
+
+Agent targets add their CLI and configuration.
+
+```mermaid
+flowchart TD
+    node["node-base"]
+    java["java-base"]
+    web["web-base"]
     codex["codex<br/>Codex CLI"]
     claude["claude<br/>Claude CLI"]
     codexJava["codex-java<br/>Codex CLI"]
     claudeJava["claude-java<br/>Claude CLI"]
+    codexWeb["codex-web<br/>Codex CLI"]
+    claudeWeb["claude-web<br/>Claude CLI"]
 
-    runtime --> node
-    runtime --> test
     node --> codex
     node --> claude
-    node --> java
     java --> codexJava
     java --> claudeJava
+    web --> codexWeb
+    web --> claudeWeb
 ```
-
-Base targets provide Mipe, Node.js, and Java. Agent targets add their CLI and configuration.
 
 Changes rebuild:
 
 - Updating Codex rebuilds only Codex images
 - Updating Claude rebuilds only Claude images
 - Updating Java rebuilds only Java images
+- Updating Playwright MCP rebuilds only web images
 - Updating Node.js rebuilds all agent images
 - Updating Mipe runtime rebuilds the entire hierarchy
 
 ### Versions
 
-`docker-bake.hcl` defines the default Node.js, Codex, and Claude versions. Override one for a local build with:
+`docker-bake.hcl` defines the default Node.js, Codex, Claude, and Playwright MCP versions. Override one for a local build with:
 
 ```bash
 CODEX_VERSION=0.144.5 just build-images codex codex-java
 CLAUDE_VERSION=2.1.211 just build-images claude claude-java
-NODE_VERSION=22.23.1 just build-images codex claude codex-java claude-java
+NODE_VERSION=22.23.1 just build-images codex claude codex-java claude-java codex-web claude-web
+PLAYWRIGHT_MCP_VERSION=0.0.78 just build-images codex-web claude-web
 ```
 
 To inspect the resolved targets, versions, and dependencies before building, run:
@@ -83,31 +99,39 @@ docker buildx bake --print
 
 Choose the service for the agent and toolchain you need.
 
+Every service mounts the current workspace at `/workspace`.
+
+### Codex State
+
 ```mermaid
 flowchart LR
-    workspace[("Current workspace")]
     codexState[("codex-home")]
-    claudeState[("claude-home")]
-
-    subgraph services["Compose services"]
-        codex["codex"]
-        codexJava["codex-java"]
-        claude["claude"]
-        claudeJava["claude-java"]
-    end
-
-    workspace -->|/workspace| codex
-    workspace -->|/workspace| codexJava
-    workspace -->|/workspace| claude
-    workspace -->|/workspace| claudeJava
+    codexWebState[("codex-web-home")]
+    codex["codex"]
+    codexJava["codex-java"]
+    codexWeb["codex-web"]
 
     codexState -->|/home/dev/.codex| codex
     codexState -->|/home/dev/.codex| codexJava
-    claudeState -->|/home/dev| claude
-    claudeState -->|/home/dev| claudeJava
+    codexWebState -->|/home/dev/web| codexWeb
 ```
 
-Every service mounts the workspace at `/workspace`. Codex and Claude keep separate agent state; each agent's standard and Java variants share it.
+### Claude State
+
+```mermaid
+flowchart LR
+    claudeState[("claude-home")]
+    claudeWebState[("claude-web-home")]
+    claude["claude"]
+    claudeJava["claude-java"]
+    claudeWeb["claude-web"]
+
+    claudeState -->|/home/dev| claude
+    claudeState -->|/home/dev| claudeJava
+    claudeWebState -->|/home/dev/web| claudeWeb
+```
+
+Standard and Java variants share agent state. Web variants use separate state volumes.
 
 ### Starting Agents
 
@@ -118,6 +142,8 @@ just codex-run
 just claude-run
 just codex-java-run
 just claude-java-run
+just codex-web-run
+just claude-web-run
 ```
 
 Or use Compose directly:
@@ -136,14 +162,16 @@ just codex-shell
 just claude-shell
 ```
 
-Inspect a Java image with:
+Inspect a Java or web image with:
 
 ```bash
 just codex-java-shell
 just claude-java-shell
+just codex-web-shell
+just claude-web-shell
 ```
 
-Java shell recipes bypass Mipe startup and are for image inspection only.
+Java and web shell recipes bypass Mipe startup and are for image inspection only.
 
 ## Container Startup
 
@@ -153,9 +181,10 @@ Mipe startup:
 
 1. The container entrypoint reads `LOCAL_UID` and `LOCAL_GID` and creates the local `dev` user
 2. Mipe loads the agent configuration
-3. Shared configuration is copied into the agent home
-4. If the workspace contains `.mipe/init/dependencies.sh`, Mipe runs it
-5. Mipe switches from root to the local user and starts the requested process in `/workspace`
+3. Mipe validates the configuration and workspace permissions
+4. Shared configuration is copied into the agent home
+5. If the workspace contains `.mipe/init/dependencies.sh`, Mipe runs it
+6. Mipe switches from root to the local user and starts the requested process in `/workspace`
 
 ### User Identity
 
