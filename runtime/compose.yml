@@ -9,7 +9,6 @@ x-codex: &codex
   volumes:
     - codex-home:/home/dev/.codex
     - .:/workspace:Z
-  command: mipe -debug codex
 
 x-claude: &claude
   pull_policy: never
@@ -20,7 +19,6 @@ x-claude: &claude
   volumes:
     - claude-home:/home/dev
     - .:/workspace:Z
-  command: mipe -debug claude
 
 services:
   codex:
@@ -31,6 +29,10 @@ services:
     <<: *codex
     image: mipe-runtime-codex-java:latest
 
+  codex-web:
+    <<: *codex
+    image: mipe-runtime-codex-web:latest
+
   claude:
     <<: *claude
     image: mipe-runtime-claude:latest
@@ -38,6 +40,10 @@ services:
   claude-java:
     <<: *claude
     image: mipe-runtime-claude-java:latest
+
+  claude-web:
+    <<: *claude
+    image: mipe-runtime-claude-web:latest
 
 volumes:
   codex-home:
