@@ -27,6 +27,9 @@ func Run(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
 }
 
 func run(ctx context.Context, cfg config.Config, logger *zap.Logger, phases phases) error {
+	if cfg.LogFormat == "console" && !cfg.Debug {
+		printBanner(logger)
+	}
 	logger.Info("Welcome to Mipe")
 	logger.Debug("bootstrap configuration",
 		zap.String("agent_name", cfg.AgentName),
@@ -64,4 +67,17 @@ func run(ctx context.Context, cfg config.Config, logger *zap.Logger, phases phas
 	logger.Info("execution completed")
 
 	return nil
+}
+
+func printBanner(logger *zap.Logger) {
+	logger.Info("")
+	logger.Info("\x1b[36m┃\x1b[0m")
+	logger.Info("\x1b[36m┃\x1b[0m  ███╗   ███╗██╗██████╗ ███████╗")
+	logger.Info("\x1b[36m┃\x1b[0m  ████╗ ████║██║██╔══██╗██╔════╝")
+	logger.Info("\x1b[36m┃\x1b[0m  ██╔████╔██║██║██████╔╝█████╗")
+	logger.Info("\x1b[36m┃\x1b[0m  ██║╚██╔╝██║██║██╔═══╝ ██╔══╝")
+	logger.Info("\x1b[36m┃\x1b[0m  ██║ ╚═╝ ██║██║██║     ███████╗")
+	logger.Info("\x1b[36m┃\x1b[0m  ╚═╝     ╚═╝╚═╝╚═╝     ╚══════╝")
+	logger.Info("\x1b[36m┃\x1b[0m")
+	logger.Info("")
 }
