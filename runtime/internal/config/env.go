@@ -1,6 +1,7 @@
 package config
 
 import (
+	"maps"
 	"os"
 	"strings"
 )
@@ -20,15 +21,12 @@ type Environment struct {
 func LoadEnvironment(defaults map[string]string) Environment {
 	values := make(map[string]string)
 
-	for key, value := range defaults {
-		values[key] = value
-	}
+	maps.Copy(values, defaults)
 	for _, entry := range os.Environ() {
 		key, value, found := strings.Cut(entry, "=")
 		if !found {
 			continue
 		}
-
 		values[key] = value
 	}
 	agentName := values["AGENT_NAME"]

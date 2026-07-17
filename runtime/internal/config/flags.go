@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"maps"
 	"os"
 )
 
@@ -75,10 +76,8 @@ func LoadFile(path string) (map[string]string, error) {
 // EnvironmentValues converts file configuration into environment variables
 func (cfg fileConfig) EnvironmentValues() map[string]string {
 	values := make(map[string]string)
+	maps.Copy(values, cfg.Environment)
 
-	for key, value := range cfg.Environment {
-		values[key] = value
-	}
 	setIfPresent(values, "AGENT_NAME", cfg.AgentName)
 	setIfPresent(values, "USER_HOME", cfg.UserHome)
 	setIfPresent(values, "AGENT_HOME", cfg.AgentHome)

@@ -47,7 +47,6 @@ func TestParseOwnership_ReturnsErrorForInvalidUidOrGid(t *testing.T) {
 		{name: "gid", edit: func(cfg *config.Config) { cfg.LocalGID = "abc" }, want: "local_gid must be a numeric group id"},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
