@@ -37,4 +37,5 @@ Continue treating the entrypoint as a consumer of the runtime environment rather
 
 ## References
 
--[ARCHITECTURE](../ARCHITECTURE.md)
+*None*
+
