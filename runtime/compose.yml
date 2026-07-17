@@ -6,7 +6,7 @@ x-runtime: &runtime
   environment:
     LOCAL_UID: "1000"
     LOCAL_GID: "1000"
-    MIPE_DEBUG: true
+    MIPE_DEBUG: "${MIPE_DEBUG:-1}"
   volumes:
     - .:/workspace:Z
 
