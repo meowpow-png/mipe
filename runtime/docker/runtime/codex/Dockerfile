@@ -5,14 +5,14 @@ RUN npm install --global @openai/codex@${CODEX_VERSION}
 
 WORKDIR /workspace
 
-COPY docker/runtime/codex/config/ /opt/mipe/config/
-COPY docker/runtime/codex/config/base.config.json /opt/mipe/config.json
+COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/codex/config/agent/ /opt/mipe/config/agent/
 
 FROM codex-base AS web
 
-COPY docker/runtime/codex/config/web.config.json /opt/mipe/config.json
-COPY docker/runtime/codex/config/web.config.toml \
-    /opt/mipe/config/config.toml
+COPY docker/runtime/codex/config/agent/web.config.json /opt/mipe/config/config.json
+COPY docker/runtime/codex/config/agent/web.config.toml \
+    /opt/mipe/config/agent/config.toml
 
 CMD ["mipe", "codex"]
 

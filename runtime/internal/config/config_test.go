@@ -89,8 +89,8 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 func TestConfigPath_UsesFixedDefaultIndependentOfRuntimeHome(t *testing.T) {
 	t.Setenv("RUNTIME_HOME", "/ignored/runtime")
 
-	if got := configPath(""); got != "/opt/mipe/config.json" {
-		t.Fatalf("configPath() = %q, want /opt/mipe/config.json", got)
+	if got := configPath(""); got != "/opt/mipe/config/config.json" {
+		t.Fatalf("configPath() = %q, want /opt/mipe/config/config.json", got)
 	}
 }
 

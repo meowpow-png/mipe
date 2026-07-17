@@ -89,7 +89,7 @@ func TestPrepare_CreatesCopiesAndChownsInOrder(t *testing.T) {
 	}
 	want := []string{
 		"create:/agent/home",
-		"copy:/runtime/config->/agent/home",
+		"copy:/runtime/config/agent->/agent/home",
 		"chown:/home/user",
 	}
 	if !reflect.DeepEqual(calls, want) {

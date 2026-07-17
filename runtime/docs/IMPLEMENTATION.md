@@ -20,12 +20,12 @@ Example configuration file:
 }
 ```
 
-If no configuration path is provided, the bootstrap loads `/opt/mipe/config.json`.
+If no configuration path is provided, the bootstrap loads `/opt/mipe/config/config.json`.
 
 The bootstrap itself is invoked with configuration flags followed by the command that should be executed once initialization is complete.
 
 ```bash
-mipe --config /opt/codex-runtime/config.json codex
+mipe --config /opt/codex-runtime/config/config.json codex
 ```
 
 Configuration from the file is loaded first, then overridden by matching environment variables. The resulting configuration is validated before the bootstrap lifecycle begins. If any required values are missing or invalid, execution terminates immediately without modifying the runtime environment.
@@ -67,10 +67,10 @@ During preparation, the bootstrap creates the configured agent home directory:
 It then copies the shared runtime from:
 
 ```text
-<runtime_home>/config
+<runtime_home>/config/agent
 ```
 
-into the agent home, making it available to the agent before execution begins.
+into the agent home, making it available to the agent before execution begins. Mipe's own bootstrap configuration is stored separately at `<runtime_home>/config/config.json` and is not copied into the agent home.
 
 If agent home is not configured, this directory creation and shared runtime copy are skipped.
 
@@ -111,8 +111,10 @@ The bootstrap works with three distinct locations, each serving a different purp
 ```text
 <runtime_home>/
   config/
-    AGENTS.md
-    config.toml
+    config.json
+    agent/
+      AGENTS.md
+      config.toml
 
 <user_home>/
 
@@ -130,4 +132,4 @@ The bootstrap works with three distinct locations, each serving a different purp
 - **Agent home** contains the prepared runtime for a specific agent together with any persistent state managed by that agent
 - **Workspace** contains the project being developed and any project-specific initialization provided by the consuming project
 
-During preparation, the bootstrap copies the shared runtime configuration from `<runtime_home>/config` into agent home. The workspace is never modified by runtime itself, except through optional project initialization.
+During preparation, the bootstrap copies the shared agent configuration from `<runtime_home>/config/agent` into agent home. The workspace is never modified by runtime itself, except through optional project initialization.

@@ -1,6 +1,6 @@
 package config
 
-const defaultConfigPath = "/opt/mipe/config.json"
+const defaultConfigPath = "/opt/mipe/config/config.json"
 
 const (
 	LogFormatConsole = "console"
