@@ -13,7 +13,7 @@ Establish Mipe as a reusable runtime for AI-assisted development.
 - Ready-to-use development runtime
 - Project customization
 - Official toolchains
-- Documentation and examples
+- Documentation
 
 **Success Criteria**
 
