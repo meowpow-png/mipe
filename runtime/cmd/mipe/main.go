@@ -45,7 +45,11 @@ func main() {
 func newLogger(debug bool, logFormat ...string) (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
 	if len(logFormat) > 0 {
-		cfg.Encoding = logFormat[0]
+		if logFormat[0] == config.LogFormatConsole {
+			cfg.Encoding = consoleEncoding(debug)
+		} else {
+			cfg.Encoding = logFormat[0]
+		}
 	}
 	if debug {
 		cfg.Level.SetLevel(zap.DebugLevel)

@@ -36,6 +36,7 @@ func run(ctx context.Context, cfg config.Config, logger *zap.Logger, phases phas
 		zap.String("workspace", cfg.Workspace),
 		zap.String("local_uid", cfg.LocalUID),
 		zap.String("local_gid", cfg.LocalGID),
+		zap.String("log_format", cfg.LogFormat),
 		zap.Strings("command", cfg.Command),
 	)
 	logger.Info("validation started")

@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 func TestInitialize_SkipsMissingDependencyScript(t *testing.T) {
@@ -23,6 +25,30 @@ func TestInitialize_SkipsMissingDependencyScript(t *testing.T) {
 	}
 	if err := Initialize(context.Background(), testConfig(), zap.NewNop()); err != nil {
 		t.Fatalf("Initialize() error = %v", err)
+	}
+}
+
+func TestInitialize_LogsSkippedDependencyScriptAtDebug(t *testing.T) {
+	restore := replaceInitializeSeams(t)
+	defer restore()
+
+	statFile = func(path string) (os.FileInfo, error) {
+		return nil, os.ErrNotExist
+	}
+	core, logs := observer.New(zapcore.DebugLevel)
+
+	if err := Initialize(context.Background(), testConfig(), zap.New(core)); err != nil {
+		t.Fatalf("Initialize() error = %v", err)
+	}
+
+	entries := logs.All()
+	if len(entries) != 2 {
+		t.Fatalf("log entry count = %d, want 2", len(entries))
+	}
+	for _, entry := range entries {
+		if entry.Level != zapcore.DebugLevel {
+			t.Fatalf("log level = %s, want DEBUG", entry.Level)
+		}
 	}
 }
 

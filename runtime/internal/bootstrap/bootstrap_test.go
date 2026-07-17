@@ -8,6 +8,8 @@ import (
 
 	"github.com/meowpow-png/mipe/runtime/internal/config"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 func TestRun_ExecutesPhasesInOrder(t *testing.T) {
@@ -95,5 +97,45 @@ func TestRun_StopsOnFirstPhaseError(t *testing.T) {
 				t.Fatalf("calls = %#v, want %#v", calls, tt.wantCalls)
 			}
 		})
+	}
+}
+
+func TestRun_LogsLifecycleAtInfoAndConfigurationAtDebug(t *testing.T) {
+	t.Parallel()
+
+	core, logs := observer.New(zapcore.DebugLevel)
+	cfg := config.Config{
+		AgentName: "test-agent",
+		LogFormat: config.LogFormatJSON,
+	}
+	noOpPhases := phases{
+		validate:   func(config.Config, *zap.Logger) error { return nil },
+		prepare:    func(config.Config, *zap.Logger) error { return nil },
+		initialize: func(context.Context, config.Config, *zap.Logger) error { return nil },
+		execute:    func(config.Config, *zap.Logger) error { return nil },
+	}
+
+	if err := run(context.Background(), cfg, zap.New(core), noOpPhases); err != nil {
+		t.Fatalf("run() error = %v", err)
+	}
+
+	var infoCount int
+	var debugEntries []observer.LoggedEntry
+	for _, entry := range logs.All() {
+		if entry.Level == zapcore.InfoLevel {
+			infoCount++
+		}
+		if entry.Level == zapcore.DebugLevel {
+			debugEntries = append(debugEntries, entry)
+		}
+	}
+	if infoCount != 9 {
+		t.Fatalf("INFO entry count = %d, want 9", infoCount)
+	}
+	if len(debugEntries) != 1 {
+		t.Fatalf("DEBUG entry count = %d, want 1", len(debugEntries))
+	}
+	if got := debugEntries[0].ContextMap()["log_format"]; got != config.LogFormatJSON {
+		t.Fatalf("log_format = %#v, want %q", got, config.LogFormatJSON)
 	}
 }

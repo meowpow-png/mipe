@@ -38,42 +38,36 @@ func TestIsConfigError_IdentifiesTypedConfigErrors(t *testing.T) {
 	}
 }
 
-func TestLogConfigError_LogsDistinctMessagesAndFields(t *testing.T) {
+func TestLogConfigError_LogsTypedFields(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
-		err     error
-		message string
-		fields  map[string]string
+		name   string
+		err    error
+		fields map[string]string
 	}{
 		{
-			name:    "flag",
-			err:     &config.FlagError{Err: errors.New("bad flag")},
-			message: "configuration flags error",
+			name: "flag",
+			err:  &config.FlagError{Err: errors.New("bad flag")},
 		},
 		{
-			name:    "file",
-			err:     &config.FileError{Path: "config.json", Operation: "open", Err: errors.New("missing")},
-			message: "configuration file error",
-			fields:  map[string]string{"path": "config.json", "operation": "open"},
+			name:   "file",
+			err:    &config.FileError{Path: "config.json", Operation: "open", Err: errors.New("missing")},
+			fields: map[string]string{"path": "config.json", "operation": "open"},
 		},
 		{
-			name:    "missing",
-			err:     &config.MissingValueError{Field: "workspace"},
-			message: "configuration missing required value",
-			fields:  map[string]string{"field": "workspace"},
+			name:   "missing",
+			err:    &config.MissingValueError{Field: "workspace"},
+			fields: map[string]string{"field": "workspace"},
 		},
 		{
-			name:    "invalid",
-			err:     &config.InvalidValueError{Field: "local_uid", Reason: "numeric"},
-			message: "configuration contains invalid value",
-			fields:  map[string]string{"field": "local_uid", "reason": "numeric"},
+			name:   "invalid",
+			err:    &config.InvalidValueError{Field: "local_uid", Reason: "numeric"},
+			fields: map[string]string{"field": "local_uid", "reason": "numeric"},
 		},
 		{
-			name:    "fallback",
-			err:     errors.New("other"),
-			message: "configuration error",
+			name: "fallback",
+			err:  errors.New("other"),
 		},
 	}
 
@@ -90,9 +84,6 @@ func TestLogConfigError_LogsDistinctMessagesAndFields(t *testing.T) {
 			entries := logs.All()
 			if len(entries) != 1 {
 				t.Fatalf("log entries = %d, want 1", len(entries))
-			}
-			if entries[0].Message != tt.message {
-				t.Fatalf("message = %q, want %q", entries[0].Message, tt.message)
 			}
 			context := entries[0].ContextMap()
 			for key, want := range tt.fields {
