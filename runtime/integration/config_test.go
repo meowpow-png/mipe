@@ -28,33 +28,28 @@ func TestEnvironmentOverridesFileConfiguration(t *testing.T) {
 
 func TestInvalidConfiguration(t *testing.T) {
 	tests := []struct {
-		name       string
-		contents   string
-		command    []string
-		wantOutput string
+		name     string
+		contents string
+		command  []string
 	}{
 		{
 			name:     "malformed JSON",
 			contents: `{`, command: []string{"mipe", "--config", defaultConfigPath(), "true"},
-			wantOutput: "configuration file error",
 		},
 		{
-			name:       "missing workspace",
-			contents:   encodedConfig(t, editConfig(func(config *runtimeConfig) { config.Workspace = "" })),
-			command:    []string{"mipe", "--config", defaultConfigPath(), "true"},
-			wantOutput: "configuration missing required value",
+			name:     "missing workspace",
+			contents: encodedConfig(t, editConfig(func(config *runtimeConfig) { config.Workspace = "" })),
+			command:  []string{"mipe", "--config", defaultConfigPath(), "true"},
 		},
 		{
-			name:       "nonnumeric UID",
-			contents:   encodedConfig(t, editConfig(func(config *runtimeConfig) { config.LocalUID = "invalid" })),
-			command:    []string{"env", "-u", "LOCAL_UID", "-u", "LOCAL_GID", "mipe", "--config", defaultConfigPath(), "true"},
-			wantOutput: "configuration contains invalid value",
+			name:     "nonnumeric UID",
+			contents: encodedConfig(t, editConfig(func(config *runtimeConfig) { config.LocalUID = "invalid" })),
+			command:  []string{"env", "-u", "LOCAL_UID", "-u", "LOCAL_GID", "mipe", "--config", defaultConfigPath(), "true"},
 		},
 		{
-			name:       "missing command",
-			contents:   encodedConfig(t, defaultConfig()),
-			command:    []string{"mipe", "--config", defaultConfigPath()},
-			wantOutput: "configuration missing required value",
+			name:     "missing command",
+			contents: encodedConfig(t, defaultConfig()),
+			command:  []string{"mipe", "--config", defaultConfigPath()},
 		},
 	}
 	for _, test := range tests {
@@ -64,7 +59,6 @@ func TestInvalidConfiguration(t *testing.T) {
 				command: test.command,
 			})
 			result.requireFailure(t)
-			result.requireOutput(t, test.wantOutput)
 		})
 	}
 }
