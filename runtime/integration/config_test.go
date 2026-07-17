@@ -9,8 +9,12 @@ func TestEnvironmentOverridesFileConfiguration(t *testing.T) {
 			"AGENT_HOME":   "/home/override/agent",
 			"RUNTIME_HOME": "/opt/mipe",
 			"WORKSPACE":    "/override-workspace",
+			"LOCAL_UID":    "2000",
+			"LOCAL_GID":    "2001",
 		},
-		command: rootSetup(`install -d -o 1000 -g 1000 /home/override /override-workspace`, mipeCommand(defaultConfigPath(), `
+		command: rootSetup(`install -d -o 2000 -g 2001 /home/override /override-workspace`, mipeCommand(defaultConfigPath(), `
+			test "$(id -u)" = 2000
+			test "$(id -g)" = 2001
 			test "$HOME" = /home/override
 			test "$AGENT_HOME" = /home/override/agent
 			test "$PWD" = /override-workspace
