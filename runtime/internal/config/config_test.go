@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -132,5 +133,51 @@ func TestLoad_SetsDebugFromFlag(t *testing.T) {
 	}
 	if !cfg.Debug {
 		t.Fatal("Debug = false, want true")
+	}
+}
+
+func TestLoad_SetsDebugFromEnvironment(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	t.Setenv("MIPE_DEBUG", "true")
+	cfg, err := Load([]string{"--config", path, "bash"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if !cfg.Debug {
+		t.Fatal("Debug = false, want true")
+	}
+}
+
+func TestLoad_CombinesDebugFlagAndEnvironment(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	t.Setenv("MIPE_DEBUG", "false")
+	cfg, err := Load([]string{"--config", path, "--debug", "bash"})
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if !cfg.Debug {
+		t.Fatal("Debug = false, want true")
+	}
+}
+
+func TestLoad_RejectsInvalidDebugEnvironmentValue(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	t.Setenv("MIPE_DEBUG", "enabled")
+	_, err := Load([]string{"--config", path, "bash"})
+	var invalidErr *InvalidValueError
+	if !errors.As(err, &invalidErr) {
+		t.Fatalf("Load() error = %T, want *InvalidValueError", err)
+	}
+	if invalidErr.Field != "MIPE_DEBUG" || invalidErr.Reason != "boolean" {
+		t.Fatalf("InvalidValueError = %#v, want MIPE_DEBUG boolean", invalidErr)
 	}
 }

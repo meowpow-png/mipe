@@ -24,8 +24,13 @@ func Load(args []string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	cfg := New(LoadEnvironment(values), flags.Command)
-	cfg.Debug = flags.Debug
+	env := LoadEnvironment(values)
+	debug, err := debugEnabled(env.Values)
+	if err != nil {
+		return Config{}, err
+	}
+	cfg := New(env, flags.Command)
+	cfg.Debug = flags.Debug || debug
 	return cfg, nil
 }
 

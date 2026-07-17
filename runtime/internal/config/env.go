@@ -3,6 +3,7 @@ package config
 import (
 	"maps"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -45,4 +46,16 @@ func LoadEnvironment(defaults map[string]string) Environment {
 		LocalUID:    values["LOCAL_UID"],
 		LocalGID:    values["LOCAL_GID"],
 	}
+}
+
+func debugEnabled(values map[string]string) (bool, error) {
+	value, ok := values["MIPE_DEBUG"]
+	if !ok || value == "" {
+		return false, nil
+	}
+	debug, err := strconv.ParseBool(value)
+	if err != nil {
+		return false, &InvalidValueError{Field: "MIPE_DEBUG", Reason: "boolean", Err: err}
+	}
+	return debug, nil
 }

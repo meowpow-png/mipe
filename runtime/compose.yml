@@ -6,6 +6,7 @@ x-codex: &codex
   environment:
     LOCAL_UID: "1000"
     LOCAL_GID: "1000"
+    MIPE_DEBUG: true
   volumes:
     - codex-home:/home/dev/.codex
     - .:/workspace:Z
@@ -22,6 +23,7 @@ x-claude: &claude
   environment:
     LOCAL_UID: "1000"
     LOCAL_GID: "1000"
+    MIPE_DEBUG: true
   volumes:
     - claude-home:/home/dev
     - .:/workspace:Z
