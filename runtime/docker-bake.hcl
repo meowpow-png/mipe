@@ -27,10 +27,28 @@ variable "PLAYWRIGHT_MCP_VERSION" {
   default = "0.0.78"
 }
 
+variable "VERSION" {
+  default = "dev"
+}
+
+variable "COMMIT" {
+  default = ""
+}
+
+variable "BUILD_DATE" {
+  default = ""
+}
+
 target "runtime" {
   context = "."
   dockerfile = "docker/runtime/base/Dockerfile"
   tags = ["mipe-runtime:latest"]
+
+  args = {
+    VERSION    = VERSION
+    COMMIT     = COMMIT
+    BUILD_DATE = BUILD_DATE
+  }
 }
 
 target "test" {

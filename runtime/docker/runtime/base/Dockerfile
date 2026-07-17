@@ -8,9 +8,16 @@ RUN go mod download
 COPY ["cmd/", "cmd/"]
 COPY ["internal/", "internal/"]
 
+ARG VERSION
+ARG COMMIT
+ARG BUILD_DATE
+
 RUN go build \
     -trimpath \
-    -ldflags="-s -w -buildid=" \
+    -ldflags="-s -w -buildid= \
+        -X github.com/meowpow-png/mipe/runtime/internal/build.Version=${VERSION} \
+        -X github.com/meowpow-png/mipe/runtime/internal/build.Commit=${COMMIT} \
+        -X github.com/meowpow-png/mipe/runtime/internal/build.Date=${BUILD_DATE}" \
     -o /out/mipe \
     ./cmd/mipe
 
