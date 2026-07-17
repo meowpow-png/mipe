@@ -5,13 +5,12 @@ RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
 
 WORKDIR /workspace
 
-COPY config/claude/ /opt/mipe/config/
-COPY docker/runtime/claude/config.json /opt/mipe/config.json
-
+COPY docker/runtime/claude/config/ /opt/mipe/config/
+COPY docker/runtime/claude/config/config.json /opt/mipe/config.json
 
 FROM claude-base AS web
 
-COPY docker/runtime/claude/web.mcp.json \
+COPY docker/runtime/claude/config/web.mcp.json \
     /opt/mipe/config/web.mcp.json
 
 CMD ["mipe", \

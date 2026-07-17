@@ -25,7 +25,7 @@ RUN apt-get update && \
 
 COPY --from=builder /out/mipe /usr/local/bin/mipe
 
-COPY config/base/ /opt/mipe/config/
+COPY docker/runtime/base/config/ /opt/mipe/config/
 COPY hooks/ /opt/mipe/hooks/
 
 COPY docker/runtime/base/entrypoint.sh /usr/local/bin/entrypoint
