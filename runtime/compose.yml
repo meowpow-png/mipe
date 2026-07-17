@@ -1,40 +1,44 @@
 name: mipe
 
-x-codex: &codex
+x-runtime: &runtime
   pull_policy: never
   working_dir: /workspace
   environment:
     LOCAL_UID: "1000"
     LOCAL_GID: "1000"
     MIPE_DEBUG: true
+  volumes:
+    - .:/workspace:Z
+
+x-codex: &codex
+  <<: *runtime
   volumes:
     - codex-home:/home/dev/.codex
     - .:/workspace:Z
 
 x-codex-web: &codex-web
-  <<: *codex
+  <<: *runtime
   volumes:
     - codex-web-home:/home/dev/web
     - .:/workspace:Z
 
 x-claude: &claude
-  pull_policy: never
-  working_dir: /workspace
-  environment:
-    LOCAL_UID: "1000"
-    LOCAL_GID: "1000"
-    MIPE_DEBUG: true
+  <<: *runtime
   volumes:
     - claude-home:/home/dev
     - .:/workspace:Z
 
 x-claude-web: &claude-web
-  <<: *claude
+  <<: *runtime
   volumes:
     - claude-web-home:/home/dev/web
     - .:/workspace:Z
 
 services:
+  mipe:
+    <<: *runtime
+    image: mipe-runtime:latest
+
   codex:
     <<: *codex
     image: mipe-runtime-codex:latest

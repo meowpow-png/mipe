@@ -37,7 +37,7 @@ Base targets provide Mipe, Node.js, Java, and web tooling.
 
 ```mermaid
 flowchart TD
-    runtime["runtime-base<br/>Bookworm and Mipe"]
+    runtime["runtime<br/>Bookworm and Mipe"]
     node["node-base<br/>Node.js 22 and shared tools"]
     java["java-base<br/>Temurin 21"]
     web["web-base<br/>Chromium and Playwright MCP"]

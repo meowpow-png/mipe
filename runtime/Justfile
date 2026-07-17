@@ -25,3 +25,8 @@ build-production:
 # Clean build artifacts
 clean:
     @rm -rf build
+
+# Run Mipe runtime
+[arg("args", help="Arguments passed to Mipe")]
+mipe-run *args:
+    @just compose run --rm mipe mipe {{args}}

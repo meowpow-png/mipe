@@ -1,5 +1,6 @@
 group "default" {
   targets = [
+    "runtime",
     "test",
     "codex",
     "claude",
@@ -26,10 +27,10 @@ variable "PLAYWRIGHT_MCP_VERSION" {
   default = "0.0.78"
 }
 
-target "runtime-base" {
+target "runtime" {
   context = "."
   dockerfile = "docker/runtime/base/Dockerfile"
-  tags = ["mipe-runtime-base:latest"]
+  tags = ["mipe-runtime:latest"]
 }
 
 target "test" {
@@ -43,7 +44,7 @@ target "test" {
   }
 
   contexts = {
-    runtime = "target:runtime-base"
+    runtime = "target:runtime"
   }
 }
 
@@ -56,7 +57,7 @@ target "node-base" {
   }
 
   contexts = {
-    runtime = "target:runtime-base"
+    runtime = "target:runtime"
   }
 }
 
