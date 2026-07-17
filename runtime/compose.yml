@@ -10,6 +10,12 @@ x-codex: &codex
     - codex-home:/home/dev/.codex
     - .:/workspace:Z
 
+x-codex-web: &codex-web
+  <<: *codex
+  volumes:
+    - codex-web-home:/home/dev/web
+    - .:/workspace:Z
+
 x-claude: &claude
   pull_policy: never
   working_dir: /workspace
@@ -18,6 +24,12 @@ x-claude: &claude
     LOCAL_GID: "1000"
   volumes:
     - claude-home:/home/dev
+    - .:/workspace:Z
+
+x-claude-web: &claude-web
+  <<: *claude
+  volumes:
+    - claude-web-home:/home/dev/web
     - .:/workspace:Z
 
 services:
@@ -30,7 +42,7 @@ services:
     image: mipe-runtime-codex-java:latest
 
   codex-web:
-    <<: *codex
+    <<: *codex-web
     image: mipe-runtime-codex-web:latest
 
   claude:
@@ -42,9 +54,11 @@ services:
     image: mipe-runtime-claude-java:latest
 
   claude-web:
-    <<: *claude
+    <<: *claude-web
     image: mipe-runtime-claude-web:latest
 
 volumes:
   codex-home:
+  codex-web-home:
   claude-home:
+  claude-web-home:
