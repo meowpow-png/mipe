@@ -2,13 +2,28 @@ package main
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
+	"github.com/meowpow-png/mipe/runtime/internal/build"
 	"github.com/meowpow-png/mipe/runtime/internal/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
 )
+
+func TestVersionOutput(t *testing.T) {
+	got := versionOutput(false)
+	if !strings.Contains(got, build.Version) {
+		t.Fatalf("versionOutput(false) = %q, expected version %q", got, build.Version)
+	}
+	got = versionOutput(true)
+	for _, want := range []string{build.Version, build.Commit, build.Date} {
+		if want != "" && !strings.Contains(got, want) {
+			t.Fatalf("versionOutput(true) = %q, expected to contain %q", got, want)
+		}
+	}
+}
 
 func TestIsConfigError_IdentifiesTypedConfigErrors(t *testing.T) {
 	t.Parallel()

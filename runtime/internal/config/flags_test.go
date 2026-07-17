@@ -26,6 +26,24 @@ func TestParseFlags_ReadsConfigAndCommand(t *testing.T) {
 	}
 }
 
+func TestParseFlags_ReadsVersionAliases(t *testing.T) {
+	t.Parallel()
+
+	for _, arg := range []string{"--version", "-v"} {
+		t.Run(arg, func(t *testing.T) {
+			t.Parallel()
+
+			flags, err := ParseFlags([]string{arg})
+			if err != nil {
+				t.Fatalf("ParseFlags() error = %v", err)
+			}
+			if !flags.Version {
+				t.Fatal("Version = false, want true")
+			}
+		})
+	}
+}
+
 func TestParseFlags_ReturnsFlagErrorForInvalidFlags(t *testing.T) {
 	t.Parallel()
 

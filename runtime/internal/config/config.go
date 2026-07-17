@@ -16,6 +16,7 @@ type Config struct {
 	LocalUID    string
 	LocalGID    string
 	Debug       bool
+	Version     bool
 	LogFormat   string
 	Command     []string
 }
@@ -25,6 +26,14 @@ func Load(args []string) (Config, error) {
 	flags, err := ParseFlags(args)
 	if err != nil {
 		return Config{}, err
+	}
+	if flags.Version {
+		env := LoadEnvironment(nil)
+		debug, err := debugEnabled(env.Values)
+		if err != nil {
+			return Config{}, err
+		}
+		return Config{Debug: flags.Debug || debug, Version: true}, nil
 	}
 	values, err := LoadFile(configPath(flags.ConfigPath))
 	if err != nil {

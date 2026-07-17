@@ -136,6 +136,30 @@ func TestLoad_SetsDebugFromFlag(t *testing.T) {
 	}
 }
 
+func TestLoad_VersionSkipsConfigFileAndHonorsDebug(t *testing.T) {
+	t.Run("flag", func(t *testing.T) {
+		cfg, err := Load([]string{"--version", "--debug", "--config", "/missing/config.json"})
+		if err != nil {
+			t.Fatalf("Load() error = %v", err)
+		}
+		if !cfg.Version || !cfg.Debug {
+			t.Fatalf("Config = %#v, want version and debug enabled", cfg)
+		}
+	})
+
+	t.Run("environment", func(t *testing.T) {
+		t.Setenv("MIPE_DEBUG", "true")
+
+		cfg, err := Load([]string{"-v", "--config", "/missing/config.json"})
+		if err != nil {
+			t.Fatalf("Load() error = %v", err)
+		}
+		if !cfg.Version || !cfg.Debug {
+			t.Fatalf("Config = %#v, want version and debug enabled", cfg)
+		}
+	})
+}
+
 func TestLoad_SetsDebugFromEnvironment(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.json")
 	if err := os.WriteFile(path, []byte(`{}`), 0o600); err != nil {

@@ -13,6 +13,7 @@ import (
 type Flags struct {
 	ConfigPath string
 	Debug      bool
+	Version    bool
 	Command    []string
 }
 
@@ -40,6 +41,8 @@ func ParseFlags(args []string) (Flags, error) {
 	var parsed Flags
 	flags.StringVar(&parsed.ConfigPath, "config", "", "path to bootstrap config file")
 	flags.BoolVar(&parsed.Debug, "debug", false, "enable debug logging")
+	flags.BoolVar(&parsed.Version, "version", false, "print version information and exit")
+	flags.BoolVar(&parsed.Version, "v", false, "print version information and exit")
 
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {

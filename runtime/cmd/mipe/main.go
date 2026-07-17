@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/meowpow-png/mipe/runtime/internal/bootstrap"
+	"github.com/meowpow-png/mipe/runtime/internal/build"
 	"github.com/meowpow-png/mipe/runtime/internal/config"
 	"go.uber.org/zap"
 )
@@ -25,6 +27,10 @@ func main() {
 		_ = logger.Sync()
 		os.Exit(1)
 	}
+	if cfg.Version {
+		_, _ = fmt.Fprint(os.Stdout, versionOutput(cfg.Debug))
+		return
+	}
 	logger, err = newLogger(cfg.Debug, cfg.LogFormat)
 	if err != nil {
 		panic(err)
@@ -40,6 +46,22 @@ func main() {
 		os.Exit(1)
 	}
 	_ = logger.Sync()
+}
+
+func versionOutput(debug bool) string {
+	mipeBuild := build.Current()
+
+	if !debug {
+		return fmt.Sprintf("Mipe version %s\n", mipeBuild.Version)
+	}
+	if mipeBuild.Date == "" {
+		return fmt.Sprintf("Mipe version %s\n", mipeBuild.Version)
+	}
+	return fmt.Sprintf(
+		"Mipe version %s\nBuilt: %s\n",
+		mipeBuild.Version,
+		mipeBuild.Date,
+	)
 }
 
 func newLogger(debug bool, logFormat ...string) (*zap.Logger, error) {
