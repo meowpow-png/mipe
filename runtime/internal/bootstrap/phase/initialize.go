@@ -21,17 +21,17 @@ var (
 func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
 	script := filepath.Join(cfg.Workspace, ".mipe", "init", "dependencies.sh")
 
-	logger.Info("checking project dependency initialization",
+	logger.Debug("checking project dependency initialization",
 		zap.String("script", script),
 	)
 	if _, err := statFile(script); err != nil {
 		if os.IsNotExist(err) {
-			logger.Info("project dependency initialization skipped", zap.String("script", script))
+			logger.Debug("project dependency initialization skipped", zap.String("script", script))
 			return nil
 		}
 		return fmt.Errorf("check project dependency initialization script %q: %w", script, err)
 	}
-	logger.Info("project dependency initialization started",
+	logger.Debug("project dependency initialization started",
 		zap.String("script", script),
 	)
 	args := []string{
@@ -50,7 +50,7 @@ func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) erro
 	if err := runProcessInDir(ctx, cfg.Workspace, "gosu", args...); err != nil {
 		return fmt.Errorf("initialize project dependencies: %w", err)
 	}
-	logger.Info("project dependency initialization completed",
+	logger.Debug("project dependency initialization completed",
 		zap.String("script", script),
 	)
 	return nil

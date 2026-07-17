@@ -12,7 +12,7 @@ var execProcess = process.ExecInDir
 
 // Execute executes the requested process
 func Execute(cfg config.Config, logger *zap.Logger) error {
-	logger.Info(
+	logger.Debug(
 		"executing requested process",
 		zap.String("user", fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID)),
 		zap.Strings("command", cfg.Command),

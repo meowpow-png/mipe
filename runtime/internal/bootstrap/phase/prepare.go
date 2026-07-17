@@ -23,31 +23,31 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 		return err
 	}
 	if cfg.AgentHome != "" {
-		logger.Info("creating agent home",
+		logger.Debug("creating agent home",
 			zap.String("path", cfg.AgentHome),
 		)
 		if err := createDirectory(cfg.AgentHome); err != nil {
 			return fmt.Errorf("create agent home %q: %w", cfg.AgentHome, err)
 		}
-		logger.Info("agent home created",
+		logger.Debug("agent home created",
 			zap.String("path", cfg.AgentHome),
 		)
 		source := filepath.Join(cfg.RuntimeHome, "config")
-		logger.Info("copying shared runtime configuration",
+		logger.Debug("copying shared runtime configuration",
 			zap.String("source", source),
 			zap.String("destination", cfg.AgentHome),
 		)
 		if err := copyContents(source, cfg.AgentHome); err != nil {
 			return fmt.Errorf("copy shared runtime configuration from %q to %q: %w", source, cfg.AgentHome, err)
 		}
-		logger.Info("shared runtime configuration copied",
+		logger.Debug("shared runtime configuration copied",
 			zap.String("source", source),
 			zap.String("destination", cfg.AgentHome),
 		)
 	} else {
-		logger.Info("agent home not configured; shared runtime configuration skipped")
+		logger.Debug("agent home not configured; shared runtime configuration skipped")
 	}
-	logger.Info("updating home ownership",
+	logger.Debug("updating home ownership",
 		zap.String("path", cfg.UserHome),
 		zap.Int("uid", uid),
 		zap.Int("gid", gid),
@@ -55,7 +55,7 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 	if err := chownRecursive(cfg.UserHome, uid, gid); err != nil {
 		return fmt.Errorf("update ownership for %q: %w", cfg.UserHome, err)
 	}
-	logger.Info("home ownership updated",
+	logger.Debug("home ownership updated",
 		zap.String("path", cfg.UserHome),
 		zap.Int("uid", uid),
 		zap.Int("gid", gid),

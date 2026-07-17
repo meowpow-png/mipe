@@ -13,14 +13,14 @@ var workspaceWritable = checkWorkspaceWritable
 
 // Validate validates runtime configuration
 func Validate(cfg config.Config, logger *zap.Logger) error {
-	logger.Info("validating configuration")
+	logger.Debug("validating configuration")
 	if err := validation.Config(cfg); err != nil {
 		return err
 	}
 	if err := workspaceWritable(cfg); err != nil {
 		return err
 	}
-	logger.Info("configuration validated")
+	logger.Debug("configuration validated")
 
 	return nil
 }
