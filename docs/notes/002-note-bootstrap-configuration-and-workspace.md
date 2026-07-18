@@ -40,9 +40,8 @@ Environment variables may still override values from `config.json`, but this is 
 
 ## Next Steps
 
-Keep the project volume mount aligned with the configured `workspace`. If the workspace changes from `/workspace` to `/work`, update the mount destination accordingly.
-
-Keep `/opt/mipe/config.json` in runtime images unless an explicit `--config` path is supplied.
+- Keep project volume mount aligned with the configured `workspace`. If the workspace changes from `/workspace` to `/work`, update the mount destination accordingly
+- Keep `/opt/mipe/config.json` in runtime images unless an explicit `--config` path is supplied
 
 No further runtime changes are required for this design. If workspace creation is ever needed, it should be treated as a separate provisioning step rather than part of bootstrap initialization.
 
