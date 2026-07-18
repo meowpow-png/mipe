@@ -13,4 +13,4 @@ test-coverage *args:
 # Run integration tests
 [arg("args", help="Arguments passed to Go test")]
 integration-test *args:
-    @MIPE_INTEGRATION=1 go test {{args}} ./integration
+    @MIPE_INTEGRATION=1 go test {{args}} ./integration/...
