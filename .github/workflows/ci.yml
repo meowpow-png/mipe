@@ -31,13 +31,6 @@ jobs:
         working-directory: runtime
         run: go test -v ./...
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build Docker images
         uses: docker/bake-action@v7
         with:
@@ -52,19 +45,19 @@ jobs:
           provenance: false
           sbom: false
           set: |
-            runtime.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            runtime.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache,mode=max
+            runtime.cache-from=type=gha,scope=runtime
+            runtime.cache-to=type=gha,scope=runtime,mode=max
 
-            node-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
-            node-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            node-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache,mode=max
+            node-base.cache-from=type=gha,scope=node-base
+            node-base.cache-from=type=gha,scope=runtime
+            node-base.cache-to=type=gha,scope=node-base,mode=max
 
-            codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:codex-buildcache
-            codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
-            codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            codex.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:codex-buildcache,mode=max
+            codex.cache-from=type=gha,scope=codex
+            codex.cache-from=type=gha,scope=node-base
+            codex.cache-from=type=gha,scope=runtime
+            codex.cache-to=type=gha,scope=codex,mode=max
 
-            claude.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:claude-buildcache
-            claude.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
-            claude.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            claude.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:claude-buildcache,mode=max
+            claude.cache-from=type=gha,scope=claude
+            claude.cache-from=type=gha,scope=node-base
+            claude.cache-from=type=gha,scope=runtime
+            claude.cache-to=type=gha,scope=claude,mode=max
