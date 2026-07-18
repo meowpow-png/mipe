@@ -26,7 +26,19 @@ build-production:
 clean:
     @rm -rf build
 
-# Run Mipe runtime
+# Run Mipe locally
 [arg("args", help="Arguments passed to Mipe")]
-mipe-run *args:
-    @just compose run --rm mipe mipe {{args}}
+mipe *args: build
+    @mkdir -p .mipe/local-home .mipe/agent-home
+    @RUNTIME_HOME="$PWD/docker/runtime/base" \
+     USER_HOME="$PWD/.mipe/local-home" \
+     AGENT_HOME="$PWD/.mipe/agent-home" \
+     WORKSPACE="$PWD" \
+     LOCAL_UID="$(id -u)" \
+     LOCAL_GID="$(id -g)" \
+     ./build/bin/mipe --config docker/runtime/base/config/config.json {{args}}
+
+# Run Mipe in runtime container
+[arg("args", help="Arguments passed to Mipe")]
+mipe-docker *args:
+    just compose run --rm mipe mipe {{args}}
