@@ -37,6 +37,7 @@ jobs:
           source: ./runtime
           targets: |
             runtime
+            test
             node-base
             java-base
             web-base
@@ -47,6 +48,10 @@ jobs:
           set: |
             runtime.cache-from=type=gha,scope=runtime
             runtime.cache-to=type=gha,scope=runtime,mode=max
+
+            test.cache-from=type=gha,scope=test
+            test.cache-from=type=gha,scope=runtime
+            test.cache-to=type=gha,scope=test,mode=max
 
             node-base.cache-from=type=gha,scope=node-base
             node-base.cache-from=type=gha,scope=runtime
@@ -61,3 +66,7 @@ jobs:
             claude.cache-from=type=gha,scope=node-base
             claude.cache-from=type=gha,scope=runtime
             claude.cache-to=type=gha,scope=claude,mode=max
+
+      - name: Run integration tests
+        working-directory: runtime
+        run: MIPE_INTEGRATION=1 go test -v ./integration/...
