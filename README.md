@@ -26,3 +26,17 @@ install_dependencies() {
 The project workspace must be writable by the configured local developer user. 
 Project initialization executes with the developer user's permissions and requires 
 write access to the workspace to install dependencies and generate project files.
+
+### Running Mipe
+
+Run the locally built bootstrap without rebuilding a container image:
+
+```bash
+just mipe bash
+```
+
+Use the container-backed runtime when validating image behavior:
+
+```bash
+just mipe-docker bash
+```
