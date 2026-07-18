@@ -1,4 +1,9 @@
+ARG NODE_VERSION=22
+FROM node:${NODE_VERSION}-bookworm-slim AS node
+
 FROM runtime AS claude-base
+
+COPY --from=node /usr/local/ /usr/local/
 
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}

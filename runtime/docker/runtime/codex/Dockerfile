@@ -1,4 +1,9 @@
+ARG NODE_VERSION=22
+FROM node:${NODE_VERSION}-bookworm-slim AS node
+
 FROM runtime AS codex-base
+
+COPY --from=node /usr/local/ /usr/local/
 
 ARG CODEX_VERSION
 RUN npm install --global @openai/codex@${CODEX_VERSION}

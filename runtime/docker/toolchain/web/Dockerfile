@@ -1,4 +1,9 @@
+ARG NODE_VERSION=22
+FROM node:${NODE_VERSION}-bookworm-slim AS node
+
 FROM runtime
+
+COPY --from=node /usr/local/ /usr/local/
 
 ARG PLAYWRIGHT_MCP_VERSION
 
