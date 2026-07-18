@@ -44,7 +44,7 @@ jobs:
         uses: docker/bake-action@v7
         with:
           source: ./runtime
-          targets: codex
+          targets: node-base
           provenance: false
           sbom: false
           set: |
