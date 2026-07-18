@@ -6,6 +6,8 @@ Runnable images:
 
 | Image                             | Agent  | Toolchain                                |
 |-----------------------------------|--------|------------------------------------------|
+| `mipe-runtime:latest`             | Mipe   | Base runtime                             |
+| `mipe-runtime-test:latest`        | Mipe   | Test runtime                             |
 | `mipe-runtime-codex:latest`       | Codex  | Node.js 22                               |
 | `mipe-runtime-claude:latest`      | Claude | Node.js 22                               |
 | `mipe-runtime-codex-java:latest`  | Codex  | Node.js 22 and Temurin 21                |
@@ -21,7 +23,7 @@ Build the complete local image set with:
 just build-images
 ```
 
-This builds the test image and all six agent images.
+This builds the runtime image, test image, and all six agent images.
 
 To build only one or more agent variants, pass their Bake target names:
 
@@ -232,7 +234,7 @@ List Mipe agent volumes with:
 docker volume ls --filter name=mipe_
 ```
 
-To reset all local agent state, remove Mipe volumes:
+To reset all local agent state, remove Mipe volumes by running from root:
 
 ```bash
 just docker-clean-volumes
