@@ -39,8 +39,6 @@ jobs:
             runtime
             test
             node-base
-            java-base
-            web-base
             codex
             codex-java
             codex-web
@@ -60,15 +58,11 @@ jobs:
             node-base.cache-from=type=gha,scope=runtime
             node-base.cache-to=type=gha,scope=node-base,mode=max
 
-            codex.cache-from=type=gha,scope=codex
             codex.cache-from=type=gha,scope=node-base
             codex.cache-from=type=gha,scope=runtime
-            codex.cache-to=type=gha,scope=codex,mode=max
 
-            claude.cache-from=type=gha,scope=claude
             claude.cache-from=type=gha,scope=node-base
             claude.cache-from=type=gha,scope=runtime
-            claude.cache-to=type=gha,scope=claude,mode=max
 
       - name: Run integration tests
         working-directory: runtime
