@@ -31,7 +31,14 @@ func TestMain(m *testing.M) {
 	if os.Getenv("MIPE_INTEGRATION") != "1" {
 		os.Exit(0)
 	}
-	command := exec.Command("docker", "buildx", "bake", "test")
+	command := exec.Command(
+		"docker",
+		"buildx",
+		"bake",
+		"--provenance=false",
+		"--sbom=false",
+		"test",
+	)
 	command.Dir = projectRoot()
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
