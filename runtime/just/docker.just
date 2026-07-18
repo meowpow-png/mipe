@@ -1,4 +1,4 @@
-# Build docker images
+# Build Docker images
 [arg("targets", help="Bake targets to build")]
 build-images *targets='default':
     @docker buildx bake {{targets}}
@@ -11,7 +11,7 @@ build-dev *targets='default':
      BUILD_DATE=$(date -u +%FT%TZ) \
      docker buildx bake {{targets}}
 
-# Run base docker compose stack
-[arg("args", help="Arguments passed to docker compose")]
+# Run base Docker Compose stack
+[arg("args", help="Arguments passed to Docker Compose")]
 compose *args:
     @docker compose {{args}}

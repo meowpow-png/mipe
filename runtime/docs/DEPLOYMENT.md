@@ -138,12 +138,12 @@ Standard and Java variants share agent state. Web variants use separate state vo
 Run an agent with a Just recipe:
 
 ```bash
-just codex-run
-just claude-run
-just codex-java-run
-just claude-java-run
-just codex-web-run
-just claude-web-run
+just codex
+just claude
+just codex-java
+just claude-java
+just codex-web
+just claude-web
 ```
 
 Or use Compose directly:
@@ -155,23 +155,16 @@ docker compose run --rm claude-java
 
 ### Opening Shells
 
-Open a Mipe-initialized agent shell with:
+Open a Mipe-initialized agent shell by passing `mipe bash` to the image recipe:
 
 ```bash
-just codex-shell
-just claude-shell
+just codex mipe bash
+just claude mipe bash
+just codex-java mipe bash
+just claude-java mipe bash
+just codex-web mipe bash
+just claude-web mipe bash
 ```
-
-Inspect a Java or web image with:
-
-```bash
-just codex-java-shell
-just claude-java-shell
-just codex-web-shell
-just claude-web-shell
-```
-
-Java and web shell recipes bypass Mipe startup and are for image inspection only.
 
 ## Container Startup
 
@@ -214,7 +207,7 @@ Build the requested target and try again:
 
 ```bash
 just build-images codex-java
-just codex-java-run
+just codex-java
 ```
 
 ### Workspace Permissions
