@@ -58,6 +58,8 @@ jobs:
           
             java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:java-base-buildcache
             java-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:java-base-buildcache,mode=max
+            java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
           
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache
             web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache,mode=max
+            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
