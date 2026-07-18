@@ -13,15 +13,6 @@ build:
     @mkdir -p build
     @go build -o build/bin/mipe ./cmd/mipe
 
-# Build production binary
-build-production:
-    @mkdir -p build
-    @go build \
-        -trimpath \
-        -ldflags="-s -w -buildid=" \
-        -o build/bin/mipe \
-        ./cmd/mipe
-
 # Clean build artifacts
 clean:
     @rm -rf build
