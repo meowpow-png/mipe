@@ -35,6 +35,7 @@ func TestMain(m *testing.M) {
 		"docker",
 		"buildx",
 		"bake",
+		"--load",
 		"--provenance=false",
 		"--sbom=false",
 		"test",
