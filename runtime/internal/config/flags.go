@@ -46,7 +46,6 @@ func ParseFlags(args []string) (Flags, error) {
 
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
-			flags.Usage()
 			return Flags{}, err
 		}
 		return Flags{}, &FlagError{Err: err}
