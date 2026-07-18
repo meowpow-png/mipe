@@ -23,6 +23,9 @@ func main() {
 		if errors.Is(err, flag.ErrHelp) {
 			os.Exit(0)
 		}
+		if errors.As(err, new(*config.MissingCommandError)) {
+			os.Exit(2)
+		}
 		logConfigError(logger, err)
 		_ = logger.Sync()
 		os.Exit(1)

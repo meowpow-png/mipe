@@ -51,7 +51,10 @@ func ParseFlags(args []string) (Flags, error) {
 		return Flags{}, &FlagError{Err: err}
 	}
 	parsed.Command = flags.Args()
-
+	if !parsed.Version && len(parsed.Command) == 0 {
+		flags.Usage()
+		return Flags{}, &MissingCommandError{}
+	}
 	return parsed, nil
 }
 

@@ -14,6 +14,12 @@ func (err *FlagError) Unwrap() error {
 	return err.Err
 }
 
+type MissingCommandError struct{}
+
+func (err *MissingCommandError) Error() string {
+	return "a command is required"
+}
+
 type FileError struct {
 	Path      string
 	Operation string
