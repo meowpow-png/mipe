@@ -59,7 +59,8 @@ COPY --from=node-source /usr/local/ /usr/local/
 
 FROM node-base AS java-base
 
-RUN apt-get update && \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
@@ -80,7 +81,9 @@ ARG PLAYWRIGHT_MCP_VERSION
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV CHROME_BIN=/usr/bin/chromium
 
-RUN apt-get update && \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/root/.npm,sharing=locked \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         chromium \
         fonts-liberation && \
