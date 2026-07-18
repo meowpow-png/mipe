@@ -32,6 +32,7 @@ RUN apt-get update && \
 
 COPY --from=builder /out/mipe /usr/local/bin/mipe
 
+COPY docker/runtime/base/config/config.json /opt/mipe/config/config.json
 COPY docker/runtime/base/config/agent/ /opt/mipe/config/agent/
 COPY hooks/ /opt/mipe/hooks/
 
