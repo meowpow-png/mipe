@@ -48,5 +48,8 @@ jobs:
           provenance: false
           sbom: false
           set: |
-            *.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
-            *.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+            runtime.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
+            runtime.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache,mode=max
+          
+            node-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
+            node-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache,mode=max
