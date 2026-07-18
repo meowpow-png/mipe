@@ -47,6 +47,8 @@ jobs:
             node-base
             java-base
             web-base
+            codex
+            claude
           provenance: false
           sbom: false
           set: |
@@ -66,3 +68,13 @@ jobs:
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
             web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache,mode=max
+
+            codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:codex-buildcache
+            codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
+            codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
+            codex.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:codex-buildcache,mode=max
+
+            claude.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:claude-buildcache
+            claude.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
+            claude.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
+            claude.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:claude-buildcache,mode=max
