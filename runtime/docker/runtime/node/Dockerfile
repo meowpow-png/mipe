@@ -3,13 +3,6 @@ FROM node:${NODE_VERSION}-bookworm-slim AS node
 
 FROM debian:bookworm-slim
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        git \
-        libatomic1 \
-        python3 && \
-    rm -rf /var/lib/apt/lists/*
+RUN echo hello > /hello.txt
 
 COPY --from=node /usr/local/ /usr/local/
