@@ -59,16 +59,6 @@ jobs:
             node-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
             node-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache,mode=max
 
-            java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:java-base-buildcache
-            java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
-            java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            java-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:java-base-buildcache,mode=max
-
-            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache
-            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
-            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache,mode=max
-
             codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:codex-buildcache
             codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
             codex.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
