@@ -1,7 +1,7 @@
 # Build Docker images
 [arg("targets", help="Bake targets to build")]
 build-images *targets='default':
-    @docker buildx bake --provenance=false -sbom=false {{targets}}
+    @docker buildx bake --provenance=false --sbom=false {{targets}}
 
 # Build versioned Docker images for development
 [arg("targets", help="Bake targets to build")]
