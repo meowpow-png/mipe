@@ -35,7 +35,7 @@ jobs:
       - name: Build Docker images
         uses: docker/bake-action@v7
         with:
-          files: runtime/docker-bake.hcl
+          source: ./runtime
           targets: default
           provenance: false
           sbom: false
