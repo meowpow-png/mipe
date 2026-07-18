@@ -1,7 +1,7 @@
 ARG NODE_VERSION=22
 FROM node:${NODE_VERSION}-bookworm-slim AS node
 
-FROM runtime
+FROM debian:bookworm-slim
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
