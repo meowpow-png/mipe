@@ -82,7 +82,7 @@ jobs:
           provenance: false
           sbom: false
           set: |
-            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache
+            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache-v2
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache,mode=max
+            web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache-v2,mode=max
