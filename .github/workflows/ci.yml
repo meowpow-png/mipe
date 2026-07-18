@@ -42,7 +42,9 @@ jobs:
         uses: docker/bake-action@v7
         with:
           source: ./runtime
-          targets: node-base
+          targets: |
+            runtime
+            node-base
           provenance: false
           sbom: false
           set: |
