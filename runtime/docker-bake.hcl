@@ -59,8 +59,11 @@ target "test" {
   tags = ["mipe-runtime-test:latest"]
 
   args = {
-    LOCAL_UID = "1000"
-    LOCAL_GID = "1000"
+    VERSION    = VERSION
+    COMMIT     = COMMIT
+    BUILD_DATE = BUILD_DATE
+    LOCAL_UID  = "1000"
+    LOCAL_GID  = "1000"
   }
 
 }
@@ -71,6 +74,9 @@ target "node-base" {
   target = "node-base"
 
   args = {
+    VERSION     = VERSION
+    COMMIT      = COMMIT
+    BUILD_DATE  = BUILD_DATE
     NODE_VERSION = NODE_VERSION
   }
 
@@ -82,6 +88,9 @@ target "java-base" {
   target = "java-base"
 
   args = {
+    VERSION     = VERSION
+    COMMIT      = COMMIT
+    BUILD_DATE  = BUILD_DATE
     NODE_VERSION = NODE_VERSION
   }
 
@@ -93,6 +102,9 @@ target "web-base" {
   target = "web-base"
 
   args = {
+    VERSION                = VERSION
+    COMMIT                 = COMMIT
+    BUILD_DATE             = BUILD_DATE
     NODE_VERSION           = NODE_VERSION
     PLAYWRIGHT_MCP_VERSION = PLAYWRIGHT_MCP_VERSION
   }
@@ -105,6 +117,9 @@ target "codex" {
   tags = ["mipe-runtime-codex:latest"]
 
   args = {
+    VERSION      = VERSION
+    COMMIT       = COMMIT
+    BUILD_DATE   = BUILD_DATE
     NODE_VERSION = NODE_VERSION
     CODEX_VERSION = CODEX_VERSION
   }
@@ -118,6 +133,9 @@ target "claude" {
   tags = ["mipe-runtime-claude:latest"]
 
   args = {
+    VERSION       = VERSION
+    COMMIT        = COMMIT
+    BUILD_DATE    = BUILD_DATE
     NODE_VERSION  = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
@@ -131,6 +149,9 @@ target "codex-java" {
   tags = ["mipe-runtime-codex-java:latest"]
 
   args = {
+    VERSION       = VERSION
+    COMMIT        = COMMIT
+    BUILD_DATE    = BUILD_DATE
     NODE_VERSION  = NODE_VERSION
     CODEX_VERSION = CODEX_VERSION
   }
@@ -144,6 +165,9 @@ target "claude-java" {
   tags = ["mipe-runtime-claude-java:latest"]
 
   args = {
+    VERSION        = VERSION
+    COMMIT         = COMMIT
+    BUILD_DATE     = BUILD_DATE
     NODE_VERSION   = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
@@ -157,6 +181,9 @@ target "codex-web" {
   tags = ["mipe-runtime-codex-web:latest"]
 
   args = {
+    VERSION       = VERSION
+    COMMIT        = COMMIT
+    BUILD_DATE    = BUILD_DATE
     NODE_VERSION  = NODE_VERSION
     CODEX_VERSION = CODEX_VERSION
   }
@@ -170,6 +197,9 @@ target "claude-web" {
   tags = ["mipe-runtime-claude-web:latest"]
 
   args = {
+    VERSION        = VERSION
+    COMMIT         = COMMIT
+    BUILD_DATE     = BUILD_DATE
     NODE_VERSION   = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
