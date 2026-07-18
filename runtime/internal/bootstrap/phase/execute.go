@@ -19,11 +19,12 @@ func Execute(cfg config.Config, logger *zap.Logger) error {
 	)
 	_ = logger.Sync()
 
-	args := append([]string{
-		fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID),
-		"env",
-	}, runtimeEnvironment(cfg)...)
+	args := runtimeEnvironment(cfg)
 	args = append(args, cfg.Command...)
 
-	return execProcess(cfg.Workspace, "gosu", args...)
+	name, args, err := commandAsUser(cfg.LocalUID, cfg.LocalGID, "env", args...)
+	if err != nil {
+		return err
+	}
+	return execProcess(cfg.Workspace, name, args...)
 }

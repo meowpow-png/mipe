@@ -131,10 +131,13 @@ func replaceInitializeSeams(t *testing.T) func() {
 	originalStat := statFile
 	originalRun := runProcess
 	originalRunInDir := runProcessInDir
+	originalIdentity := currentIdentity
+	currentIdentity = func() (int, int) { return 0, 0 }
 
 	return func() {
 		statFile = originalStat
 		runProcess = originalRun
 		runProcessInDir = originalRunInDir
+		currentIdentity = originalIdentity
 	}
 }

@@ -39,6 +39,9 @@ func TestRuntimeEnvironment_SkipsAgentHomeWhenUnset(t *testing.T) {
 }
 
 func TestExecute_BuildsGosuExecInvocation(t *testing.T) {
+	restoreIdentity := replaceCurrentIdentity(t, 0, 0)
+	defer restoreIdentity()
+
 	originalExec := execProcess
 	defer func() { execProcess = originalExec }()
 
@@ -74,6 +77,9 @@ func TestExecute_BuildsGosuExecInvocation(t *testing.T) {
 }
 
 func TestExecute_ReturnsExecError(t *testing.T) {
+	restoreIdentity := replaceCurrentIdentity(t, 0, 0)
+	defer restoreIdentity()
+
 	originalExec := execProcess
 	defer func() { execProcess = originalExec }()
 

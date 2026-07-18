@@ -34,20 +34,20 @@ func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) erro
 	logger.Debug("project dependency initialization started",
 		zap.String("script", script),
 	)
-	args := []string{
-		fmt.Sprintf("%s:%s", cfg.LocalUID, cfg.LocalGID),
-		"env",
-	}
-	args = append(args, runtimeEnvironment(cfg,
+	args := runtimeEnvironment(cfg,
 		"WORKSPACE="+cfg.Workspace,
 		"DEPENDENCIES_SCRIPT="+script,
-	)...)
+	)
 	args = append(args,
 		"bash",
 		"-c",
 		`set -euo pipefail; source "$DEPENDENCIES_SCRIPT"; install_dependencies`,
 	)
-	if err := runProcessInDir(ctx, cfg.Workspace, "gosu", args...); err != nil {
+	name, args, err := commandAsUser(cfg.LocalUID, cfg.LocalGID, "env", args...)
+	if err != nil {
+		return err
+	}
+	if err := runProcessInDir(ctx, cfg.Workspace, name, args...); err != nil {
 		return fmt.Errorf("initialize project dependencies: %w", err)
 	}
 	logger.Debug("project dependency initialization completed",
