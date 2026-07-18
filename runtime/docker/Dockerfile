@@ -1,0 +1,165 @@
+ARG NODE_VERSION=22
+
+FROM golang:1.26-bookworm AS runtime-builder
+
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY ["cmd/", "cmd/"]
+COPY ["internal/", "internal/"]
+
+ARG VERSION
+ARG COMMIT
+ARG BUILD_DATE
+
+RUN go build \
+    -trimpath \
+    -ldflags="-s -w -buildid= \
+        -X github.com/meowpow-png/mipe/runtime/internal/build.Version=${VERSION} \
+        -X github.com/meowpow-png/mipe/runtime/internal/build.Commit=${COMMIT} \
+        -X github.com/meowpow-png/mipe/runtime/internal/build.Date=${BUILD_DATE}" \
+    -o /out/mipe \
+    ./cmd/mipe
+
+FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        bash \
+        gosu \
+        passwd && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=runtime-builder /out/mipe /usr/local/bin/mipe
+
+COPY docker/runtime/base/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/base/config/agent/ /opt/mipe/config/agent/
+COPY hooks/ /opt/mipe/hooks/
+
+COPY docker/runtime/base/entrypoint.sh /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+CMD ["mipe", "--help"]
+
+FROM runtime AS test
+
+ARG LOCAL_UID=1000
+ARG LOCAL_GID=1000
+
+RUN mkdir -p /workspace && \
+    chown "${LOCAL_UID}:${LOCAL_GID}" /workspace
+
+FROM node:${NODE_VERSION}-bookworm-slim AS node-source
+
+FROM runtime AS node-base
+
+COPY --from=node-source /usr/local/ /usr/local/
+
+FROM node-base AS java-base
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gpg && \
+    curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | \
+        gpg --dearmor -o /usr/share/keyrings/adoptium.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" \
+        > /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        temurin-21-jdk && \
+    rm -rf /var/lib/apt/lists/*
+
+FROM node-base AS web-base
+
+ARG PLAYWRIGHT_MCP_VERSION
+
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV CHROME_BIN=/usr/bin/chromium
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        chromium \
+        fonts-liberation && \
+    npm install --global \
+        @playwright/mcp@${PLAYWRIGHT_MCP_VERSION} && \
+    rm -rf /var/lib/apt/lists/*
+
+FROM node-base AS codex
+
+ARG CODEX_VERSION
+RUN npm install --global @openai/codex@${CODEX_VERSION}
+
+WORKDIR /workspace
+
+COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/codex/config/agent/ /opt/mipe/config/agent/
+
+CMD ["mipe", "codex"]
+
+FROM java-base AS codex-java
+
+ARG CODEX_VERSION
+RUN npm install --global @openai/codex@${CODEX_VERSION}
+
+WORKDIR /workspace
+
+COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/codex/config/agent/ /opt/mipe/config/agent/
+
+CMD ["mipe", "codex"]
+
+FROM web-base AS codex-web
+
+ARG CODEX_VERSION
+RUN npm install --global @openai/codex@${CODEX_VERSION}
+
+WORKDIR /workspace
+
+COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/codex/config/agent/ /opt/mipe/config/agent/
+COPY docker/runtime/codex/config/agent/web.config.json /opt/mipe/config/config.json
+COPY docker/runtime/codex/config/agent/web.config.toml /opt/mipe/config/agent/config.toml
+
+CMD ["mipe", "codex"]
+
+FROM node-base AS claude
+
+ARG CLAUDE_VERSION
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+
+WORKDIR /workspace
+
+COPY docker/runtime/claude/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/claude/config/agent/ /opt/mipe/config/agent/
+
+CMD ["mipe", "claude", "--dangerously-skip-permissions"]
+
+FROM java-base AS claude-java
+
+ARG CLAUDE_VERSION
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+
+WORKDIR /workspace
+
+COPY docker/runtime/claude/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/claude/config/agent/ /opt/mipe/config/agent/
+
+CMD ["mipe", "claude", "--dangerously-skip-permissions"]
+
+FROM web-base AS claude-web
+
+ARG CLAUDE_VERSION
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+
+WORKDIR /workspace
+
+COPY docker/runtime/claude/config/config.json /opt/mipe/config/config.json
+COPY docker/runtime/claude/config/agent/ /opt/mipe/config/agent/
+COPY docker/runtime/claude/config/agent/web.config.json /opt/mipe/config/config.json
+COPY docker/runtime/claude/config/agent/web.mcp.json /opt/mipe/config/agent/web.mcp.json
+
+CMD ["mipe", "claude", "--dangerously-skip-permissions", "--mcp-config", "/opt/mipe/config/agent/web.mcp.json"]

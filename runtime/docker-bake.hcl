@@ -41,7 +41,8 @@ variable "BUILD_DATE" {
 
 target "runtime" {
   context = "."
-  dockerfile = "docker/runtime/base/Dockerfile"
+  dockerfile = "docker/Dockerfile"
+  target = "runtime"
   tags = ["mipe-runtime:latest"]
 
   args = {
@@ -53,7 +54,8 @@ target "runtime" {
 
 target "test" {
   context = "."
-  dockerfile = "docker/runtime/test/Dockerfile"
+  dockerfile = "docker/Dockerfile"
+  target = "test"
   tags = ["mipe-runtime-test:latest"]
 
   args = {
@@ -61,55 +63,45 @@ target "test" {
     LOCAL_GID = "1000"
   }
 
-  contexts = {
-    runtime = "target:runtime"
-  }
 }
 
 target "node-base" {
   context = "."
-  dockerfile = "docker/runtime/node/Dockerfile"
+  dockerfile = "docker/Dockerfile"
+  target = "node-base"
 
   args = {
     NODE_VERSION = NODE_VERSION
   }
 
-  contexts = {
-    runtime = "target:runtime"
-  }
 }
 
 target "java-base" {
   context = "."
-  dockerfile = "docker/toolchain/java/Dockerfile"
+  dockerfile = "docker/Dockerfile"
+  target = "java-base"
 
   args = {
     NODE_VERSION = NODE_VERSION
   }
 
-  contexts = {
-    runtime = "target:runtime"
-  }
 }
 
 target "web-base" {
   context = "."
-  dockerfile = "docker/toolchain/web/Dockerfile"
+  dockerfile = "docker/Dockerfile"
+  target = "web-base"
 
   args = {
-    NODE_VERSION             = NODE_VERSION
+    NODE_VERSION           = NODE_VERSION
     PLAYWRIGHT_MCP_VERSION = PLAYWRIGHT_MCP_VERSION
-  }
-
-  contexts = {
-    runtime = "target:runtime"
   }
 }
 
 target "codex" {
   context = "."
-  dockerfile = "docker/runtime/codex/Dockerfile"
-  target = "default"
+  dockerfile = "docker/Dockerfile"
+  target = "codex"
   tags = ["mipe-runtime-codex:latest"]
 
   args = {
@@ -117,15 +109,12 @@ target "codex" {
     CODEX_VERSION = CODEX_VERSION
   }
 
-  contexts = {
-    runtime = "target:runtime"
-  }
 }
 
 target "claude" {
   context = "."
-  dockerfile = "docker/runtime/claude/Dockerfile"
-  target = "default"
+  dockerfile = "docker/Dockerfile"
+  target = "claude"
   tags = ["mipe-runtime-claude:latest"]
 
   args = {
@@ -133,15 +122,12 @@ target "claude" {
     CLAUDE_VERSION = CLAUDE_VERSION
   }
 
-  contexts = {
-    runtime = "target:runtime"
-  }
 }
 
 target "codex-java" {
   context = "."
-  dockerfile = "docker/runtime/codex/Dockerfile"
-  target = "default"
+  dockerfile = "docker/Dockerfile"
+  target = "codex-java"
   tags = ["mipe-runtime-codex-java:latest"]
 
   args = {
@@ -149,15 +135,12 @@ target "codex-java" {
     CODEX_VERSION = CODEX_VERSION
   }
 
-  contexts = {
-    runtime = "target:java-base"
-  }
 }
 
 target "claude-java" {
   context = "."
-  dockerfile = "docker/runtime/claude/Dockerfile"
-  target = "default"
+  dockerfile = "docker/Dockerfile"
+  target = "claude-java"
   tags = ["mipe-runtime-claude-java:latest"]
 
   args = {
@@ -165,15 +148,12 @@ target "claude-java" {
     CLAUDE_VERSION = CLAUDE_VERSION
   }
 
-  contexts = {
-    runtime = "target:java-base"
-  }
 }
 
 target "codex-web" {
   context = "."
-  dockerfile = "docker/runtime/codex/Dockerfile"
-  target = "web"
+  dockerfile = "docker/Dockerfile"
+  target = "codex-web"
   tags = ["mipe-runtime-codex-web:latest"]
 
   args = {
@@ -181,15 +161,12 @@ target "codex-web" {
     CODEX_VERSION = CODEX_VERSION
   }
 
-  contexts = {
-    runtime = "target:web-base"
-  }
 }
 
 target "claude-web" {
   context = "."
-  dockerfile = "docker/runtime/claude/Dockerfile"
-  target = "web"
+  dockerfile = "docker/Dockerfile"
+  target = "claude-web"
   tags = ["mipe-runtime-claude-web:latest"]
 
   args = {
@@ -197,7 +174,4 @@ target "claude-web" {
     CLAUDE_VERSION = CLAUDE_VERSION
   }
 
-  contexts = {
-    runtime = "target:web-base"
-  }
 }
