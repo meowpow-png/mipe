@@ -84,9 +84,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         chromium \
         fonts-liberation && \
+    npm install --global \
+        @playwright/mcp@${PLAYWRIGHT_MCP_VERSION} && \
     rm -rf /var/lib/apt/lists/*
-
-RUN npm install --global @playwright/mcp@${PLAYWRIGHT_MCP_VERSION}
 
 FROM node-base AS codex
 

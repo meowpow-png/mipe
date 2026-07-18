@@ -38,51 +38,31 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build runtime image
+      - name: Build Docker images
         uses: docker/bake-action@v7
         with:
           source: ./runtime
-          targets: runtime
+          targets: |
+            runtime
+            node-base
+            java-base
+            web-base
           provenance: false
           sbom: false
           set: |
             runtime.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
             runtime.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache,mode=max
 
-      - name: Build Node base image
-        uses: docker/bake-action@v7
-        with:
-          source: ./runtime
-          targets: node-base
-          provenance: false
-          sbom: false
-          set: |
             node-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
             node-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
             node-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache,mode=max
 
-      - name: Build Java base image
-        uses: docker/bake-action@v7
-        with:
-          source: ./runtime
-          targets: java-base
-          provenance: false
-          sbom: false
-          set: |
             java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:java-base-buildcache
             java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
             java-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
             java-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:java-base-buildcache,mode=max
 
-      - name: Build Web base image
-        uses: docker/bake-action@v7
-        with:
-          source: ./runtime
-          targets: web-base
-          provenance: false
-          sbom: false
-          set: |
-            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache-v2
+            web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:node-base-buildcache
             web-base.cache-from=type=registry,ref=ghcr.io/${{ github.repository }}:runtime-buildcache
-            web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache-v2,mode=max
+            web-base.cache-to=type=registry,ref=ghcr.io/${{ github.repository }}:web-base-buildcache,mode=max
