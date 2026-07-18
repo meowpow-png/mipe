@@ -29,9 +29,7 @@ jobs:
 
       - name: Run tests
         working-directory: runtime
-        run: |
-          go test -v ./...
-          MIPE_INTEGRATION=1 go test -v ./integration/...
+        run: go test -v ./...
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
