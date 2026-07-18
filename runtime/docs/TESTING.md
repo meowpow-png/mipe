@@ -66,6 +66,12 @@ Docker must be running, with Buildx available. Run the suite in verbose mode to 
 just integration-test -v
 ```
 
+The recipe builds and loads `mipe-runtime-test:latest` before running the suite. If running the Go command directly, build the test image first:
+
+```bash
+docker buildx bake --load --provenance=false --sbom=false test
+```
+
 To run a specific test:
 
 ```bash

@@ -13,4 +13,5 @@ test-coverage *args:
 # Run integration tests
 [arg("args", help="Arguments passed to Go test")]
 integration-test *args:
-    @MIPE_INTEGRATION=1 go test {{args}} ./integration/...
+	@docker buildx bake --load --provenance=false --sbom=false test
+	@MIPE_INTEGRATION=1 go test {{args}} ./integration/...

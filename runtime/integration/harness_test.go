@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -31,31 +29,7 @@ func TestMain(m *testing.M) {
 	if os.Getenv("MIPE_INTEGRATION") != "1" {
 		os.Exit(0)
 	}
-	command := exec.Command(
-		"docker",
-		"buildx",
-		"bake",
-		"--load",
-		"--provenance=false",
-		"--sbom=false",
-		"test",
-	)
-	command.Dir = projectRoot()
-	command.Stdout = os.Stdout
-	command.Stderr = os.Stderr
-	if err := command.Run(); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "build integration image: %v\n", err)
-		os.Exit(1)
-	}
 	os.Exit(m.Run())
-}
-
-func projectRoot() string {
-	_, file, _, ok := runtime.Caller(0)
-	if !ok {
-		panic("locate integration test source")
-	}
-	return filepath.Dir(filepath.Dir(file))
 }
 
 type runtimeConfig struct {
@@ -151,7 +125,7 @@ func createContainer(t *testing.T, spec containerSpec) string {
 		install -d -m 0755 -o 1000 -g 1000 /workspace/.mipe/init
 		install -m 0644 /tmp/dependencies.sh /workspace/.mipe/init/dependencies.sh
 	`, spec.command)
-	args := []string{"create", "--name", name}
+	args := []string{"create", "--pull=never", "--name", name}
 	environment := spec.environment
 	if !spec.replaceEnvironment {
 		environment = mergeValues(defaultEnvironment(), environment)
