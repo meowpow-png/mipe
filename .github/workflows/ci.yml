@@ -40,5 +40,20 @@ jobs:
           provenance: false
           sbom: false
           set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
+            runtime.cache-from=type=gha,scope=runtime
+            runtime.cache-to=type=gha,scope=runtime,mode=max
+          
+            node-base.cache-from=type=gha,scope=node-base
+            node-base.cache-to=type=gha,scope=node-base,mode=max
+          
+            java-base.cache-from=type=gha,scope=java-base
+            java-base.cache-to=type=gha,scope=java-base,mode=max
+          
+            web-base.cache-from=type=gha,scope=web-base
+            web-base.cache-to=type=gha,scope=web-base,mode=max
+          
+            codex*.cache-from=type=gha,scope=codex
+            codex*.cache-to=type=gha,scope=codex,mode=max
+          
+            claude*.cache-from=type=gha,scope=claude
+            claude*.cache-to=type=gha,scope=claude,mode=max
