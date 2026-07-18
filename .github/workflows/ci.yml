@@ -42,7 +42,11 @@ jobs:
             java-base
             web-base
             codex
+            codex-java
+            codex-web
             claude
+            claude-java
+            claude-web
           provenance: false
           sbom: false
           set: |
