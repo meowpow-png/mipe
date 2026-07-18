@@ -6,8 +6,44 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"syscall"
 	"testing"
 )
+
+func TestOwnershipMatches_ReturnsTrueForMatchingTree(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "file.txt"), []byte("content"), 0o600); err != nil {
+		t.Fatalf("write file: %v", err)
+	}
+
+	matches, err := OwnershipMatches(root, syscall.Getuid(), syscall.Getgid())
+	if err != nil {
+		t.Fatalf("OwnershipMatches() error = %v", err)
+	}
+	if !matches {
+		t.Fatal("OwnershipMatches() = false, want true")
+	}
+}
+
+func TestOwnershipMatches_ReturnsFalseForMismatchedTree(t *testing.T) {
+	root := t.TempDir()
+	uid, gid := syscall.Getuid(), syscall.Getgid()
+
+	matches, err := OwnershipMatches(root, uid+1, gid+1)
+	if err != nil {
+		t.Fatalf("OwnershipMatches() error = %v", err)
+	}
+	if matches {
+		t.Fatal("OwnershipMatches() = true, want false")
+	}
+}
+
+func TestOwnershipMatches_ReturnsWalkError(t *testing.T) {
+	_, err := OwnershipMatches(filepath.Join(t.TempDir(), "missing"), syscall.Getuid(), syscall.Getgid())
+	if err == nil {
+		t.Fatal("OwnershipMatches() error = nil, want error")
+	}
+}
 
 func TestChownRecursive_AppliesOwnershipToRootAndChildren(t *testing.T) {
 	restore := replaceChownSeam(t)

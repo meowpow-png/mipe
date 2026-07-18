@@ -11,9 +11,10 @@ import (
 )
 
 var (
-	createDirectory = files.CreateDirectory
-	copyContents    = files.CopyContents
-	chownRecursive  = files.ChownRecursive
+	createDirectory  = files.CreateDirectory
+	copyContents     = files.CopyContents
+	ownershipMatches = files.OwnershipMatches
+	chownRecursive   = files.ChownRecursive
 )
 
 // Prepare prepares the runtime
@@ -47,19 +48,31 @@ func Prepare(cfg config.Config, logger *zap.Logger) error {
 	} else {
 		logger.Debug("agent home not configured; shared agent configuration skipped")
 	}
-	logger.Debug("updating home ownership",
-		zap.String("path", cfg.UserHome),
-		zap.Int("uid", uid),
-		zap.Int("gid", gid),
-	)
-	if err := chownRecursive(cfg.UserHome, uid, gid); err != nil {
-		return fmt.Errorf("update ownership for %q: %w", cfg.UserHome, err)
+	matches, err := ownershipMatches(cfg.UserHome, uid, gid)
+	if err != nil {
+		return fmt.Errorf("check ownership for %q: %w", cfg.UserHome, err)
 	}
-	logger.Debug("home ownership updated",
-		zap.String("path", cfg.UserHome),
-		zap.Int("uid", uid),
-		zap.Int("gid", gid),
-	)
+	if !matches {
+		logger.Debug("updating home ownership",
+			zap.String("path", cfg.UserHome),
+			zap.Int("uid", uid),
+			zap.Int("gid", gid),
+		)
+		if err := chownRecursive(cfg.UserHome, uid, gid); err != nil {
+			return fmt.Errorf("update ownership for %q: %w", cfg.UserHome, err)
+		}
+		logger.Debug("home ownership updated",
+			zap.String("path", cfg.UserHome),
+			zap.Int("uid", uid),
+			zap.Int("gid", gid),
+		)
+	} else {
+		logger.Debug("home ownership already matches",
+			zap.String("path", cfg.UserHome),
+			zap.Int("uid", uid),
+			zap.Int("gid", gid),
+		)
+	}
 	return nil
 }
 

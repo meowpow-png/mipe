@@ -97,6 +97,25 @@ func TestPrepare_CreatesCopiesAndChownsInOrder(t *testing.T) {
 	}
 }
 
+func TestPrepare_SkipsChownWhenOwnershipMatches(t *testing.T) {
+	restore := replacePrepareSeams(t)
+	defer restore()
+
+	cfg := testConfig()
+	cfg.AgentHome = ""
+	ownershipMatches = func(path string, uid int, gid int) (bool, error) {
+		return true, nil
+	}
+	chownRecursive = func(path string, uid int, gid int) error {
+		t.Fatal("chownRecursive() called for matching ownership")
+		return nil
+	}
+
+	if err := Prepare(cfg, zap.NewNop()); err != nil {
+		t.Fatalf("Prepare() error = %v", err)
+	}
+}
+
 func TestPrepare_SkipsAgentHomeWhenUnset(t *testing.T) {
 	restore := replacePrepareSeams(t)
 	defer restore()
@@ -180,11 +199,16 @@ func replacePrepareSeams(t *testing.T) func() {
 
 	originalCreate := createDirectory
 	originalCopy := copyContents
+	originalOwnershipMatches := ownershipMatches
 	originalChown := chownRecursive
+	ownershipMatches = func(path string, uid int, gid int) (bool, error) {
+		return false, nil
+	}
 
 	return func() {
 		createDirectory = originalCreate
 		copyContents = originalCopy
+		ownershipMatches = originalOwnershipMatches
 		chownRecursive = originalChown
 	}
 }
