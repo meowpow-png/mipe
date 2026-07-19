@@ -3,7 +3,7 @@
 [arg("output", help="Output OCI image name")]
 build-repro target output:
      @rm -rf {{output}}
-     @SOURCE_DATE_EPOCH=$(git log -1 --format=%ct) \
+     @VERSION=$(bash scripts/get-go-build-version.sh) \
      docker buildx bake {{target}} \
        --provenance=false \
        --sbom=false \
@@ -20,14 +20,13 @@ build-compare target:
 # Build Docker images
 [arg("targets", help="Bake targets to build")]
 build-images *targets='default':
-    @docker buildx bake --load --provenance=false --sbom=false {{targets}}
+    @VERSION=$(bash scripts/get-go-build-version.sh) \
+     docker buildx bake --load --provenance=false --sbom=false {{targets}}
 
 # Build versioned Docker images for development
 [arg("targets", help="Bake targets to build")]
 build-dev *targets='default':
-    @VERSION=$(git describe --tags --always --dirty) \
-     COMMIT=$(git rev-parse --short HEAD) \
-     BUILD_DATE=$(date -u +%FT%TZ) \
+    @VERSION=$(bash scripts/get-go-build-version.sh) \
      docker buildx bake --load --provenance=false --sbom=false {{targets}}
 
 # Run base Docker Compose stack
@@ -37,7 +36,8 @@ compose *args:
 
 [private]
 build-tagged-image target tag:
-    @docker buildx bake {{target}} \
+    @VERSION=$(bash scripts/get-go-build-version.sh) \
+     docker buildx bake {{target}} \
       --load \
       --provenance=false \
       --sbom=false \

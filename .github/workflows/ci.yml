@@ -41,10 +41,8 @@ jobs:
 
       - name: Set build version
         id: version
-        env:
-          GITHUB_SHA: ${{ github.sha }}
         run: |
-          echo "version=dev-${GITHUB_SHA:0:7}" >> "${GITHUB_OUTPUT}"
+          echo "version=$(bash runtime/scripts/get-go-build-version.sh)" >> "${GITHUB_OUTPUT}"
 
       - name: Run tests
         working-directory: runtime
