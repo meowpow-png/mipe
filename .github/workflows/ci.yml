@@ -45,6 +45,10 @@ jobs:
         run: |
           echo "version=dev-${GITHUB_SHA:0:7}" >> "${GITHUB_OUTPUT}"
 
+      - name: Set reproducible build timestamp
+        id: build-metadata
+        run: echo "source_date_epoch=$(git log -1 --format=%ct)" >> "${GITHUB_OUTPUT}"
+
       - name: Run tests
         working-directory: runtime
         run: go test -v ./...
@@ -53,12 +57,15 @@ jobs:
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
         with:
           source: ./runtime
           targets: |
             runtime
             test
             node-base
+            java-base
+            web-base
             codex
             codex-java
             codex-web
@@ -67,30 +74,57 @@ jobs:
             claude-web
           provenance: false
           sbom: false
+          load: true
           set: |
+            runtime.output=type=image,rewrite-timestamp=true
             runtime.cache-from=type=gha,scope=runtime
             runtime.cache-to=type=gha,scope=runtime,mode=max
-            runtime.output=type=docker
 
+            test.output=type=image,rewrite-timestamp=true
             test.cache-from=type=gha,scope=runtime
-            test.output=type=docker
 
-            codex.output=type=docker
-            codex-java.output=type=docker
-            codex-web.output=type=docker
-            claude.output=type=docker
-            claude-java.output=type=docker
-            claude-web.output=type=docker
+            codex.output=type=image,rewrite-timestamp=true
+            codex-java.output=type=image,rewrite-timestamp=true
+            codex-web.output=type=image,rewrite-timestamp=true
+            claude.output=type=image,rewrite-timestamp=true
+            claude-java.output=type=image,rewrite-timestamp=true
+            claude-web.output=type=image,rewrite-timestamp=true
 
             node-base.cache-from=type=gha,scope=node-base
             node-base.cache-from=type=gha,scope=runtime
             node-base.cache-to=type=gha,scope=node-base,mode=max
+
+            java-base.cache-from=type=gha,scope=java-base
+            java-base.cache-from=type=gha,scope=node-base
+            java-base.cache-from=type=gha,scope=runtime
+            java-base.cache-to=type=gha,scope=java-base,mode=max
+
+            web-base.cache-from=type=gha,scope=web-base
+            web-base.cache-from=type=gha,scope=node-base
+            web-base.cache-from=type=gha,scope=runtime
+            web-base.cache-to=type=gha,scope=web-base,mode=max
 
             codex.cache-from=type=gha,scope=node-base
             codex.cache-from=type=gha,scope=runtime
 
             claude.cache-from=type=gha,scope=node-base
             claude.cache-from=type=gha,scope=runtime
+
+            codex-java.cache-from=type=gha,scope=java-base
+            codex-java.cache-from=type=gha,scope=node-base
+            codex-java.cache-from=type=gha,scope=runtime
+
+            claude-java.cache-from=type=gha,scope=java-base
+            claude-java.cache-from=type=gha,scope=node-base
+            claude-java.cache-from=type=gha,scope=runtime
+
+            codex-web.cache-from=type=gha,scope=web-base
+            codex-web.cache-from=type=gha,scope=node-base
+            codex-web.cache-from=type=gha,scope=runtime
+
+            claude-web.cache-from=type=gha,scope=web-base
+            claude-web.cache-from=type=gha,scope=node-base
+            claude-web.cache-from=type=gha,scope=runtime
 
       - name: Run integration tests
         working-directory: runtime

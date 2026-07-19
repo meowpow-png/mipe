@@ -31,6 +31,10 @@ variable "VERSION" {
   default = "dev"
 }
 
+variable "SOURCE_DATE_EPOCH" {
+  default = ""
+}
+
 target "runtime" {
   context = "."
   dockerfile = "docker/Dockerfile"
@@ -38,7 +42,8 @@ target "runtime" {
   tags = ["mipe-runtime:local"]
 
   args = {
-    VERSION = VERSION
+    VERSION            = VERSION
+    SOURCE_DATE_EPOCH  = SOURCE_DATE_EPOCH
   }
 }
 
@@ -49,11 +54,11 @@ target "test" {
   tags = ["mipe-runtime-test:local"]
 
   args = {
-    VERSION   = VERSION
-    LOCAL_UID = "1000"
-    LOCAL_GID = "1000"
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    LOCAL_UID         = "1000"
+    LOCAL_GID         = "1000"
   }
-
 }
 
 target "node-base" {
@@ -62,10 +67,10 @@ target "node-base" {
   target = "node-base"
 
   args = {
-    VERSION     = VERSION
-    NODE_VERSION = NODE_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
   }
-
 }
 
 target "java-base" {
@@ -74,10 +79,10 @@ target "java-base" {
   target = "java-base"
 
   args = {
-    VERSION     = VERSION
-    NODE_VERSION = NODE_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
   }
-
 }
 
 target "web-base" {
@@ -87,6 +92,7 @@ target "web-base" {
 
   args = {
     VERSION                = VERSION
+    SOURCE_DATE_EPOCH      = SOURCE_DATE_EPOCH
     NODE_VERSION           = NODE_VERSION
     PLAYWRIGHT_MCP_VERSION = PLAYWRIGHT_MCP_VERSION
   }
@@ -99,11 +105,11 @@ target "codex" {
   tags = ["mipe-runtime-codex:local"]
 
   args = {
-    VERSION      = VERSION
-    NODE_VERSION = NODE_VERSION
-    CODEX_VERSION = CODEX_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
+    CODEX_VERSION     = CODEX_VERSION
   }
-
 }
 
 target "claude" {
@@ -113,11 +119,11 @@ target "claude" {
   tags = ["mipe-runtime-claude:local"]
 
   args = {
-    VERSION       = VERSION
-    NODE_VERSION  = NODE_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
-
 }
 
 target "codex-java" {
@@ -127,11 +133,11 @@ target "codex-java" {
   tags = ["mipe-runtime-codex-java:local"]
 
   args = {
-    VERSION       = VERSION
-    NODE_VERSION  = NODE_VERSION
-    CODEX_VERSION = CODEX_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
+    CODEX_VERSION     = CODEX_VERSION
   }
-
 }
 
 target "claude-java" {
@@ -141,11 +147,11 @@ target "claude-java" {
   tags = ["mipe-runtime-claude-java:local"]
 
   args = {
-    VERSION        = VERSION
-    NODE_VERSION   = NODE_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
-
 }
 
 target "codex-web" {
@@ -155,11 +161,11 @@ target "codex-web" {
   tags = ["mipe-runtime-codex-web:local"]
 
   args = {
-    VERSION       = VERSION
-    NODE_VERSION  = NODE_VERSION
-    CODEX_VERSION = CODEX_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
+    CODEX_VERSION     = CODEX_VERSION
   }
-
 }
 
 target "claude-web" {
@@ -169,9 +175,9 @@ target "claude-web" {
   tags = ["mipe-runtime-claude-web:local"]
 
   args = {
-    VERSION        = VERSION
-    NODE_VERSION   = NODE_VERSION
+    VERSION           = VERSION
+    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
+    NODE_VERSION      = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
-
 }

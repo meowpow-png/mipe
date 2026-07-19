@@ -26,7 +26,10 @@ RUN apt-get update && \
         bash \
         gosu \
         passwd && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* \
+           /var/log/apt/history.log \
+           /var/log/apt/term.log \
+           /var/log/dpkg.log
 
 COPY --from=runtime-builder /out/mipe /usr/local/bin/mipe
 
@@ -55,11 +58,14 @@ COPY --from=node-source /usr/local/ /usr/local/
 
 FROM node-base AS java-base
 
+ARG SOURCE_DATE_EPOCH
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
-        gpg && \
+        gpg \
+        faketime && \
     curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | \
         gpg --dearmor -o /usr/share/keyrings/adoptium.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" \
@@ -67,7 +73,17 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         temurin-21-jdk && \
-    rm -rf /var/lib/apt/lists/*
+    rm -f /etc/ssl/certs/adoptium/cacerts && \
+    FAKE_TIME="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%d %H:%M:%S')" && \
+    faketime -f "@${FAKE_TIME}" \
+        trust extract --format=java-cacerts /etc/ssl/certs/adoptium/cacerts && \
+    apt-get purge -y --auto-remove faketime libfaketime && \
+    rm -rf /var/lib/apt/lists/* \
+           /var/log/apt/history.log \
+           /var/log/apt/term.log \
+           /var/log/dpkg.log \
+           /var/log/alternatives.log \
+           /var/cache/ldconfig/aux-cache
 
 FROM node-base AS web-base
 
@@ -82,7 +98,17 @@ RUN apt-get update && \
         fonts-liberation && \
     npm install --global \
         @playwright/mcp@${PLAYWRIGHT_MCP_VERSION} && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* \
+           /var/log/apt/history.log \
+           /var/log/apt/term.log \
+           /var/log/dpkg.log \
+           /var/log/alternatives.log \
+           /var/cache/fontconfig/* \
+           /var/cache/ldconfig/aux-cache \
+           /etc/machine-id \
+           /var/lib/dbus/machine-id \
+           /root/.npm \
+           /tmp/node-compile-cache
 
 FROM node-base AS codex
 
