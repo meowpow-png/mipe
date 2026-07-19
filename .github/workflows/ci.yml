@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   verify:
@@ -37,12 +38,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      - name: Set build version
+        id: version
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          echo "version=dev-${GITHUB_SHA:0:7}" >> "${GITHUB_OUTPUT}"
+
       - name: Run tests
         working-directory: runtime
         run: go test -v ./...
 
       - name: Build Docker images
         uses: docker/bake-action@v7
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         with:
           source: ./runtime
           targets: |
@@ -60,9 +70,17 @@ jobs:
           set: |
             runtime.cache-from=type=gha,scope=runtime
             runtime.cache-to=type=gha,scope=runtime,mode=max
+            runtime.output=type=docker
 
             test.cache-from=type=gha,scope=runtime
             test.output=type=docker
+
+            codex.output=type=docker
+            codex-java.output=type=docker
+            codex-web.output=type=docker
+            claude.output=type=docker
+            claude-java.output=type=docker
+            claude-web.output=type=docker
 
             node-base.cache-from=type=gha,scope=node-base
             node-base.cache-from=type=gha,scope=runtime
@@ -77,3 +95,18 @@ jobs:
       - name: Run integration tests
         working-directory: runtime
         run: MIPE_INTEGRATION=1 go test -v ./integration/...
+
+      - name: Log in to GitHub Container Registry
+        if: github.ref == 'refs/heads/dev'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish development images
+        if: github.ref == 'refs/heads/dev'
+        env:
+          GHCR_OWNER: ${{ github.repository_owner }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: .github/scripts/publish.sh
