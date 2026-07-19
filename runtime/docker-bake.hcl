@@ -105,10 +105,10 @@ target "codex" {
   tags = ["mipe-runtime-codex:local"]
 
   args = {
-    VERSION           = VERSION
-    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
-    NODE_VERSION      = NODE_VERSION
-    CODEX_VERSION     = CODEX_VERSION
+    VERSION                = VERSION
+    SOURCE_DATE_EPOCH      = SOURCE_DATE_EPOCH
+    NODE_VERSION           = NODE_VERSION
+    CODEX_VERSION          = CODEX_VERSION
   }
 }
 
@@ -119,10 +119,10 @@ target "claude" {
   tags = ["mipe-runtime-claude:local"]
 
   args = {
-    VERSION           = VERSION
-    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
-    NODE_VERSION      = NODE_VERSION
-    CLAUDE_VERSION = CLAUDE_VERSION
+    VERSION                = VERSION
+    SOURCE_DATE_EPOCH      = SOURCE_DATE_EPOCH
+    NODE_VERSION           = NODE_VERSION
+    CLAUDE_VERSION         = CLAUDE_VERSION
   }
 }
 
@@ -165,6 +165,7 @@ target "codex-web" {
     SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
     NODE_VERSION      = NODE_VERSION
     CODEX_VERSION     = CODEX_VERSION
+    PLAYWRIGHT_MCP_VERSION = PLAYWRIGHT_MCP_VERSION
   }
 }
 
@@ -179,5 +180,6 @@ target "claude-web" {
     SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
     NODE_VERSION      = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
+    PLAYWRIGHT_MCP_VERSION = PLAYWRIGHT_MCP_VERSION
   }
 }
