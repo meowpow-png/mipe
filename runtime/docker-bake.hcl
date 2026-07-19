@@ -32,7 +32,7 @@ variable "VERSION" {
 }
 
 variable "SOURCE_DATE_EPOCH" {
-  default = ""
+  default = "1784448885"
 }
 
 target "runtime" {

@@ -46,10 +46,6 @@ jobs:
         run: |
           echo "version=dev-${GITHUB_SHA:0:7}" >> "${GITHUB_OUTPUT}"
 
-      - name: Set reproducible build timestamp
-        id: build-metadata
-        run: echo "source_date_epoch=$(git log -1 --format=%ct)" >> "${GITHUB_OUTPUT}"
-
       - name: Run tests
         working-directory: runtime
         run: go test -v ./...
@@ -58,7 +54,6 @@ jobs:
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
         with:
           source: ./runtime
           targets: |
@@ -91,7 +86,6 @@ jobs:
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
         with:
           source: ./runtime
           files: |
@@ -125,7 +119,6 @@ jobs:
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
           IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
         with:
           source: ./runtime
