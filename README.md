@@ -1,6 +1,8 @@
 # Mipe
 
-## Project Dependencies
+## Getting Started
+
+### Project Dependencies
 
 To configure project initialization, create the following file:
 
@@ -20,6 +22,13 @@ install_dependencies() {
     go mod download
 }
 ```
+
+### Development Builds
+
+Development builds are available through GitHub Container Registry (GHCR).
+
+> [!WARNING]
+> Development builds are intended for testing, evaluation, and early adoption of new functionality. They may introduce breaking changes at any time and should not be considered stable.
 
 ## Deployment
 

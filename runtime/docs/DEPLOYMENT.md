@@ -35,41 +35,75 @@ just build-images codex codex-java
 
 ### Build Architecture
 
-Base targets provide Mipe, Node.js, Java, and web tooling.
+Base targets provide the shared Debian, Node.js, Java, and web tooling. Java and web base targets also include the MIPE runtime after installing their dependencies; standard agent targets add it after installing their agent packages.
 
 ```mermaid
 flowchart TD
-    runtime["runtime<br/>Bookworm and Mipe"]
-    node["node-base<br/>Node.js 22 and shared tools"]
+    runtimeBase["runtime-base<br/>Debian and common packages"]
+    runtime["runtime<br/>MIPE binary and config"]
+    node["node-base<br/>Node.js 22"]
     java["java-base<br/>Temurin 21"]
     web["web-base<br/>Chromium and Playwright MCP"]
+    test["test"]
+    codex["codex"]
+    claude["claude"]
+    codexJava["codex-java"]
+    claudeJava["claude-java"]
+    codexWeb["codex-web"]
+    claudeWeb["claude-web"]
 
-    runtime --> node
+    runtimeBase --> runtime
+    runtimeBase --> node
+    runtime --> test
+
     node --> java
     node --> web
-```
 
-Agent targets add their CLI and configuration.
-
-```mermaid
-flowchart TD
-    node["node-base"]
-    java["java-base"]
-    web["web-base"]
-    codex["codex<br/>Codex CLI"]
-    claude["claude<br/>Claude CLI"]
-    codexJava["codex-java<br/>Codex CLI"]
-    claudeJava["claude-java<br/>Claude CLI"]
-    codexWeb["codex-web<br/>Codex CLI"]
-    claudeWeb["claude-web<br/>Claude CLI"]
-
+    runtime --> codex
     node --> codex
+    runtime --> claude
     node --> claude
+
     java --> codexJava
     java --> claudeJava
+
     web --> codexWeb
     web --> claudeWeb
 ```
+
+The CI build uses separate cache scopes for the shared targets:
+
+```mermaid
+flowchart LR
+    source["Source and build inputs"]
+    test["Test Bake"]
+    bases["Base-cache Bake"]
+    images["Final-image Bake"]
+    runtimeCache[("GHA cache<br/>runtime")]
+    nodeCache[("GHA cache<br/>node-base")]
+    javaCache[("GHA cache<br/>java-base")]
+    webCache[("GHA cache<br/>web-base")]
+    ghcr[("GHCR images")]
+
+    source --> test
+    source --> bases
+    source --> images
+
+    test -->|imports and exports| runtimeCache
+    bases -->|imports and exports| nodeCache
+    bases -->|imports and exports| javaCache
+    bases -->|imports and exports| webCache
+
+    images -->|imports| runtimeCache
+    images -->|imports| nodeCache
+    images -->|imports| javaCache
+    images -->|imports| webCache
+images -->|pushes| ghcr
+```
+
+Cache records are reusable only when the cache-warming and final-image solves use the same BuildKit graph. Dependency stages therefore use stable parents, and runtime copies happen after expensive dependency installation.
+
+The six agent npm-install layers are intentionally rebuilt instead of exported. Their export cost is higher than their parallel rebuild cost.
 
 Changes rebuild:
 
@@ -78,7 +112,7 @@ Changes rebuild:
 - Updating Java rebuilds only Java images
 - Updating Playwright MCP rebuilds only web images
 - Updating Node.js rebuilds all agent images
-- Updating Mipe runtime rebuilds the entire hierarchy
+- Updating the MIPE runtime rebuilds final agent layers, while leaving Node, Java, and web dependency layers cacheable
 
 ### Versions
 
@@ -96,6 +130,12 @@ To inspect the resolved targets, versions, and dependencies before building, run
 ```bash
 docker buildx bake --print
 ```
+
+The build uses a fixed `SOURCE_DATE_EPOCH` from `docker-bake.hcl`. It must not be derived from the current commit, because changing layer timestamps would produce different image digests for otherwise identical layers.
+
+The MIPE build version is computed from `go.mod`, `go.sum`, and production Go files under `cmd/` and `internal/`. Test files are excluded from both the version hash and the Docker build context, so test-only changes do not invalidate the runtime binary layer.
+
+CI adds the GHCR image tags through `docker-bake-ci.hcl`. Publishing may still reprocess layers with `rewrite-timestamp=true`, but the fixed epoch keeps unchanged layer digests stable so GHCR can deduplicate their blobs.
 
 ## Running Agents
 
