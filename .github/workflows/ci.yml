@@ -14,6 +14,7 @@ on:
       - runtime/docker/**
       - runtime/hooks/**
       - runtime/docker-bake.hcl
+      - runtime/docker-bake-ci.hcl
       - runtime/compose.yml
 
 permissions:
@@ -53,7 +54,7 @@ jobs:
         working-directory: runtime
         run: go test -v ./...
 
-      - name: Build Docker images
+      - name: Build test image
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
@@ -63,9 +64,42 @@ jobs:
           targets: |
             runtime
             test
-            node-base
-            java-base
-            web-base
+          provenance: false
+          sbom: false
+          load: true
+          set: |
+            runtime.output=type=cacheonly
+            runtime.cache-from=type=gha,scope=runtime
+            runtime.cache-to=type=gha,scope=runtime,mode=max
+
+            test.output=type=docker
+            test.cache-from=type=gha,scope=runtime
+
+      - name: Run integration tests
+        working-directory: runtime
+        run: MIPE_INTEGRATION=1 go test -v ./integration/...
+
+      - name: Log in to GitHub Container Registry
+        if: github.ref == 'refs/heads/dev'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push dev images
+        uses: docker/bake-action@v7
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
+          IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+        with:
+          source: ./runtime
+          files: |
+            docker-bake.hcl
+            docker-bake-ci.hcl
+          targets: |
+            runtime
             codex
             codex-java
             codex-web
@@ -74,18 +108,16 @@ jobs:
             claude-web
           provenance: false
           sbom: false
-          load: true
+          push: ${{ github.ref == 'refs/heads/dev' }}
           set: |
             runtime.output=type=image,rewrite-timestamp=true
             runtime.cache-from=type=gha,scope=runtime
             runtime.cache-to=type=gha,scope=runtime,mode=max
 
-            test.output=type=image,rewrite-timestamp=true
-            test.cache-from=type=gha,scope=runtime
-
             codex.output=type=image,rewrite-timestamp=true
             codex-java.output=type=image,rewrite-timestamp=true
             codex-web.output=type=image,rewrite-timestamp=true
+
             claude.output=type=image,rewrite-timestamp=true
             claude-java.output=type=image,rewrite-timestamp=true
             claude-web.output=type=image,rewrite-timestamp=true
@@ -125,22 +157,3 @@ jobs:
             claude-web.cache-from=type=gha,scope=web-base
             claude-web.cache-from=type=gha,scope=node-base
             claude-web.cache-from=type=gha,scope=runtime
-
-      - name: Run integration tests
-        working-directory: runtime
-        run: MIPE_INTEGRATION=1 go test -v ./integration/...
-
-      - name: Log in to GitHub Container Registry
-        if: github.ref == 'refs/heads/dev'
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish development images
-        if: github.ref == 'refs/heads/dev'
-        env:
-          GHCR_OWNER: ${{ github.repository_owner }}
-          VERSION: ${{ steps.version.outputs.version }}
-        run: .github/scripts/publish.sh
