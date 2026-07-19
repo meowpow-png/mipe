@@ -19,7 +19,7 @@ RUN go build \
     -o /out/mipe \
     ./cmd/mipe
 
-FROM debian:bookworm-slim AS runtime
+FROM debian:bookworm-slim AS runtime-base
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -30,6 +30,8 @@ RUN apt-get update && \
            /var/log/apt/history.log \
            /var/log/apt/term.log \
            /var/log/dpkg.log
+
+FROM runtime-base AS runtime
 
 COPY --from=runtime-builder /out/mipe /usr/local/bin/mipe
 
@@ -52,7 +54,7 @@ RUN mkdir -p /workspace && \
 
 FROM node:${NODE_VERSION}-bookworm-slim AS node-source
 
-FROM runtime AS node-base
+FROM runtime-base AS node-base
 
 COPY --from=node-source /usr/local/ /usr/local/
 
@@ -115,6 +117,13 @@ FROM node-base AS codex
 ARG CODEX_VERSION
 RUN npm install --global @openai/codex@${CODEX_VERSION}
 
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+
 WORKDIR /workspace
 
 COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
@@ -127,6 +136,13 @@ FROM java-base AS codex-java
 ARG CODEX_VERSION
 RUN npm install --global @openai/codex@${CODEX_VERSION}
 
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+
 WORKDIR /workspace
 
 COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
@@ -138,6 +154,13 @@ FROM web-base AS codex-web
 
 ARG CODEX_VERSION
 RUN npm install --global @openai/codex@${CODEX_VERSION}
+
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
 
 WORKDIR /workspace
 
@@ -153,6 +176,13 @@ FROM node-base AS claude
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
 
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+
 WORKDIR /workspace
 
 COPY docker/runtime/claude/config/config.json /opt/mipe/config/config.json
@@ -165,6 +195,13 @@ FROM java-base AS claude-java
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
 
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+
 WORKDIR /workspace
 
 COPY docker/runtime/claude/config/config.json /opt/mipe/config/config.json
@@ -176,6 +213,13 @@ FROM web-base AS claude-web
 
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
 
 WORKDIR /workspace
 

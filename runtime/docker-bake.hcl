@@ -67,9 +67,7 @@ target "node-base" {
   target = "node-base"
 
   args = {
-    VERSION           = VERSION
-    SOURCE_DATE_EPOCH = SOURCE_DATE_EPOCH
-    NODE_VERSION      = NODE_VERSION
+    NODE_VERSION = NODE_VERSION
   }
 }
 
