@@ -87,36 +87,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push dev images
+      - name: Build base image caches
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
-          IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
         with:
           source: ./runtime
           files: |
             docker-bake.hcl
             docker-bake-ci.hcl
           targets: |
-            runtime
             node-base
             java-base
             web-base
-            codex
-            codex-java
-            codex-web
-            claude
-            claude-java
-            claude-web
           provenance: false
           sbom: false
-          push: ${{ github.ref == 'refs/heads/dev' }}
           set: |
-            runtime.output=type=image,rewrite-timestamp=true
-            runtime.cache-from=type=gha,scope=runtime
-            runtime.cache-to=type=gha,scope=runtime,mode=max
-
             node-base.output=type=cacheonly
             node-base.cache-from=type=gha,scope=node-base
             node-base.cache-from=type=gha,scope=runtime
@@ -133,6 +120,33 @@ jobs:
             web-base.cache-from=type=gha,scope=node-base
             web-base.cache-from=type=gha,scope=runtime
             web-base.cache-to=type=gha,scope=web-base,mode=max
+
+      - name: Build and push dev images
+        uses: docker/bake-action@v7
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          SOURCE_DATE_EPOCH: ${{ steps.build-metadata.outputs.source_date_epoch }}
+          IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+        with:
+          source: ./runtime
+          files: |
+            docker-bake.hcl
+            docker-bake-ci.hcl
+          targets: |
+            runtime
+            codex
+            codex-java
+            codex-web
+            claude
+            claude-java
+            claude-web
+          provenance: false
+          sbom: false
+          push: ${{ github.ref == 'refs/heads/dev' }}
+          set: |
+            runtime.output=type=image,rewrite-timestamp=true
+            runtime.cache-from=type=gha,scope=runtime
+            runtime.cache-to=type=gha,scope=runtime,mode=max
 
             codex.output=type=image,rewrite-timestamp=true
             codex-java.output=type=image,rewrite-timestamp=true
