@@ -87,6 +87,14 @@ RUN apt-get update && \
            /var/log/alternatives.log \
            /var/cache/ldconfig/aux-cache
 
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+CMD ["mipe", "--help"]
+
 FROM node-base AS web-base
 
 ARG PLAYWRIGHT_MCP_VERSION
@@ -112,6 +120,14 @@ RUN apt-get update && \
            /root/.npm \
            /tmp/node-compile-cache
 
+COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
+COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
+COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
+COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+CMD ["mipe", "--help"]
+
 FROM node-base AS codex
 
 ARG CODEX_VERSION
@@ -136,13 +152,6 @@ FROM java-base AS codex-java
 ARG CODEX_VERSION
 RUN npm install --global @openai/codex@${CODEX_VERSION}
 
-COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
-COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
-COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
-COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT ["entrypoint"]
-
 WORKDIR /workspace
 
 COPY docker/runtime/codex/config/config.json /opt/mipe/config/config.json
@@ -154,13 +163,6 @@ FROM web-base AS codex-web
 
 ARG CODEX_VERSION
 RUN npm install --global @openai/codex@${CODEX_VERSION}
-
-COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
-COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
-COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
-COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT ["entrypoint"]
 
 WORKDIR /workspace
 
@@ -195,13 +197,6 @@ FROM java-base AS claude-java
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
 
-COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
-COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
-COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
-COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT ["entrypoint"]
-
 WORKDIR /workspace
 
 COPY docker/runtime/claude/config/config.json /opt/mipe/config/config.json
@@ -213,13 +208,6 @@ FROM web-base AS claude-web
 
 ARG CLAUDE_VERSION
 RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
-
-COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
-COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
-COPY --from=runtime /opt/mipe/hooks/ /opt/mipe/hooks/
-COPY --from=runtime /usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT ["entrypoint"]
 
 WORKDIR /workspace
 
