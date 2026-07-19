@@ -100,6 +100,9 @@ jobs:
             docker-bake-ci.hcl
           targets: |
             runtime
+            node-base
+            java-base
+            web-base
             codex
             codex-java
             codex-web
@@ -114,6 +117,23 @@ jobs:
             runtime.cache-from=type=gha,scope=runtime
             runtime.cache-to=type=gha,scope=runtime,mode=max
 
+            node-base.output=type=cacheonly
+            node-base.cache-from=type=gha,scope=node-base
+            node-base.cache-from=type=gha,scope=runtime
+            node-base.cache-to=type=gha,scope=node-base,mode=max
+
+            java-base.output=type=cacheonly
+            java-base.cache-from=type=gha,scope=java-base
+            java-base.cache-from=type=gha,scope=node-base
+            java-base.cache-from=type=gha,scope=runtime
+            java-base.cache-to=type=gha,scope=java-base,mode=max
+
+            web-base.output=type=cacheonly
+            web-base.cache-from=type=gha,scope=web-base
+            web-base.cache-from=type=gha,scope=node-base
+            web-base.cache-from=type=gha,scope=runtime
+            web-base.cache-to=type=gha,scope=web-base,mode=max
+
             codex.output=type=image,rewrite-timestamp=true
             codex-java.output=type=image,rewrite-timestamp=true
             codex-web.output=type=image,rewrite-timestamp=true
@@ -121,20 +141,6 @@ jobs:
             claude.output=type=image,rewrite-timestamp=true
             claude-java.output=type=image,rewrite-timestamp=true
             claude-web.output=type=image,rewrite-timestamp=true
-
-            node-base.cache-from=type=gha,scope=node-base
-            node-base.cache-from=type=gha,scope=runtime
-            node-base.cache-to=type=gha,scope=node-base,mode=max
-
-            java-base.cache-from=type=gha,scope=java-base
-            java-base.cache-from=type=gha,scope=node-base
-            java-base.cache-from=type=gha,scope=runtime
-            java-base.cache-to=type=gha,scope=java-base,mode=max
-
-            web-base.cache-from=type=gha,scope=web-base
-            web-base.cache-from=type=gha,scope=node-base
-            web-base.cache-from=type=gha,scope=runtime
-            web-base.cache-to=type=gha,scope=web-base,mode=max
 
             codex.cache-from=type=gha,scope=node-base
             codex.cache-from=type=gha,scope=runtime
