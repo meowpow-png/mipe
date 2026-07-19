@@ -31,14 +31,6 @@ variable "VERSION" {
   default = "dev"
 }
 
-variable "COMMIT" {
-  default = ""
-}
-
-variable "BUILD_DATE" {
-  default = ""
-}
-
 target "runtime" {
   context = "."
   dockerfile = "docker/Dockerfile"
@@ -46,9 +38,7 @@ target "runtime" {
   tags = ["mipe-runtime:latest"]
 
   args = {
-    VERSION    = VERSION
-    COMMIT     = COMMIT
-    BUILD_DATE = BUILD_DATE
+    VERSION = VERSION
   }
 }
 
@@ -59,11 +49,9 @@ target "test" {
   tags = ["mipe-runtime-test:latest"]
 
   args = {
-    VERSION    = VERSION
-    COMMIT     = COMMIT
-    BUILD_DATE = BUILD_DATE
-    LOCAL_UID  = "1000"
-    LOCAL_GID  = "1000"
+    VERSION   = VERSION
+    LOCAL_UID = "1000"
+    LOCAL_GID = "1000"
   }
 
 }
@@ -75,8 +63,6 @@ target "node-base" {
 
   args = {
     VERSION     = VERSION
-    COMMIT      = COMMIT
-    BUILD_DATE  = BUILD_DATE
     NODE_VERSION = NODE_VERSION
   }
 
@@ -89,8 +75,6 @@ target "java-base" {
 
   args = {
     VERSION     = VERSION
-    COMMIT      = COMMIT
-    BUILD_DATE  = BUILD_DATE
     NODE_VERSION = NODE_VERSION
   }
 
@@ -103,8 +87,6 @@ target "web-base" {
 
   args = {
     VERSION                = VERSION
-    COMMIT                 = COMMIT
-    BUILD_DATE             = BUILD_DATE
     NODE_VERSION           = NODE_VERSION
     PLAYWRIGHT_MCP_VERSION = PLAYWRIGHT_MCP_VERSION
   }
@@ -118,8 +100,6 @@ target "codex" {
 
   args = {
     VERSION      = VERSION
-    COMMIT       = COMMIT
-    BUILD_DATE   = BUILD_DATE
     NODE_VERSION = NODE_VERSION
     CODEX_VERSION = CODEX_VERSION
   }
@@ -134,8 +114,6 @@ target "claude" {
 
   args = {
     VERSION       = VERSION
-    COMMIT        = COMMIT
-    BUILD_DATE    = BUILD_DATE
     NODE_VERSION  = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
@@ -150,8 +128,6 @@ target "codex-java" {
 
   args = {
     VERSION       = VERSION
-    COMMIT        = COMMIT
-    BUILD_DATE    = BUILD_DATE
     NODE_VERSION  = NODE_VERSION
     CODEX_VERSION = CODEX_VERSION
   }
@@ -166,8 +142,6 @@ target "claude-java" {
 
   args = {
     VERSION        = VERSION
-    COMMIT         = COMMIT
-    BUILD_DATE     = BUILD_DATE
     NODE_VERSION   = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }
@@ -182,8 +156,6 @@ target "codex-web" {
 
   args = {
     VERSION       = VERSION
-    COMMIT        = COMMIT
-    BUILD_DATE    = BUILD_DATE
     NODE_VERSION  = NODE_VERSION
     CODEX_VERSION = CODEX_VERSION
   }
@@ -198,8 +170,6 @@ target "claude-web" {
 
   args = {
     VERSION        = VERSION
-    COMMIT         = COMMIT
-    BUILD_DATE     = BUILD_DATE
     NODE_VERSION   = NODE_VERSION
     CLAUDE_VERSION = CLAUDE_VERSION
   }

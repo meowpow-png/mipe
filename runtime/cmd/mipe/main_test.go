@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"strings"
 	"testing"
 
 	"github.com/meowpow-png/mipe/runtime/internal/build"
@@ -13,15 +12,9 @@ import (
 )
 
 func TestVersionOutput(t *testing.T) {
-	got := versionOutput(false)
-	if !strings.Contains(got, build.Version) {
-		t.Fatalf("versionOutput(false) = %q, expected version %q", got, build.Version)
-	}
-	got = versionOutput(true)
-	for _, want := range []string{build.Version, build.Commit, build.Date} {
-		if want != "" && !strings.Contains(got, want) {
-			t.Fatalf("versionOutput(true) = %q, expected to contain %q", got, want)
-		}
+	want := "Mipe version " + build.Version + "\n"
+	if got := versionOutput(); got != want {
+		t.Fatalf("versionOutput() = %q, want %q", got, want)
 	}
 }
 

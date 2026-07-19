@@ -31,7 +31,7 @@ func main() {
 		os.Exit(1)
 	}
 	if cfg.Version {
-		_, _ = fmt.Fprint(os.Stdout, versionOutput(cfg.Debug))
+		_, _ = fmt.Fprint(os.Stdout, versionOutput())
 		return
 	}
 	logger, err = newLogger(cfg.Debug, cfg.LogFormat)
@@ -51,20 +51,8 @@ func main() {
 	_ = logger.Sync()
 }
 
-func versionOutput(debug bool) string {
-	mipeBuild := build.Current()
-
-	if !debug {
-		return fmt.Sprintf("Mipe version %s\n", mipeBuild.Version)
-	}
-	if mipeBuild.Date == "" {
-		return fmt.Sprintf("Mipe version %s\n", mipeBuild.Version)
-	}
-	return fmt.Sprintf(
-		"Mipe version %s\nBuilt: %s\n",
-		mipeBuild.Version,
-		mipeBuild.Date,
-	)
+func versionOutput() string {
+	return fmt.Sprintf("Mipe version %s\n", build.Current().Version)
 }
 
 func newLogger(debug bool, logFormat ...string) (*zap.Logger, error) {
