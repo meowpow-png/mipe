@@ -131,7 +131,8 @@ CMD ["mipe", "--help"]
 FROM node-base AS codex
 
 ARG CODEX_VERSION
-RUN npm install --global @openai/codex@${CODEX_VERSION}
+RUN npm install --global @openai/codex@${CODEX_VERSION} && \
+    rm -rf /root/.npm /tmp/node-compile-cache
 
 COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
 COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
@@ -150,7 +151,8 @@ CMD ["mipe", "codex"]
 FROM java-base AS codex-java
 
 ARG CODEX_VERSION
-RUN npm install --global @openai/codex@${CODEX_VERSION}
+RUN npm install --global @openai/codex@${CODEX_VERSION} && \
+    rm -rf /root/.npm /tmp/node-compile-cache
 
 WORKDIR /workspace
 
@@ -162,7 +164,8 @@ CMD ["mipe", "codex"]
 FROM web-base AS codex-web
 
 ARG CODEX_VERSION
-RUN npm install --global @openai/codex@${CODEX_VERSION}
+RUN npm install --global @openai/codex@${CODEX_VERSION} && \
+    rm -rf /root/.npm /tmp/node-compile-cache
 
 WORKDIR /workspace
 
@@ -176,7 +179,8 @@ CMD ["mipe", "codex"]
 FROM node-base AS claude
 
 ARG CLAUDE_VERSION
-RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION} && \
+    rm -rf /root/.npm /tmp/node-compile-cache
 
 COPY --from=runtime /usr/local/bin/mipe /usr/local/bin/mipe
 COPY --from=runtime /opt/mipe/config/ /opt/mipe/config/
@@ -195,7 +199,8 @@ CMD ["mipe", "claude", "--dangerously-skip-permissions"]
 FROM java-base AS claude-java
 
 ARG CLAUDE_VERSION
-RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION} && \
+    rm -rf /root/.npm /tmp/node-compile-cache
 
 WORKDIR /workspace
 
@@ -207,7 +212,8 @@ CMD ["mipe", "claude", "--dangerously-skip-permissions"]
 FROM web-base AS claude-web
 
 ARG CLAUDE_VERSION
-RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION}
+RUN npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION} && \
+    rm -rf /root/.npm /tmp/node-compile-cache
 
 WORKDIR /workspace
 
