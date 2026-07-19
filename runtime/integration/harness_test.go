@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-const testImage = "mipe-runtime-test:latest"
+const testImage = "mipe-runtime-test:local"
 
 const defaultInitializationScript = `#!/usr/bin/env bash
 set -euo pipefail

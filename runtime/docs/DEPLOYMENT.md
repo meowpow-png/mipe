@@ -6,14 +6,14 @@ Runnable images:
 
 | Image                             | Agent  | Toolchain                                |
 |-----------------------------------|--------|------------------------------------------|
-| `mipe-runtime:latest`             | Mipe   | Base runtime                             |
-| `mipe-runtime-test:latest`        | Mipe   | Test runtime                             |
-| `mipe-runtime-codex:latest`       | Codex  | Node.js 22                               |
-| `mipe-runtime-claude:latest`      | Claude | Node.js 22                               |
-| `mipe-runtime-codex-java:latest`  | Codex  | Node.js 22 and Temurin 21                |
-| `mipe-runtime-claude-java:latest` | Claude | Node.js 22 and Temurin 21                |
-| `mipe-runtime-codex-web:latest`   | Codex  | Node.js 22, Chromium, and Playwright MCP |
-| `mipe-runtime-claude-web:latest`  | Claude | Node.js 22, Chromium, and Playwright MCP |
+| `mipe-runtime:local`              | Mipe   | Base runtime                             |
+| `mipe-runtime-test:local`         | Mipe   | Test runtime                             |
+| `mipe-runtime-codex:local`        | Codex  | Node.js 22                               |
+| `mipe-runtime-claude:local`       | Claude | Node.js 22                               |
+| `mipe-runtime-codex-java:local`   | Codex  | Node.js 22 and Temurin 21                |
+| `mipe-runtime-claude-java:local`  | Claude | Node.js 22 and Temurin 21                |
+| `mipe-runtime-codex-web:local`    | Codex  | Node.js 22, Chromium, and Playwright MCP |
+| `mipe-runtime-claude-web:local`   | Claude | Node.js 22, Chromium, and Playwright MCP |
 
 ## Building Images
 

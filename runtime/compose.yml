@@ -37,31 +37,31 @@ x-claude-web: &claude-web
 services:
   mipe:
     <<: *runtime
-    image: mipe-runtime:latest
+    image: mipe-runtime:local
 
   codex:
     <<: *codex
-    image: mipe-runtime-codex:latest
+    image: mipe-runtime-codex:local
 
   codex-java:
     <<: *codex
-    image: mipe-runtime-codex-java:latest
+    image: mipe-runtime-codex-java:local
 
   codex-web:
     <<: *codex-web
-    image: mipe-runtime-codex-web:latest
+    image: mipe-runtime-codex-web:local
 
   claude:
     <<: *claude
-    image: mipe-runtime-claude:latest
+    image: mipe-runtime-claude:local
 
   claude-java:
     <<: *claude
-    image: mipe-runtime-claude-java:latest
+    image: mipe-runtime-claude-java:local
 
   claude-web:
     <<: *claude-web
-    image: mipe-runtime-claude-web:latest
+    image: mipe-runtime-claude-web:local
 
 volumes:
   codex-home:
