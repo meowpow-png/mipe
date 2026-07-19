@@ -12,4 +12,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
     ! -name '*_test.go' \
     -print0
 } | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum | \
-  cut -c1-12 | sed 's/^/dev-go-/'
+  cut -c1-12 | sed 's/^/dev-/'
