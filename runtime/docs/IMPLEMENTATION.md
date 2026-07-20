@@ -78,17 +78,17 @@ Finally, the bootstrap updates ownership of the configured user home directory u
 
 Project initialization allows the consuming project to perform its own setup after the shared runtime has been prepared. Unlike the runtime itself, this step is entirely project-specific and remains local to the workspace.
 
-The bootstrap looks for the following initialization script:
+The bootstrap looks for the following project setup script:
 
 ```text
-<workspace>/.mipe/init/dependencies.sh
+<workspace>/.mipe/init/setup.sh
 ```
 
 If the script is present, it is executed as the local developer user. If it is absent, the bootstrap simply continues to the next phase.
 
 The configured workspace must already exist as a writable directory for the local developer user. Project initialization runs from this directory. The bootstrap does not copy or relocate project files into the workspace.
 
-The script is expected to define an `install_dependencies` function, allowing each project to install its own dependencies without the runtime needing to understand project-specific tooling or package managers.
+The script is expected to define a `setup_project` function. It can install project dependencies, copy project-specific agent configuration, or generate other files needed before the session starts.
 
 ## Process Execution
 
@@ -123,7 +123,7 @@ The bootstrap works with three distinct locations, each serving a different purp
 <workspace>/
   .mipe/
     init/
-      dependencies.sh
+      setup.sh
 ```
 
 - **Runtime** contains the shared configuration provided by Mipe. It is read-only from the perspective of the bootstrap and serves as the source for agent initialization

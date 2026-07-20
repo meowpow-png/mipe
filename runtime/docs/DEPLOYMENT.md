@@ -184,7 +184,7 @@ Mipe startup:
 2. Mipe loads the agent configuration
 3. Mipe validates the configuration and workspace permissions
 4. Shared configuration is copied into the agent home
-5. If the workspace contains `.mipe/init/dependencies.sh`, Mipe runs it
+5. If the workspace contains `.mipe/init/setup.sh`, Mipe runs it
 6. Mipe switches from root to the local user and starts the requested process in `/workspace`
 
 ### User Identity

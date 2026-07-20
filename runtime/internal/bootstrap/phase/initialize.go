@@ -19,38 +19,38 @@ var (
 
 // Initialize initializes the project
 func Initialize(ctx context.Context, cfg config.Config, logger *zap.Logger) error {
-	script := filepath.Join(cfg.Workspace, ".mipe", "init", "dependencies.sh")
+	script := filepath.Join(cfg.Workspace, ".mipe", "init", "setup.sh")
 
-	logger.Debug("checking project dependency initialization",
+	logger.Debug("checking project setup",
 		zap.String("script", script),
 	)
 	if _, err := statFile(script); err != nil {
 		if os.IsNotExist(err) {
-			logger.Debug("project dependency initialization skipped", zap.String("script", script))
+			logger.Debug("project setup skipped", zap.String("script", script))
 			return nil
 		}
-		return fmt.Errorf("check project dependency initialization script %q: %w", script, err)
+		return fmt.Errorf("check project setup script %q: %w", script, err)
 	}
-	logger.Debug("project dependency initialization started",
+	logger.Debug("project setup started",
 		zap.String("script", script),
 	)
 	args := runtimeEnvironment(cfg,
 		"WORKSPACE="+cfg.Workspace,
-		"DEPENDENCIES_SCRIPT="+script,
+		"SETUP_SCRIPT="+script,
 	)
 	args = append(args,
 		"bash",
 		"-c",
-		`set -euo pipefail; source "$DEPENDENCIES_SCRIPT"; install_dependencies`,
+		`set -euo pipefail; source "$SETUP_SCRIPT"; setup_project`,
 	)
 	name, args, err := commandAsUser(cfg.LocalUID, cfg.LocalGID, "env", args...)
 	if err != nil {
 		return err
 	}
 	if err := runProcessInDir(ctx, cfg.Workspace, name, args...); err != nil {
-		return fmt.Errorf("initialize project dependencies: %w", err)
+		return fmt.Errorf("run project setup: %w", err)
 	}
-	logger.Debug("project dependency initialization completed",
+	logger.Debug("project setup completed",
 		zap.String("script", script),
 	)
 	return nil

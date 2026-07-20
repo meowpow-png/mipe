@@ -28,7 +28,7 @@ func TestRuntimeWithoutInitializationScript(t *testing.T) {
 	`
 	mipeCommand := mipeCommand(defaultConfigPath(), finalScript)
 	result := runContainer(t, containerSpec{
-		command: rootSetup(`rm -f /workspace/.mipe/init/dependencies.sh`, mipeCommand),
+		command: rootSetup(`rm -f /workspace/.mipe/init/setup.sh`, mipeCommand),
 	})
 	result.requireSuccess(t)
 	result.requireOutput(t, "initialization-skipped")
@@ -37,7 +37,7 @@ func TestRuntimeWithoutInitializationScript(t *testing.T) {
 func TestRuntimeStopsWhenInitializationFails(t *testing.T) {
 	result := runContainer(t, containerSpec{
 		files: map[string]string{
-			"/tmp/dependencies.sh": "install_dependencies() { echo init-sentinel >&2; return 23; }\n",
+			"/tmp/setup.sh": "setup_project() { echo init-sentinel >&2; return 23; }\n",
 		},
 		command: mipeCommand(defaultConfigPath(), `echo final-command-ran`),
 	})

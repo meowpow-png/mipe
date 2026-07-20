@@ -15,10 +15,10 @@ import (
 
 const testImage = "mipe-runtime-test:local"
 
-const defaultInitializationScript = `#!/usr/bin/env bash
+const defaultSetupScript = `#!/usr/bin/env bash
 set -euo pipefail
 
-install_dependencies() {
+setup_project() {
 	touch "$WORKSPACE/.test"
 }
 `
@@ -116,12 +116,12 @@ func createContainer(t *testing.T, spec containerSpec) string {
 	tag := strconv.FormatUint(containerSequence.Add(1), 10)
 	name := "mipe-runtime-integration-" + pid + "-" + tag
 	files := mergeValues(map[string]string{
-		defaultConfigPath():    encodedConfig(t, defaultConfig()),
-		"/tmp/dependencies.sh": defaultInitializationScript,
+		defaultConfigPath(): encodedConfig(t, defaultConfig()),
+		"/tmp/setup.sh":     defaultSetupScript,
 	}, spec.files)
 	spec.command = rootSetup(`
 		install -d -m 0755 -o 1000 -g 1000 /workspace/.mipe/init
-		install -m 0644 /tmp/dependencies.sh /workspace/.mipe/init/dependencies.sh
+		install -m 0644 /tmp/setup.sh /workspace/.mipe/init/setup.sh
 	`, spec.command)
 	args := []string{"create", "--pull=never", "--name", name}
 	environment := spec.environment

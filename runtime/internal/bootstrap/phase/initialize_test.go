@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 )
 
-func TestInitialize_SkipsMissingDependencyScript(t *testing.T) {
+func TestInitialize_SkipsMissingSetupScript(t *testing.T) {
 	restore := replaceInitializeSeams(t)
 	defer restore()
 
@@ -28,7 +28,7 @@ func TestInitialize_SkipsMissingDependencyScript(t *testing.T) {
 	}
 }
 
-func TestInitialize_LogsSkippedDependencyScriptAtDebug(t *testing.T) {
+func TestInitialize_LogsSkippedSetupScriptAtDebug(t *testing.T) {
 	restore := replaceInitializeSeams(t)
 	defer restore()
 
@@ -66,7 +66,7 @@ func TestInitialize_ReturnsStatError(t *testing.T) {
 	}
 }
 
-func TestInitialize_RunsExistingDependencyScript(t *testing.T) {
+func TestInitialize_RunsExistingSetupScript(t *testing.T) {
 	restore := replaceInitializeSeams(t)
 	defer restore()
 
@@ -98,10 +98,10 @@ func TestInitialize_RunsExistingDependencyScript(t *testing.T) {
 		"RUNTIME_HOME=/runtime",
 		"AGENT_HOME=/agent/home",
 		"WORKSPACE=/workspace",
-		"DEPENDENCIES_SCRIPT=/workspace/.mipe/init/dependencies.sh",
+		"SETUP_SCRIPT=/workspace/.mipe/init/setup.sh",
 		"bash",
 		"-c",
-		`set -euo pipefail; source "$DEPENDENCIES_SCRIPT"; install_dependencies`,
+		`set -euo pipefail; source "$SETUP_SCRIPT"; setup_project`,
 	}
 	if !reflect.DeepEqual(gotArgs, wantArgs) {
 		t.Fatalf("args = %#v, want %#v", gotArgs, wantArgs)
