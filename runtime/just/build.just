@@ -8,7 +8,7 @@ build-images *targets='default':
 [arg("target", help="Bake target to build")]
 [arg("output", help="Output OCI image name")]
 build-oci target output:
-     @rm -rf {{output}}
+     @rm -rf .mipe/{{output}}
      @VERSION=$(bash scripts/get-go-build-version.sh) \
      docker buildx bake {{target}} \
        --provenance=false \
