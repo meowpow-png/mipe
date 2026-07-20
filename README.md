@@ -1,51 +1,167 @@
 # Mipe
 
-## Getting Started
+[![CI](https://github.com/meowpow-png/mipe/actions/workflows/ci.yml/badge.svg)](https://github.com/meowpow-png/mipe/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/meowpow-png/mipe/branch/dev/graph/badge.svg?token=MbG8tNgD2G)](https://codecov.io/github/meowpow-png/mipe)
+![Go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white)
+![OpenAI Codex](https://img.shields.io/badge/OpenAI-Codex-412991?logo=openai&logoColor=white)
+![Anthropic Claude](https://img.shields.io/badge/Anthropic-Claude-D97757?logo=anthropic&logoColor=white)
 
-### Project Dependencies
+There's only so many times you can copy the same AI development setup into a new repository before admitting it probably belongs somewhere else. That's how this repository happened.
 
-To configure project initialization, create the following file:
+## What is this?
 
-```text
-.mipe/init/dependencies.sh
+The boring stuff nobody wants to rebuild for every AI-assisted project.
+
+Imagine every project came with its own AI workspace instead of borrowing whatever happened to be installed on your machine.
+
+Clone the repository, start the container, and your AI agent finds the tools, configuration, prompts, and project context waiting for it. No machine setup, no copy-pasted bootstrap scripts, no wondering what you forgot this time.
+
+## Is this another AI agent?
+
+No.
+
+Mipe doesn't replace Codex, Claude, or whatever comes next. It's the environment around the agent, not the agent itself. Think of it like a kitchen. The AI agent does the cooking, Mipe makes sure the kitchen is ready when it walks in.
+
+## Why should I use it?
+
+Because your AI setup is part of your project, not your laptop.
+
+Instead of one global environment shared across everything, each project gets its own tools, configuration, initialization, and runtime.
+
+Open your project directory, start a container, and get to work.
+
+Your host machine stays clean and every project gets its own isolated environment. Install whatever tools the project needs, experiment freely, and throw the whole environment away when you're done. The next project starts with a clean slate.
+
+## Available Images
+
+The available runtime images are listed below.
+
+| Image                                          | Tags                                 | Agent Version |
+|------------------------------------------------|--------------------------------------|---------------|
+| `ghcr.io/meowpow-png/mipe-runtime-codex`       | `latest`, `dev-latest`, `dev-<hash>` | 0.144.6       |
+| `ghcr.io/meowpow-png/mipe-runtime-claude`      | `latest`, `dev-latest`, `dev-<hash>` | 2.1.211       |
+| `ghcr.io/meowpow-png/mipe-runtime-codex-java`  | `latest`, `dev-latest`, `dev-<hash>` | 0.144.6       |
+| `ghcr.io/meowpow-png/mipe-runtime-claude-java` | `latest`, `dev-latest`, `dev-<hash>` | 2.1.211       |
+| `ghcr.io/meowpow-png/mipe-runtime-codex-web`   | `latest`, `dev-latest`, `dev-<hash>` | 0.144.6       |
+| `ghcr.io/meowpow-png/mipe-runtime-claude-web`  | `latest`, `dev-latest`, `dev-<hash>` | 2.1.211       |
+
+Each variant includes a different set of language toolchains and developer tools.
+
+| Variants                    | Language Toolchains    | Developer Tools          |
+|-----------------------------|------------------------|--------------------------|
+| `codex`, `claude`           | Node.js 22             | Shared runtime           |
+| `codex-java`, `claude-java` | Node.js 22, Temurin 21 | Shared runtime           |
+| `codex-web`, `claude-web`   | Node.js 22             | Chromium, Playwright MCP |
+
+## Quickstart
+
+**Requirements:**
+
+- [Docker](https://docs.docker.com/engine/install/)
+- [Docker Compose](https://docs.docker.com/compose/install)
+
+The following example starts [Codex CLI](https://github.com/openai/codex) with Mipe.
+
+Create `compose.yaml`:
+
+```yaml
+services:
+  codex:
+    image: ghcr.io/meowpow-png/mipe-runtime-codex:latest
+    volumes:
+      - .:/workspace
+      - codex-home:/home/dev/.codex
+
+volumes:
+  codex-home:
 ```
 
-The script must define an `install_dependencies` function containing the commands required to prepare this project before development begins.
-
-Example:
+Start Codex:
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
+docker compose run --rm codex
+```
 
-install_dependencies() {
-    go mod download
+If your host user isn't `1000`, pass your UID and GID:
+
+```bash
+docker compose run --rm \
+    -e LOCAL_UID="$(id -u)" \
+    -e LOCAL_GID="$(id -g)" \
+    codex
+```
+
+Authenticate when prompted. The `codex-home` volume preserves your authentication, settings, and caches between runs.
+
+> [!TIP]
+> Replace `:latest` with `:dev-latest` to try the latest development build.
+
+For runtime configuration, agent variants, and advanced usage, see [Runtime](runtime/README.md) documentation.
+
+## Project setup
+
+Projects can prepare themselves automatically before each AI session.
+
+Create the following file in your project:
+
+```text
+.mipe/init/setup.sh
+```
+
+Mipe runs this script as the project user before starting the agent. It can install project dependencies, customize the agent environment, or generate files the agent needs. Keep the commands repeatable because the script runs when a session starts.
+
+For example, a project can copy its own agent instructions and configuration over the image defaults:
+
+```bash
+setup_project() {
+    install -Dm644 "$WORKSPACE/.mipe/config/AGENTS.md" "$AGENT_HOME/AGENTS.md"
+    install -Dm644 "$WORKSPACE/.mipe/config/config.toml" "$AGENT_HOME/config.toml"
 }
 ```
 
-### Development Builds
+The agent can combine project-specific instructions in the workspace with Mipe’s shared instructions. Use this configuration when the project needs to control or override the agent settings supplied by the image.
 
-Development builds are available through GitHub Container Registry (GHCR).
-
-> [!WARNING]
-> Development builds are intended for testing, evaluation, and early adoption of new functionality. They may introduce breaking changes at any time and should not be considered stable.
-
-## Deployment
-
-The project workspace must be writable by the configured local developer user. 
-Project initialization executes with the developer user's permissions and requires 
-write access to the workspace to install dependencies and generate project files.
-
-### Running Mipe
-
-Run the locally built bootstrap without rebuilding a container image:
+It can also generate project context before the agent starts:
 
 ```bash
-just mipe bash
+setup_project() {
+    npm run generate
+    git ls-files > .mipe/project-files.txt
+}
 ```
 
-Use the container-backed runtime when validating image behavior:
+Use this when the agent depends on generated metadata, indexes, or other project context that should be refreshed for each session.
+
+For dependency setup, a Node.js project image might run:
 
 ```bash
-just mipe-docker bash
+setup_project() {
+    npm ci
+}
 ```
+
+Alternatively, a Java project using Maven Wrapper might run:
+
+```bash
+setup_project() {
+    ./mvnw dependency:go-offline
+}
+```
+
+Use these dependency hooks when sessions run in fresh or disposable environments and the project should prepare itself before the agent starts.
+
+## Documentation
+
+- [Runtime](runtime/README.md) — Build, run, and configure Mipe
+- [Concept](docs/CONCEPT.md) — Project motivation and vision
+- [Roadmap](docs/ROADMAP.md) — Planned milestones and release goals
+
+## Contributing
+
+Contributions are welcome. Let's be honest, if you found yourself here, you were probably about to change something anyway. You might as well open a pull request.
+
+Start by reading the [Contributing](CONTRIBUTING.md) guide.
+
+## License
+
+Licensed under Apache License 2.0. See [LICENSE](LICENSE).
