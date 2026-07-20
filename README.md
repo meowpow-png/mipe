@@ -69,8 +69,10 @@ services:
   codex:
     image: ghcr.io/meowpow-png/mipe-runtime-codex:latest
     volumes:
-      - .:/workspace
       - codex-home:/home/dev/.codex
+      - .:/workspace:Z
+    stdin_open: true
+    tty: true
 
 volumes:
   codex-home:
@@ -110,16 +112,26 @@ Create the following file in your project:
 
 Mipe runs this script as the project user before starting the agent. It can install project dependencies, customize the agent environment, or generate files the agent needs. Keep the commands repeatable because the script runs when a session starts.
 
-For example, a project can copy its own agent instructions and configuration over the image defaults:
+For example, a project can override the image defaults with your own global agent instructions and configuration:
 
 ```bash
 setup_project() {
-    install -Dm644 "$WORKSPACE/.mipe/config/AGENTS.md" "$AGENT_HOME/AGENTS.md"
-    install -Dm644 "$WORKSPACE/.mipe/config/config.toml" "$AGENT_HOME/config.toml"
+    [ -f /mipe/config/AGENTS.md ] &&
+        install -Dm644 /mipe/config/AGENTS.md "$AGENT_HOME/AGENTS.md"
+
+    [ -f /mipe/config/config.toml ] &&
+        install -Dm644 /mipe/config/config.toml "$AGENT_HOME/config.toml"
 }
 ```
 
-The agent can combine project-specific instructions in the workspace with Mipe’s shared instructions. Use this configuration when the project needs to control or override the agent settings supplied by the image.
+This requires mounting your host `~/.mipe` directory into the container: 
+
+```yaml
+volumes:
+  - ~/.mipe:/mipe:ro
+```
+
+The agent can then combine project-specific instructions from the workspace with your shared configuration. Use this to customize or override the default agent configuration provided by the image.
 
 It can also generate project context before the agent starts:
 
