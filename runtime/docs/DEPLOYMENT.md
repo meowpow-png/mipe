@@ -35,7 +35,9 @@ just build-images codex codex-java
 
 ### Build Architecture
 
-Base targets provide the shared Debian, Node.js, Java, and web tooling. Java and web base targets also include the MIPE runtime after installing their dependencies; standard agent targets add it after installing their agent packages.
+Base targets provide shared Debian, Node.js, Java, and web tooling. Java and web bases add MIPE runtime after installing dependencies. Standard agent images add it after installing agent packages.
+
+### Shared Foundations
 
 ```mermaid
 flowchart TD
@@ -45,12 +47,6 @@ flowchart TD
     java["java-base<br/>Temurin 21"]
     web["web-base<br/>Chromium and Playwright MCP"]
     test["test"]
-    codex["codex"]
-    claude["claude"]
-    codexJava["codex-java"]
-    claudeJava["claude-java"]
-    codexWeb["codex-web"]
-    claudeWeb["claude-web"]
 
     runtimeBase --> runtime
     runtimeBase --> node
@@ -58,15 +54,30 @@ flowchart TD
 
     node --> java
     node --> web
+    runtime -. "runtime copy" .-> java
+    runtime -. "runtime copy" .-> web
+```
 
-    runtime --> codex
+### Agent Variants
+
+All agent images include MIPE runtime. Standard variants combine it with `node-base`; Java and web variants inherit it from their base image.
+
+```mermaid
+flowchart TD
+    node["node-base<br/>Node.js 22"]
+    java["java-base<br/>Node.js 22 and Temurin 21"]
+    web["web-base<br/>Node.js 22, Chromium, and Playwright MCP"]
+    codex["codex"]
+    claude["claude"]
+    codexJava["codex-java"]
+    claudeJava["claude-java"]
+    codexWeb["codex-web"]
+    claudeWeb["claude-web"]
+
     node --> codex
-    runtime --> claude
     node --> claude
-
     java --> codexJava
     java --> claudeJava
-
     web --> codexWeb
     web --> claudeWeb
 ```
