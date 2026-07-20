@@ -7,10 +7,11 @@ CI verifies runtime code, builds container images, runs integration tests, and p
 Pipeline runs in one job:
 
 1. Checks out source, sets up Go and Buildx, then calculates runtime build version
-2. Runs unit tests and builds `runtime` plus `test` Bake targets
+2. Runs unit tests with coverage and builds `runtime` plus `test` Bake targets
 3. Runs integration tests against loaded test image
 4. Builds shared toolchain base targets to refresh BuildKit caches
 5. Builds runtime plus all agent images. On `dev`, it also publishes them to GHCR
+6. Uploads the unit-test coverage report to Codecov
 
 ```mermaid
 flowchart TD
@@ -20,6 +21,7 @@ flowchart TD
     integration --> bases["Toolchain base images"]
     bases --> images["Runtime and agent images"]
     images -->|dev only| ghcr[("GHCR")]
+    images --> codecov[("Codecov")]
 ```
 
 Builds use plain BuildKit output, making cache hits and misses visible in job logs.

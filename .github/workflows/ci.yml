@@ -48,9 +48,12 @@ jobs:
         run: |
           echo "version=$(bash runtime/scripts/get-go-build-version.sh)" >> "${GITHUB_OUTPUT}"
 
-      - name: Run tests
+      - name: Run tests with coverage
         working-directory: runtime
-        run: go test -v ./...
+        run: |
+          mkdir -p build/reports
+          go test -coverprofile=build/reports/coverage.out -v ./...
+          go tool cover -func=build/reports/coverage.out
 
       - name: Build test image
         uses: docker/bake-action@v7
@@ -172,3 +175,10 @@ jobs:
             claude-web.cache-from=type=gha,scope=web-base
             claude-web.cache-from=type=gha,scope=node-base
             claude-web.cache-from=type=gha,scope=runtime
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          files: runtime/build/reports/coverage.out
+          disable_search: true
+          fail_ci_if_error: true
