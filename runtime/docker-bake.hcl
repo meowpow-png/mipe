@@ -16,7 +16,7 @@ variable "CODEX_VERSION" {
 }
 
 variable "CLAUDE_VERSION" {
-  default = "2.1.211"
+  default = "2.1.216"
 }
 
 variable "NODE_VERSION" {
