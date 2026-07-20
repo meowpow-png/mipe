@@ -73,6 +73,18 @@ just claude mipe --config /opt/mipe/config/config.json claude
 | `--debug`         | Enable debug logging.                                 |
 | `--version`, `-v` | Print the Mipe version and exit.                      |
 
+Run the locally built bootstrap without rebuilding a container image:
+
+```bash
+just mipe bash
+```
+
+Use the container-backed runtime when validating image behavior:
+
+```bash
+just mipe-docker bash
+```
+
 ## Testing
 
 Unit tests cover bootstrap behavior in isolation. Integration tests validate the assembled runtime image and Linux environment.
