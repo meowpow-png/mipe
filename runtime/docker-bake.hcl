@@ -12,7 +12,7 @@ group "default" {
 }
 
 variable "CODEX_VERSION" {
-  default = "0.144.5"
+  default = "0.144.6"
 }
 
 variable "CLAUDE_VERSION" {
