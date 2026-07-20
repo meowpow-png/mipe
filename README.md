@@ -167,6 +167,7 @@ Use these dependency hooks when sessions run in fresh or disposable environments
 - [Runtime](runtime/README.md) — Build, run, and configure Mipe
 - [Concept](docs/CONCEPT.md) — Project motivation and vision
 - [Roadmap](docs/ROADMAP.md) — Planned milestones and release goals
+- [Examples](runtime/examples/README.md) — Complete example projects
 
 ## Contributing
 

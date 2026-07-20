@@ -1,0 +1,26 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+# List available recipes
+default:
+    @just --list
+
+# Run the Alchemy test suite
+test:
+    @go test ./...
+
+# Build the Alchemy binary
+build:
+    @mkdir -p build
+    @go build -o build/alchemy ./cmd/alchemy
+
+# List all potion recipes
+list:
+    @go run ./cmd/alchemy list
+
+# Show a potion recipe
+show name:
+    @go run ./cmd/alchemy show '{{name}}'
+
+# Brew a potion
+brew name:
+    @go run ../cmd/alchemy brew '{{name}}'

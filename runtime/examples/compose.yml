@@ -1,0 +1,14 @@
+name: mipe-examples
+
+services:
+  alchemy-claude:
+    image: ghcr.io/meowpow-png/mipe-runtime-claude:dev-latest
+    volumes:
+      - claude-home:/home/dev
+      - ./alchemy:/workspace:Z
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
+volumes:
+  claude-home:

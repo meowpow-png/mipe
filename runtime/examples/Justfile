@@ -1,0 +1,11 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+mod alchemy "alchemy/Justfile"
+
+# List available recipes
+default:
+    @just --list
+
+# Talk with Claude the wise wizard
+alchemy-claude:
+    @docker compose run --rm alchemy-claude
