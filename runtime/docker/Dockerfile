@@ -25,11 +25,13 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         bash \
         gosu \
-        passwd && \
+        passwd \
+        python3 && \
     rm -rf /var/lib/apt/lists/* \
            /var/log/apt/history.log \
            /var/log/apt/term.log \
-           /var/log/dpkg.log
+           /var/log/dpkg.log \
+           /var/cache/ldconfig/aux-cache
 
 FROM runtime-base AS runtime
 
