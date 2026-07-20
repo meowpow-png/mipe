@@ -2,7 +2,5 @@
   "agent_name": "mipe",
   "user_home": "/home/dev",
   "runtime_home": "/opt/mipe",
-  "workspace": "/workspace",
-  "local_uid": "1000",
-  "local_gid": "1000"
+  "workspace": "/workspace"
 }

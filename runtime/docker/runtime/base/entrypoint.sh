@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Require local developer identity
-LOCAL_UID="${LOCAL_UID:?LOCAL_UID is required}"
-LOCAL_GID="${LOCAL_GID:?LOCAL_GID is required}"
+# Default local developer identity
+LOCAL_UID="${LOCAL_UID:-1000}"
+LOCAL_GID="${LOCAL_GID:-1000}"
 
 # Ensure local developer group exists with the expected GID
 if getent group dev >/dev/null; then

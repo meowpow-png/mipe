@@ -38,8 +38,6 @@ type runtimeConfig struct {
 	AgentHome   string `json:"agent_home,omitempty"`
 	RuntimeHome string `json:"runtime_home"`
 	Workspace   string `json:"workspace"`
-	LocalUID    string `json:"local_uid"`
-	LocalGID    string `json:"local_gid"`
 }
 
 type containerSpec struct {
@@ -57,7 +55,7 @@ type containerResult struct {
 func defaultConfig() runtimeConfig {
 	return runtimeConfig{
 		AgentName: "test-agent", UserHome: "/home/dev", AgentHome: "/home/dev/.mipe-agent",
-		RuntimeHome: "/opt/mipe", Workspace: "/workspace", LocalUID: "1000", LocalGID: "1000",
+		RuntimeHome: "/opt/mipe", Workspace: "/workspace",
 	}
 }
 

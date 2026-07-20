@@ -42,11 +42,6 @@ func TestInvalidConfiguration(t *testing.T) {
 			command:  []string{"mipe", "--config", defaultConfigPath(), "true"},
 		},
 		{
-			name:     "nonnumeric UID",
-			contents: encodedConfig(t, editConfig(func(config *runtimeConfig) { config.LocalUID = "invalid" })),
-			command:  []string{"env", "-u", "LOCAL_UID", "-u", "LOCAL_GID", "mipe", "--config", defaultConfigPath(), "true"},
-		},
-		{
 			name:     "missing command",
 			contents: encodedConfig(t, defaultConfig()),
 			command:  []string{"mipe", "--config", defaultConfigPath()},

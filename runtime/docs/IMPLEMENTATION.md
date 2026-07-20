@@ -14,9 +14,7 @@ Example configuration file:
   "user_home": "/home/dev",
   "agent_home": "/home/dev/.codex",
   "runtime_home": "/opt/codex-runtime",
-  "workspace": "/workspace",
-  "local_uid": "1000",
-  "local_gid": "1000"
+  "workspace": "/workspace"
 }
 ```
 

@@ -4,8 +4,8 @@ x-runtime: &runtime
   pull_policy: never
   working_dir: /workspace
   environment:
-    LOCAL_UID: "1000"
-    LOCAL_GID: "1000"
+    LOCAL_UID: "${LOCAL_UID:-1000}"
+    LOCAL_GID: "${LOCAL_GID:-1000}"
     MIPE_DEBUG: "${MIPE_DEBUG:-1}"
   volumes:
     - .:/workspace:Z

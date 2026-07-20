@@ -45,3 +45,16 @@ func TestLoadEnvironment_MergesDefaultsAndProcessEnvironment(t *testing.T) {
 		t.Fatalf("EXTRA_PROCESS = %q, want process", got)
 	}
 }
+
+func TestLoadEnvironment_DefaultsOwnership(t *testing.T) {
+	t.Setenv("LOCAL_UID", "")
+	t.Setenv("LOCAL_GID", "")
+
+	env := LoadEnvironment(nil)
+	if env.LocalUID != "1000" || env.LocalGID != "1000" {
+		t.Fatalf("uid/gid = %q/%q, want defaults 1000/1000", env.LocalUID, env.LocalGID)
+	}
+	if env.Values["LOCAL_UID"] != "1000" || env.Values["LOCAL_GID"] != "1000" {
+		t.Fatalf("environment values do not contain ownership defaults: %#v", env.Values)
+	}
+}

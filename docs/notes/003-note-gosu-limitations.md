@@ -6,15 +6,15 @@ While making Mipe runnable directly on a host, I reviewed where the runtime depe
 
 ## Observations
 
-Mipe uses `gosu` in three bootstrap paths: workspace validation, dependency initialization, and final command execution. The requested UID and GID come from the resolved runtime configuration.
+Mipe uses `gosu` in three bootstrap paths: workspace validation, dependency initialization, and final command execution. The requested UID and GID come from the resolved environment configuration (`LOCAL_UID` and `LOCAL_GID`).
 
 Mipe changes ownership separately with Go's `os.Chown`. `gosu` is not involved in the recursive ownership update.
 
-When Mipe already runs with the configured effective UID and GID, invoking `gosu` is redundant. The runtime can execute the command directly and therefore does not require `gosu` to be installed in this case.
+When Mipe already runs with the resolved effective UID and GID, invoking `gosu` is redundant. The runtime can execute the command directly and therefore does not require `gosu` to be installed in this case.
 
 ## Analysis
 
-The runtime now compares the configured UID and GID with the current effective process credentials. It bypasses `gosu` only when both values match. If either value differs, the existing `gosu UID:GID` path remains in use.
+The runtime now compares the resolved UID and GID with the current effective process credentials. It bypasses `gosu` only when both values match. If either value differs, the existing `gosu UID:GID` path remains in use.
 
 Matching process credentials do not guarantee that `UserHome` is correctly owned. Mipe checks the ownership of the complete home directory tree separately and only calls `os.Chown` when an entry has a different UID or GID. An unprivileged host process cannot repair incorrect ownership itself.
 
@@ -31,7 +31,7 @@ Ownership preparation and process identity are separate concerns. Skipping `gosu
 ## Next Steps
 
 - Keep `gosu` available in runtime images for configurations where the target UID or GID differs from the process credentials
-- When running Mipe locally, configure the target UID and GID to match the host user and ensure `UserHome` is already correctly owned
+- When running Mipe locally, set `LOCAL_UID` and `LOCAL_GID` to match the host user and ensure `UserHome` is already correctly owned
 
 No further changes are required unless Mipe needs to support credential switching without an external binary.
 

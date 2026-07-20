@@ -2,7 +2,7 @@ package integration_test
 
 import "testing"
 
-func TestEntrypointRequiresDeveloperIdentity(t *testing.T) {
+func TestEntrypointDefaultsDeveloperIdentity(t *testing.T) {
 	for _, missing := range []string{"LOCAL_UID", "LOCAL_GID"} {
 		t.Run(missing, func(t *testing.T) {
 			environment := defaultEnvironment()
@@ -13,8 +13,7 @@ func TestEntrypointRequiresDeveloperIdentity(t *testing.T) {
 			}
 			delete(environment, missing)
 			result := runContainer(t, spec)
-			result.requireFailure(t)
-			result.requireOutput(t, missing+" is required")
+			result.requireSuccess(t)
 		})
 	}
 }

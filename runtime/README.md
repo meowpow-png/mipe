@@ -93,7 +93,7 @@ MIPE_INTEGRATION=1 go test -v ./integration
 
 ## Configuration
 
-Bootstrap configuration describes agent environment, developer identity, and project workspace used for each runtime invocation. Values may be supplied as top-level JSON fields or through the `environment` map, and process environment variables take precedence.
+Bootstrap configuration describes the agent environment, developer identity, and project workspace used for each runtime invocation. JSON supplies the runtime paths and agent settings; UID/GID are environment-only values, defaulting to `1000`, and process environment variables take precedence.
 
 | Field          | Required | Description                                                                                             |
 |----------------|---------:|---------------------------------------------------------------------------------------------------------|
@@ -103,8 +103,6 @@ Bootstrap configuration describes agent environment, developer identity, and pro
 | `agent_home`   |       No | Agent-specific persistent home directory                                                                |
 | `runtime_home` |      Yes | Location of the shared Mipe runtime configuration                                                       |
 | `workspace`    |      Yes | Existing writable project directory used for initialization and command execution                       |
-| `local_uid`    |      Yes | Numeric user ID used for project initialization and command execution                                   |
-| `local_gid`    |      Yes | Numeric group ID used for project initialization and command execution                                  |
 
 Mipe supplies configuration for each runtime environment. You can supply another file with `--config`, but prefer environment-variable overrides for per-run changes so supplied configuration remains the shared default.
 
@@ -115,8 +113,8 @@ Mipe supplies configuration for each runtime environment. You can supply another
 | `AGENT_HOME`          | Optional persistent home for agent configuration and state; exported when set                    |
 | `RUNTIME_HOME`        | Required location of shared Mipe runtime configuration; exported to child commands               |
 | `WORKSPACE`           | Required writable project directory used for initialization and command execution                |
-| `LOCAL_UID`           | Required numeric user ID for initialization and command execution                                |
-| `LOCAL_GID`           | Required numeric group ID for initialization and command execution                               |
+| `LOCAL_UID`           | Optional numeric user ID; defaults to `1000`                                                     |
+| `LOCAL_GID`           | Optional numeric group ID; defaults to `1000`                                                    |
 | `MIPE_DEBUG`          | Optional boolean debug toggle                                                                    |
 | `MIPE_LOG_FORMAT`     | Optional log format: `console` (default) or `json`                                               |
 

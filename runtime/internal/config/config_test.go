@@ -55,9 +55,7 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 		"user_home": "/home/file",
 		"agent_home": "/agent/file",
 		"runtime_home": "/runtime/file",
-		"workspace": "/workspace/file",
-		"local_uid": "1000",
-		"local_gid": "1001"
+		"workspace": "/workspace/file"
 	}`
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatalf("write config: %v", err)
@@ -75,8 +73,8 @@ func TestLoad_LoadsFileAndAppliesEnvironmentOverrides(t *testing.T) {
 	if cfg.LocalUID != "2000" {
 		t.Fatalf("LocalUID = %q, want 2000", cfg.LocalUID)
 	}
-	if cfg.LocalGID != "1001" {
-		t.Fatalf("LocalGID = %q, want 1001", cfg.LocalGID)
+	if cfg.LocalGID != "1000" {
+		t.Fatalf("LocalGID = %q, want default 1000", cfg.LocalGID)
 	}
 	if cfg.AgentHome != "/agent/process" {
 		t.Fatalf("AgentHome = %q, want /agent/process", cfg.AgentHome)
@@ -117,8 +115,8 @@ func TestLoad_UsesExplicitConfigPath(t *testing.T) {
 	if cfg.AgentName != "explicit-agent" {
 		t.Fatalf("AgentName = %q, want explicit-agent", cfg.AgentName)
 	}
-	if cfg.LocalUID != "2000" || cfg.LocalGID != "2001" {
-		t.Fatalf("uid/gid = %q/%q, want 2000/2001", cfg.LocalUID, cfg.LocalGID)
+	if cfg.LocalUID != "1000" || cfg.LocalGID != "1000" {
+		t.Fatalf("uid/gid = %q/%q, want defaults 1000/1000", cfg.LocalUID, cfg.LocalGID)
 	}
 }
 

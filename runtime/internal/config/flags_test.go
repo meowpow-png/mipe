@@ -81,9 +81,7 @@ func TestLoadFile_LoadsConfigFileValues(t *testing.T) {
 			"user_home": "/home/agent",
 			"agent_home": "/agent/home",
 			"runtime_home": "/runtime",
-			"workspace": "/workspace",
-			"local_uid": "1000",
-			"local_gid": "1001"
+			"workspace": "/workspace"
 		}`
 		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 			t.Fatalf("write config: %v", err)
@@ -99,8 +97,6 @@ func TestLoadFile_LoadsConfigFileValues(t *testing.T) {
 			"AGENT_HOME":   "/agent/home",
 			"RUNTIME_HOME": "/runtime",
 			"WORKSPACE":    "/workspace",
-			"LOCAL_UID":    "1000",
-			"LOCAL_GID":    "1001",
 		}
 		if !reflect.DeepEqual(values, want) {
 			t.Fatalf("LoadFile() = %#v, want %#v", values, want)
@@ -154,8 +150,6 @@ func TestFileConfigEnvironmentValues_MergesNestedAndTopLevelValues(t *testing.T)
 		AgentHome:   "/agent/top",
 		RuntimeHome: "",
 		Workspace:   "/workspace",
-		LocalUID:    "1000",
-		LocalGID:    "1001",
 	}
 	values := cfg.EnvironmentValues()
 	want := map[string]string{
@@ -164,8 +158,6 @@ func TestFileConfigEnvironmentValues_MergesNestedAndTopLevelValues(t *testing.T)
 		"KEEP":       "yes",
 		"USER_HOME":  "/home/top",
 		"WORKSPACE":  "/workspace",
-		"LOCAL_UID":  "1000",
-		"LOCAL_GID":  "1001",
 	}
 	if !reflect.DeepEqual(values, want) {
 		t.Fatalf("EnvironmentValues() = %#v, want %#v", values, want)

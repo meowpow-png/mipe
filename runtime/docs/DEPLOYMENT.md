@@ -180,7 +180,7 @@ just claude-web mipe bash
 
 Mipe startup:
 
-1. The container entrypoint reads `LOCAL_UID` and `LOCAL_GID` and creates the local `dev` user
+1. The container entrypoint reads `LOCAL_UID` and `LOCAL_GID` (defaulting each to `1000`) and creates the local `dev` user
 2. Mipe loads the agent configuration
 3. Mipe validates the configuration and workspace permissions
 4. Shared configuration is copied into the agent home

@@ -30,6 +30,12 @@ func LoadEnvironment(defaults map[string]string) Environment {
 		}
 		values[key] = value
 	}
+	if values["LOCAL_UID"] == "" {
+		values["LOCAL_UID"] = "1000"
+	}
+	if values["LOCAL_GID"] == "" {
+		values["LOCAL_GID"] = "1000"
+	}
 	agentName := values["AGENT_NAME"]
 	userHome := values["USER_HOME"]
 	agentHome := values["AGENT_HOME"]

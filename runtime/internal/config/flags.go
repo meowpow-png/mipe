@@ -24,8 +24,6 @@ type fileConfig struct {
 	AgentHome   string            `json:"agent_home"`
 	RuntimeHome string            `json:"runtime_home"`
 	Workspace   string            `json:"workspace"`
-	LocalUID    string            `json:"local_uid"`
-	LocalGID    string            `json:"local_gid"`
 }
 
 // ParseFlags parses bootstrap command-line flags
@@ -88,8 +86,6 @@ func (cfg fileConfig) EnvironmentValues() map[string]string {
 	setIfPresent(values, "AGENT_HOME", cfg.AgentHome)
 	setIfPresent(values, "RUNTIME_HOME", cfg.RuntimeHome)
 	setIfPresent(values, "WORKSPACE", cfg.Workspace)
-	setIfPresent(values, "LOCAL_UID", cfg.LocalUID)
-	setIfPresent(values, "LOCAL_GID", cfg.LocalGID)
 
 	return values
 }
