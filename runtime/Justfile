@@ -1,6 +1,7 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
 import "just/agent.just"
+import "just/build.just"
 import "just/docker.just"
 import "just/test.just"
 
