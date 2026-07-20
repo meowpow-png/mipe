@@ -82,49 +82,6 @@ flowchart TD
     web --> claudeWeb
 ```
 
-The CI build uses separate cache scopes for the shared targets:
-
-```mermaid
-flowchart LR
-    source["Source and build inputs"]
-    test["Test Bake"]
-    bases["Base-cache Bake"]
-    images["Final-image Bake"]
-    runtimeCache[("GHA cache<br/>runtime")]
-    nodeCache[("GHA cache<br/>node-base")]
-    javaCache[("GHA cache<br/>java-base")]
-    webCache[("GHA cache<br/>web-base")]
-    ghcr[("GHCR images")]
-
-    source --> test
-    source --> bases
-    source --> images
-
-    test -->|imports and exports| runtimeCache
-    bases -->|imports and exports| nodeCache
-    bases -->|imports and exports| javaCache
-    bases -->|imports and exports| webCache
-
-    images -->|imports| runtimeCache
-    images -->|imports| nodeCache
-    images -->|imports| javaCache
-    images -->|imports| webCache
-images -->|pushes| ghcr
-```
-
-Cache records are reusable only when the cache-warming and final-image solves use the same BuildKit graph. Dependency stages therefore use stable parents, and runtime copies happen after expensive dependency installation.
-
-The six agent npm-install layers are intentionally rebuilt instead of exported. Their export cost is higher than their parallel rebuild cost.
-
-Changes rebuild:
-
-- Updating Codex rebuilds only Codex images
-- Updating Claude rebuilds only Claude images
-- Updating Java rebuilds only Java images
-- Updating Playwright MCP rebuilds only web images
-- Updating Node.js rebuilds all agent images
-- Updating the MIPE runtime rebuilds final agent layers, while leaving Node, Java, and web dependency layers cacheable
-
 ### Versions
 
 `docker-bake.hcl` defines the default Node.js, Codex, Claude, and Playwright MCP versions. Override one for a local build with:
@@ -145,8 +102,6 @@ docker buildx bake --print
 The build uses a fixed `SOURCE_DATE_EPOCH` from `docker-bake.hcl`. It must not be derived from the current commit, because changing layer timestamps would produce different image digests for otherwise identical layers.
 
 The MIPE build version is computed from `go.mod`, `go.sum`, and production Go files under `cmd/` and `internal/`. Test files are excluded from both the version hash and the Docker build context, so test-only changes do not invalidate the runtime binary layer.
-
-CI adds the GHCR image tags through `docker-bake-ci.hcl`. Publishing may still reprocess layers with `rewrite-timestamp=true`, but the fixed epoch keeps unchanged layer digests stable so GHCR can deduplicate their blobs.
 
 ## Running Agents
 
