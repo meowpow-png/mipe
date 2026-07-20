@@ -40,7 +40,7 @@ Run the unit tests with coverage using:
 just test-coverage
 ```
 
-This prints a coverage summary and writes the full profile to `build/report/coverage.out`.
+This prints a coverage summary and writes the full profile to `build/reports/coverage.out`.
 
 Integration tests run the runtime as a separate binary inside Docker, so they do not add to the Go coverage profile. Use unit tests to track line coverage and integration tests to check real container behavior.
 
