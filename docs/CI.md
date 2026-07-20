@@ -45,7 +45,8 @@ Scopes follow image dependency graph. Shared dependency installs sit below stabl
 
 CI exports shared runtime and toolchain caches because many images consume them. It does not export any agent npm-install layers. Rebuilding those layers in parallel costs less than exporting and restoring their large, volatile cache records.
 
-Cache availability does not guarantee a hit. BuildKit also needs matching inputs, build arguments, parent filesystem, and solve graph. Reproducible layers make those records dependable across runs.
+> [!NOTE]
+> Cache availability does not guarantee a hit. BuildKit also needs matching inputs, build arguments, parent filesystem, and solve graph. Reproducible layers make those records dependable across runs.
 
 Changes rebuild only affected image families:
 

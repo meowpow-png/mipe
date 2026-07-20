@@ -207,6 +207,9 @@ docker compose run --rm \
 
 Matching IDs lets the agent modify workspace files without creating root-owned files.
 
+> [!WARNING]
+> Mismatched `LOCAL_UID` or `LOCAL_GID` can create workspace files the host user cannot modify.
+
 ## Troubleshooting
 
 ### Missing Images
@@ -242,8 +245,11 @@ docker volume ls --filter name=mipe_
 
 To reset all local agent state, remove Mipe volumes by running from root:
 
+> [!WARNING]
+> This permanently removes agent authentication, settings, and caches.
+
 ```bash
 just docker-clean-volumes
 ```
 
-This deletes agent authentication, settings, and caches, but not the workspace.
+Workspace is not removed.

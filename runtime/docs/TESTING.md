@@ -96,11 +96,14 @@ just build-oci runtime runtime-oci
 
 Layout is written under `.mipe/`. Recipe uses configured fixed epoch and timestamp rewriting, so OCI manifests and layers are suitable for reproducibility checks.
 
-For normal validation, run an automated full-image comparison with `diffoci`. Use affected Bake target in place of `runtime`; any difference is a reproducibility regression.
+For normal validation, run an automated full-image comparison with `diffoci`. Use affected Bake target in place of `runtime`.
 
 ```bash
 just build-compare runtime
 ```
+
+> [!WARNING]
+> Any difference between independent no-cache builds is a reproducibility regression. Investigate output before changing cache policy.
 
 Compare exported OCI layouts when checking files and metadata. Build same target twice with unchanged inputs, then compare both layouts.
 
