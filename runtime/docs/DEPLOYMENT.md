@@ -266,26 +266,6 @@ Rebuild the affected Bake target:
 just build-images claude-java
 ```
 
-### Reproducibility
-
-When changing image construction, verify that independent no-cache builds produce the same image. This catches nondeterministic files, timestamps, and metadata before they cause cache misses or republish unchanged layers.
-
-Build an OCI image layout for inspection:
-
-```bash
-just build-oci runtime runtime-oci
-```
-
-The layout is written under `.mipe/`. The recipe uses the configured fixed epoch and timestamp rewriting, so its OCI manifests and layers are suitable for reproducibility checks.
-
-Compare two independent no-cache builds of a target:
-
-```bash
-just build-compare runtime
-```
-
-The recipe builds two temporary local images and compares them with `diffoci`. Use the affected Bake target in place of `runtime`; a difference is a reproducibility regression that should be investigated before changing cache policy.
-
 ### Agent State
 
 List Mipe agent volumes with:

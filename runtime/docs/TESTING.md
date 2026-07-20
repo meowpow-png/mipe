@@ -84,6 +84,48 @@ The direct Go command is:
 MIPE_INTEGRATION=1 go test -v ./integration
 ```
 
+## Image Reproducibility
+
+When changing image construction, verify that independent no-cache builds produce same image. This catches nondeterministic files, timestamps, and metadata before they cause CI cache misses or republish unchanged layers.
+
+Build an OCI image layout for inspection:
+
+```bash
+just build-oci runtime runtime-oci
+```
+
+Layout is written under `.mipe/`. Recipe uses configured fixed epoch and timestamp rewriting, so OCI manifests and layers are suitable for reproducibility checks.
+
+For normal validation, run an automated full-image comparison with `diffoci`. Use affected Bake target in place of `runtime`; any difference is a reproducibility regression.
+
+```bash
+just build-compare runtime
+```
+
+Compare exported OCI layouts when checking files and metadata. Build same target twice with unchanged inputs, then compare both layouts.
+
+```bash
+just build-oci runtime runtime-a
+just build-oci runtime runtime-b
+diff -ru .mipe/runtime-a .mipe/runtime-b
+```
+
+Inspect layer identifiers when narrowing down a difference. Build two tagged local images, then compare their layer lists.
+
+```bash
+VERSION="$(bash scripts/get-go-build-version.sh)" \
+  docker buildx bake runtime --load --provenance=false --sbom=false \
+    --set runtime.tags=runtime-a --no-cache
+VERSION="$(bash scripts/get-go-build-version.sh)" \
+  docker buildx bake runtime --load --provenance=false --sbom=false \
+    --set runtime.tags=runtime-b --no-cache
+diff -u \
+  <(docker image inspect runtime-a --format '{{json .RootFS.Layers}}') \
+  <(docker image inspect runtime-b --format '{{json .RootFS.Layers}}')
+```
+
+Matching layer lists are a quick signal, not a complete image comparison. Use `just build-compare` or OCI-layout comparison before accepting a change.
+
 ## Daily Workflow
 
 Run focused unit tests while developing, then run the full unit suite before finishing a change:

@@ -24,7 +24,7 @@ just build-oci runtime runtime-oci
 just build-compare runtime
 ```
 
-See [Local deployment](docs/DEPLOYMENT.md#reproducibility) for when to use these checks.
+See [Testing](docs/TESTING.md#image-reproducibility) for when to use these checks.
 
 ## Running
 
