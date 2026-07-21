@@ -3,7 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
     paths:
       - .github/workflows/ci.yml
       - .github/scripts/write-release-source-manifest.sh
