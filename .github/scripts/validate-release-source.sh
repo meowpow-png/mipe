@@ -24,32 +24,29 @@ if [[ "$changelog_entries" -ne 1 ]]; then
   exit 1
 fi
 
-ci_run="$({
+candidate_run="$({
   gh api --paginate \
-    "/repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${source_sha}&status=completed&per_page=100" \
+    "/repos/${GITHUB_REPOSITORY}/actions/workflows/runtime-rc.yml/runs?head_sha=${source_sha}&status=completed&per_page=100" \
     | jq -s '
         [.[].workflow_runs[]
-         | select(.event == "push" or .event == "workflow_dispatch")]
+         | select(.event == "push" and .conclusion == "success")]
         | sort_by(.run_started_at)
         | last // empty
       '
 })"
 
-if [[ -z "$ci_run" ]]; then
-  echo "No completed CI run exists for $source_sha. Run CI for this commit, then retry the release." >&2
+if [[ -z "$candidate_run" ]]; then
+  echo "No successful runtime release-candidate run exists for $source_sha. Publish an RC for this commit, then retry the release." >&2
   exit 1
 fi
 
-ci_run_id="$(jq -r '.id' <<<"$ci_run")"
-ci_conclusion="$(jq -r '.conclusion' <<<"$ci_run")"
-if [[ "$ci_conclusion" != "success" ]]; then
-  echo "Latest CI run $ci_run_id for $source_sha concluded with $ci_conclusion. Run CI successfully, then retry the release." >&2
-  exit 1
-fi
+candidate_run_id="$(jq -r '.id' <<<"$candidate_run")"
+candidate_tag="$(jq -r '.head_branch' <<<"$candidate_run")"
 
 {
   echo "release_tag=$RELEASE_TAG"
   echo "release_version=$release_version"
   echo "source_sha=$source_sha"
-  echo "ci_run_id=$ci_run_id"
+  echo "candidate_run_id=$candidate_run_id"
+  echo "candidate_tag=$candidate_tag"
 } >> "$GITHUB_OUTPUT"

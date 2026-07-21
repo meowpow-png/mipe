@@ -1,0 +1,41 @@
+name: Runtime Release Candidate
+
+on:
+  push:
+    tags:
+      - 'runtime/v*-rc.*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      candidate_version: ${{ steps.validate.outputs.candidate_version }}
+      image_tag: ${{ steps.validate.outputs.image_tag }}
+      release_version: ${{ steps.validate.outputs.release_version }}
+      source_sha: ${{ steps.validate.outputs.source_sha }}
+
+    steps:
+      - name: Check out candidate tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Validate candidate tag and source
+        id: validate
+        env:
+          RUNTIME_CANDIDATE_TAG: ${{ github.ref_name }}
+        run: .github/scripts/validate-runtime-candidate.sh
+
+  runtime-build:
+    needs: validate
+    uses: ./.github/workflows/runtime-build.yml
+    with:
+      publish: true
+      provenance: true
+      sbom: true
+      image_tags: ${{ needs.validate.outputs.image_tag }}

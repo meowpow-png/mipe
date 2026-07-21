@@ -3,7 +3,8 @@ name: Release Runtime
 on:
   push:
     tags:
-      - runtime/v*
+      - 'runtime/v*'
+      - '!runtime/v*-*'
   workflow_dispatch:
     inputs:
       tag:
@@ -36,11 +37,11 @@ jobs:
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: bash .github/scripts/validate-release-source.sh
 
-      - name: Resolve development image digests
+      - name: Resolve release-candidate image digests
         id: resolve
         env:
           GH_TOKEN: ${{ github.token }}
-          CI_RUN_ID: ${{ steps.validate.outputs.ci_run_id }}
+          CI_RUN_ID: ${{ steps.validate.outputs.candidate_run_id }}
           SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
         run: bash .github/scripts/resolve-release-source.sh
 
@@ -90,7 +91,8 @@ jobs:
           RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
           RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
           SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
-          SOURCE_CI_RUN_ID: ${{ steps.validate.outputs.ci_run_id }}
+          SOURCE_CANDIDATE_TAG: ${{ steps.validate.outputs.candidate_tag }}
+          SOURCE_RC_RUN_ID: ${{ steps.validate.outputs.candidate_run_id }}
           REPOSITORY: ${{ github.repository }}
 
           VALIDATE_STATUS: ${{ steps.validate.outcome }}
