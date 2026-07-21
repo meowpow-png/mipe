@@ -44,6 +44,46 @@ jobs:
           SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
         run: bash .github/scripts/resolve-release-source.sh
 
+      - name: Promote release images
+        id: promote
+        if: ${{ false }}
+        run: |
+          # Retag each resolved digest in GHCR without rebuilding any layers.
+          # Publish the full vX.Y.Z tag and any supported moving tags, such as
+          # vX.Y, vX, and latest, according to the runtime tag policy.
+
+      - name: Generate release attestations
+        id: attest
+        if: ${{ false }}
+        run: |
+          # Generate an SBOM for each promoted image digest.
+          # Generate provenance that identifies this workflow, release tag, and
+          # source digest, then attach the metadata to the released images.
+
+      - name: Create release manifest
+        id: manifest
+        if: ${{ false }}
+        run: |
+          # Write a machine-readable manifest listing every user-facing runtime
+          # variant, its release tags, its immutable digest, and agent version.
+          # Preserve the manifest as a workflow artifact and release asset.
+
+      - name: Publish GitHub release
+        id: publish
+        if: ${{ false }}
+        run: |
+          # Create the GitHub Release for the runtime/vX.Y.Z tag.
+          # Use the matching changelog section as the release notes and attach
+          # the release manifest and any SBOM or provenance artifacts.
+
+      - name: Verify published release
+        id: verify
+        if: ${{ false }}
+        run: |
+          # Resolve every published release tag and confirm it matches the
+          # originally selected digest for that runtime variant.
+          # Confirm that the expected SBOM and provenance metadata is available.
+
       - name: Generate release summary
         if: ${{ always() && steps.validate.outcome == 'success' && steps.resolve.outcome == 'success' }}
         env:
