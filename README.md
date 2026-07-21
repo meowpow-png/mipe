@@ -36,14 +36,14 @@ Your host machine stays clean, and every project gets its own isolated environme
 
 The available runtime images are listed below.
 
-| Image                                          | Tags                                 | Agent Version |
-|------------------------------------------------|--------------------------------------|---------------|
-| `ghcr.io/meowpow-png/mipe-runtime-codex`       | `latest`, `dev-latest`, `dev-<hash>` | 0.144.6       |
-| `ghcr.io/meowpow-png/mipe-runtime-claude`      | `latest`, `dev-latest`, `dev-<hash>` | 2.1.211       |
-| `ghcr.io/meowpow-png/mipe-runtime-codex-java`  | `latest`, `dev-latest`, `dev-<hash>` | 0.144.6       |
-| `ghcr.io/meowpow-png/mipe-runtime-claude-java` | `latest`, `dev-latest`, `dev-<hash>` | 2.1.211       |
-| `ghcr.io/meowpow-png/mipe-runtime-codex-web`   | `latest`, `dev-latest`, `dev-<hash>` | 0.144.6       |
-| `ghcr.io/meowpow-png/mipe-runtime-claude-web`  | `latest`, `dev-latest`, `dev-<hash>` | 2.1.211       |
+| Image                                          | Tags                   |
+|------------------------------------------------|------------------------|
+| `ghcr.io/meowpow-png/mipe-runtime-codex`       | `latest`, `dev-latest` |
+| `ghcr.io/meowpow-png/mipe-runtime-claude`      | `latest`, `dev-latest` |
+| `ghcr.io/meowpow-png/mipe-runtime-codex-java`  | `latest`, `dev-latest` |
+| `ghcr.io/meowpow-png/mipe-runtime-claude-java` | `latest`, `dev-latest` |
+| `ghcr.io/meowpow-png/mipe-runtime-codex-web`   | `latest`, `dev-latest` |
+| `ghcr.io/meowpow-png/mipe-runtime-claude-web`  | `latest`, `dev-latest` |
 
 Each variant includes a different set of language toolchains and developer tools.
 
