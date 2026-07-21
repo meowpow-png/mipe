@@ -138,8 +138,8 @@ jobs:
             claude
             claude-java
             claude-web
-          provenance: false
-          sbom: false
+          provenance: true
+          sbom: true
           push: ${{ github.ref == 'refs/heads/dev' }}
           set: |
             runtime.output=type=image,rewrite-timestamp=true
