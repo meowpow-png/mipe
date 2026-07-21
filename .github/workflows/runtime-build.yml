@@ -58,7 +58,7 @@ jobs:
           if [[ -n "$BUILD_VERSION" ]]; then
             version="$BUILD_VERSION"
           else
-            version="$(bash runtime/scripts/get-go-build-version.sh)"
+            version="$(runtime/scripts/get-go-build-version.sh)"
           fi
           echo "version=$version" >> "${GITHUB_OUTPUT}"
 
