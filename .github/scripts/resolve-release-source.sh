@@ -37,15 +37,16 @@ targets=(
 )
 
 for target in "${targets[@]}"; do
-  output_name="${target//-/_}"
-  repository="$(jq -er --arg target "$target" '.images[$target].repository | select(type == "string" and length > 0)' "$manifest_path")"
-  digest="$(jq -er --arg target "$target" '.images[$target].digest | select(type == "string" and test("^sha256:[0-9a-f]{64}$"))' "$manifest_path")"
-
-  {
-    echo "${output_name}_repository=$repository"
-    echo "${output_name}_digest=$digest"
-  } >> "$GITHUB_OUTPUT"
+  jq -e \
+    --arg target "$target" \
+    '
+      (.images[$target].repository | select(type == "string" and length > 0))
+      and (.images[$target].digest | select(type == "string" and test("^sha256:[0-9a-f]{64}$")))
+    ' \
+    "$manifest_path" >/dev/null
 done
 
-build_version="$(jq -er '.build_version | select(type == "string" and length > 0)' "$manifest_path")"
-echo "build_version=$build_version" >> "$GITHUB_OUTPUT"
+: "${RUNNER_TEMP:?RUNNER_TEMP must be set}"
+release_source_manifest="${RUNNER_TEMP}/runtime-release-source.json"
+cp "$manifest_path" "$release_source_manifest"
+echo "release_source_manifest=$release_source_manifest" >> "$GITHUB_OUTPUT"

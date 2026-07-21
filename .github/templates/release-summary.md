@@ -15,9 +15,7 @@
 | Stage                             | Status             |
 |-----------------------------------|--------------------|
 | Validate release tag and source   | ${VALIDATE_STATUS} |
-| Resolve release-candidate digests  | ${RESOLVE_STATUS}  |
+| Resolve release-candidate digests | ${RESOLVE_STATUS}  |
 | Promote release images            | ${PROMOTE_STATUS}  |
-| Generate release attestations     | ${ATTEST_STATUS}   |
-| Create release manifest           | ${MANIFEST_STATUS} |
 | Publish GitHub release            | ${PUBLISH_STATUS}  |
 | Verify published release          | ${VERIFY_STATUS}   |

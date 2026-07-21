@@ -45,29 +45,19 @@ jobs:
           SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
         run: bash .github/scripts/resolve-release-source.sh
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Promote release images
         id: promote
-        if: ${{ false }}
-        run: |
-          # Retag each resolved digest in GHCR without rebuilding any layers.
-          # Publish the full vX.Y.Z tag and any supported moving tags, such as
-          # vX.Y, vX, and latest, according to the runtime tag policy.
-
-      - name: Generate release attestations
-        id: attest
-        if: ${{ false }}
-        run: |
-          # Generate an SBOM for each promoted image digest.
-          # Generate provenance that identifies this workflow, release tag, and
-          # source digest, then attach the metadata to the released images.
-
-      - name: Create release manifest
-        id: manifest
-        if: ${{ false }}
-        run: |
-          # Write a machine-readable manifest listing every user-facing runtime
-          # variant, its release tags, its immutable digest, and agent version.
-          # Preserve the manifest as a workflow artifact and release asset.
+        env:
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+          RELEASE_SOURCE_MANIFEST: ${{ steps.resolve.outputs.release_source_manifest }}
+        run: .github/scripts/promote-release-images.sh
 
       - name: Publish GitHub release
         id: publish
@@ -98,8 +88,6 @@ jobs:
           VALIDATE_STATUS: ${{ steps.validate.outcome }}
           RESOLVE_STATUS: ${{ steps.resolve.outcome }}
           PROMOTE_STATUS: ${{ steps.promote.outcome }}
-          ATTEST_STATUS: ${{ steps.attest.outcome }}
-          MANIFEST_STATUS: ${{ steps.manifest.outcome }}
           PUBLISH_STATUS: ${{ steps.publish.outcome }}
           VERIFY_STATUS: ${{ steps.verify.outcome }}
         run: .github/scripts/render-release-summary.sh > "$GITHUB_STEP_SUMMARY"
