@@ -28,12 +28,12 @@ eval "$(
     '
 )"
 
-if [[ -z "${BUILD_METADATA:-}" ]]; then
-  printf 'Missing required build metadata output.\n' >&2
+if [[ ! -f "${RELEASE_SOURCE_MANIFEST:-}" ]]; then
+  printf 'Missing release source manifest.\n' >&2
   exit 1
 fi
 
-PUBLISHED_TAGS="${IMAGE_TAGS:-dev-latest,${VERSION}}"
+PUBLISHED_TAGS="$(jq -er '.image_tags | select(type == "string" and length > 0)' "$RELEASE_SOURCE_MANIFEST")"
 export PUBLISHED_TAGS
 
 extract_digest() {
@@ -44,9 +44,9 @@ extract_digest() {
   if ! digest="$(
     jq -er \
       --arg target "$target" \
-      '.[$target]["containerimage.digest"] // empty
+      '.images[$target].digest // empty
        | select(type == "string" and test("^sha256:[0-9a-f]{64}$"))' \
-      <<<"${BUILD_METADATA}"
+      "$RELEASE_SOURCE_MANIFEST"
   )"; then
     printf 'Missing or invalid image digest for Bake target %s.\n' "$target" >&2
     exit 1

@@ -209,7 +209,6 @@ jobs:
           BUILD_VERSION: ${{ steps.version.outputs.version }}
           IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
           IMAGE_TAGS: ${{ inputs.image_tags }}
-          BUILD_METADATA: ${{ steps.publish.outputs.metadata }}
         run: >
           .github/scripts/write-release-source-manifest.sh
           > runtime/build/reports/release-source.json
@@ -231,6 +230,7 @@ jobs:
           fail_ci_if_error: true
 
       - name: Generate CI summary
+        if: inputs.publish
         env:
           BRANCH: ${{ github.ref_name }}
           COMMIT: ${{ github.sha }}
@@ -241,7 +241,6 @@ jobs:
           COVERAGE: ${{ steps.coverage.outputs.coverage }}
 
           OWNER: ${{ github.repository_owner }}
-          IMAGE_TAGS: ${{ inputs.image_tags }}
-          BUILD_METADATA: ${{ steps.publish.outputs.metadata }}
+          RELEASE_SOURCE_MANIFEST: runtime/build/reports/release-source.json
 
         run: .github/scripts/render-ci-summary.sh > "$GITHUB_STEP_SUMMARY"
