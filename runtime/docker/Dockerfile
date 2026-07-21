@@ -26,7 +26,8 @@ RUN apt-get update && \
         bash \
         gosu \
         passwd \
-        python3 && \
+        python3 \
+        ca-certificates && \
     rm -rf /var/lib/apt/lists/* \
            /var/log/apt/history.log \
            /var/log/apt/term.log \
@@ -66,7 +67,6 @@ ARG SOURCE_DATE_EPOCH
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ca-certificates \
         curl \
         gpg \
         faketime && \
