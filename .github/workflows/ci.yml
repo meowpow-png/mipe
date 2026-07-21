@@ -6,7 +6,9 @@ on:
     branches: [ main, dev ]
     paths:
       - .github/workflows/ci.yml
-      - .github/scripts/write-release-source-manifest.sh
+      - .github/workflows/release.yml
+      - .github/scripts/**
+      - .github/templates/**
       - runtime/cmd/**
       - runtime/internal/**
       - runtime/integration/**
