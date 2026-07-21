@@ -23,6 +23,13 @@ build-compare target:
     just build-tagged-image {{target}} local-b && \
     diffoci diff docker://local-a docker://local-b || test $? -eq 1
 
+# Compare exported OCI image layouts
+[arg("target", help="Bake target to compare")]
+build-compare-oci target:
+    @just build-oci {{target}} {{target}}-a
+    @just build-oci {{target}} {{target}}-b
+    diff -ru .mipe/{{target}}-a .mipe/{{target}}-b/
+
 # Show latest available package versions
 [arg("target", help="Docker image to inspect")]
 show-versions target:
