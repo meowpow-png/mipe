@@ -22,6 +22,11 @@ on:
         required: false
         type: string
         default: ""
+      build_version:
+        description: Version embedded in runtime images; defaults to a content-derived development version
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -47,8 +52,15 @@ jobs:
 
       - name: Set build version
         id: version
+        env:
+          BUILD_VERSION: ${{ inputs.build_version }}
         run: |
-          echo "version=$(bash runtime/scripts/get-go-build-version.sh)" >> "${GITHUB_OUTPUT}"
+          if [[ -n "$BUILD_VERSION" ]]; then
+            version="$BUILD_VERSION"
+          else
+            version="$(bash runtime/scripts/get-go-build-version.sh)"
+          fi
+          echo "version=$version" >> "${GITHUB_OUTPUT}"
 
       - name: Run tests with coverage
         id: coverage

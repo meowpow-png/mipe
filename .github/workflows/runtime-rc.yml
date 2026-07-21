@@ -39,3 +39,4 @@ jobs:
       provenance: true
       sbom: true
       image_tags: ${{ needs.validate.outputs.image_tag }}
+      build_version: ${{ needs.validate.outputs.release_version }}
