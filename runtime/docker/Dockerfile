@@ -1,4 +1,6 @@
 ARG NODE_VERSION=22
+ARG TEMURIN_21_JDK_VERSION=21.0.11.0.0+10-1
+ARG CHROMIUM_VERSION=150.0.7871.124-1~deb12u1
 
 FROM golang:1.26-bookworm AS runtime-builder
 
@@ -76,6 +78,7 @@ COPY --from=node-source /usr/local/ /usr/local/
 FROM node-base AS java-base
 
 ARG SOURCE_DATE_EPOCH
+ARG TEMURIN_21_JDK_VERSION
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -88,7 +91,7 @@ RUN apt-get update && \
         > /etc/apt/sources.list.d/adoptium.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        temurin-21-jdk && \
+        temurin-21-jdk="${TEMURIN_21_JDK_VERSION}" && \
     rm -f /etc/ssl/certs/adoptium/cacerts && \
     FAKE_TIME="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%d %H:%M:%S')" && \
     faketime -f "@${FAKE_TIME}" \
@@ -112,13 +115,14 @@ CMD ["mipe", "--help"]
 FROM node-base AS web-base
 
 ARG PLAYWRIGHT_MCP_VERSION
+ARG CHROMIUM_VERSION
 
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV CHROME_BIN=/usr/bin/chromium
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        chromium \
+        chromium="${CHROMIUM_VERSION}" \
         fonts-liberation && \
     npm install --global \
         @playwright/mcp@${PLAYWRIGHT_MCP_VERSION} && \
