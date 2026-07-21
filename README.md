@@ -36,22 +36,30 @@ Your host machine stays clean, and every project gets its own isolated environme
 
 The available runtime images are listed below.
 
-| Image                                          | Tags                   |
-|------------------------------------------------|------------------------|
-| `ghcr.io/meowpow-png/mipe-runtime-codex`       | `latest`, `dev-latest` |
-| `ghcr.io/meowpow-png/mipe-runtime-claude`      | `latest`, `dev-latest` |
-| `ghcr.io/meowpow-png/mipe-runtime-codex-java`  | `latest`, `dev-latest` |
-| `ghcr.io/meowpow-png/mipe-runtime-claude-java` | `latest`, `dev-latest` |
-| `ghcr.io/meowpow-png/mipe-runtime-codex-web`   | `latest`, `dev-latest` |
-| `ghcr.io/meowpow-png/mipe-runtime-claude-web`  | `latest`, `dev-latest` |
+| Image                                          | Tags                                 |
+|------------------------------------------------|--------------------------------------|
+| `ghcr.io/meowpow-png/mipe-runtime-codex`       | `latest`, `dev-latest`, `dev-<hash>` |
+| `ghcr.io/meowpow-png/mipe-runtime-claude`      | `latest`, `dev-latest`, `dev-<hash>` |
+| `ghcr.io/meowpow-png/mipe-runtime-codex-java`  | `latest`, `dev-latest`, `dev-<hash>` |
+| `ghcr.io/meowpow-png/mipe-runtime-claude-java` | `latest`, `dev-latest`, `dev-<hash>` |
+| `ghcr.io/meowpow-png/mipe-runtime-codex-web`   | `latest`, `dev-latest`, `dev-<hash>` |
+| `ghcr.io/meowpow-png/mipe-runtime-claude-web`  | `latest`, `dev-latest`, `dev-<hash>` |
 
-Each variant includes a different set of language toolchains and developer tools.
+> [!NOTE] 
+> Use `dev-<hash>` tag to pin a specific Mipe runtime build. The hash is shared across all image variants and identifies the runtime binary version, independent of bundled dependency versions.
 
-| Variants                    | Language Toolchains    | Developer Tools          |
-|-----------------------------|------------------------|--------------------------|
-| `codex`, `claude`           | Node.js 22             | Shared runtime           |
-| `codex-java`, `claude-java` | Node.js 22, Temurin 21 | Shared runtime           |
-| `codex-web`, `claude-web`   | Node.js 22             | Chromium, Playwright MCP |
+Each variant includes `mipe-runtime` and the following components:
+
+| Variant       | Components                                                     |
+|---------------|----------------------------------------------------------------|
+| `codex`       | `python3`, `codex`, `node`                                     |
+| `claude`      | `python3`, `claude-code`, `node`                               |
+| `codex-java`  | `python3`, `codex`, `node`, `temurin-21-jdk`                   |
+| `claude-java` | `python3`, `claude-code`, `node`, `temurin-21-jdk`             |
+| `codex-web`   | `python3`, `codex`, `node`, `chromium`, `playwright-mcp`       |
+| `claude-web`  | `python3`, `claude-code`, `node`, `chromium`, `playwright-mcp` |
+
+For a complete list of components and their versions, inspect the SBOM attached to the image.
 
 ## Quickstart
 
