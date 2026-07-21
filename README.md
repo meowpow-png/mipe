@@ -6,7 +6,7 @@
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI-Codex-412991?logo=openai&logoColor=white)
 ![Anthropic Claude](https://img.shields.io/badge/Anthropic-Claude-D97757?logo=anthropic&logoColor=white)
 
-There's only so many times you can copy the same AI development setup into a new repository before admitting it probably belongs somewhere else. That's how this repository happened.
+There are only so many times you can copy the same AI development setup into a new repository before admitting it probably belongs somewhere else. That's how this repository happened.
 
 ## What is this?
 
@@ -30,7 +30,7 @@ Instead of one global environment shared across everything, each project gets it
 
 Open your project directory, start a container, and get to work.
 
-Your host machine stays clean and every project gets its own isolated environment. Install whatever tools the project needs, experiment freely, and throw the whole environment away when you're done. The next project starts with a clean slate.
+Your host machine stays clean, and every project gets its own isolated environment. Install whatever tools the project needs, experiment freely, and throw the whole environment away when you're done. The next project starts with a clean slate.
 
 ## Available Images
 
@@ -160,7 +160,7 @@ setup_project() {
 }
 ```
 
-Use these dependency hooks when sessions run in fresh or disposable environments and the project should prepare itself before the agent starts.
+Use these dependency hooks when sessions run in fresh or disposable environments, and the project should prepare itself before the agent starts.
 
 ## Documentation
 
