@@ -69,11 +69,12 @@ jobs:
 
       - name: Verify published release
         id: verify
-        if: ${{ false }}
-        run: |
-          # Resolve every published release tag and confirm it matches the
-          # originally selected digest for that runtime variant.
-          # Confirm that the expected SBOM and provenance metadata is available.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+          RELEASE_SOURCE_MANIFEST: ${{ steps.resolve.outputs.release_source_manifest }}
+        run: .github/scripts/verify-published-release.sh
 
       - name: Generate release summary
         if: ${{ always() && steps.validate.outcome == 'success' && steps.resolve.outcome == 'success' }}
