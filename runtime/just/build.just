@@ -41,6 +41,7 @@ show-versions target:
 			python3 \
 			bash \
 			gosu \
+			git \
 			ca-certificates'
 
 [private]

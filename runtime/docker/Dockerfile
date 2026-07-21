@@ -71,6 +71,21 @@ RUN printf 'node: %s\n' "$(node --version)" && \
 
 FROM runtime-base AS node-base
 
+ARG GIT_VERSION
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git="${GIT_VERSION}" && \
+    dpkg-query \
+        --show \
+        --showformat='${Package}: ${Version}\n' \
+        git && \
+    rm -rf /var/lib/apt/lists/* \
+           /var/log/apt/history.log \
+           /var/log/apt/term.log \
+           /var/log/dpkg.log \
+           /var/cache/ldconfig/aux-cache
+
 COPY --from=node-source /usr/local/ /usr/local/
 
 FROM node-base AS java-base

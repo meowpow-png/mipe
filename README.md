@@ -50,14 +50,14 @@ The available runtime images are listed below.
 
 Each variant includes `mipe-runtime` and the following components:
 
-| Variant       | Components                                                     |
-|---------------|----------------------------------------------------------------|
-| `codex`       | `python3`, `codex`, `node`                                     |
-| `claude`      | `python3`, `claude-code`, `node`                               |
-| `codex-java`  | `python3`, `codex`, `node`, `temurin-21-jdk`                   |
-| `claude-java` | `python3`, `claude-code`, `node`, `temurin-21-jdk`             |
-| `codex-web`   | `python3`, `codex`, `node`, `chromium`, `playwright-mcp`       |
-| `claude-web`  | `python3`, `claude-code`, `node`, `chromium`, `playwright-mcp` |
+| Variant       | Components                                                            |
+|---------------|-----------------------------------------------------------------------|
+| `codex`       | `python3`, `git`, `codex`, `node`                                     |
+| `claude`      | `python3`, `git`, `claude-code`, `node`                               |
+| `codex-java`  | `python3`, `git`, `codex`, `node`, `temurin-21-jdk`                   |
+| `claude-java` | `python3`, `git`, `claude-code`, `node`, `temurin-21-jdk`             |
+| `codex-web`   | `python3`, `git`, `codex`, `node`, `chromium`, `playwright-mcp`       |
+| `claude-web`  | `python3`, `git`, `claude-code`, `node`, `chromium`, `playwright-mcp` |
 
 ## Quickstart
 
