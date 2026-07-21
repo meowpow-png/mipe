@@ -28,6 +28,14 @@ RUN apt-get update && \
         passwd \
         python3 \
         ca-certificates && \
+    dpkg-query \
+        --show \
+        --showformat='${Package}: ${Version}\n' \
+        bash \
+        gosu \
+        passwd \
+        python3 \
+        ca-certificates && \
     rm -rf /var/lib/apt/lists/* \
            /var/log/apt/history.log \
            /var/log/apt/term.log \
@@ -56,6 +64,10 @@ RUN mkdir -p /workspace && \
     chown "${LOCAL_UID}:${LOCAL_GID}" /workspace
 
 FROM node:${NODE_VERSION}-bookworm-slim AS node-source
+
+RUN printf 'node: %s\n' "$(node --version)" && \
+    printf 'npm: %s\n' "$(npm --version)" && \
+    printf 'corepack: %s\n' "$(corepack --version)"
 
 FROM runtime-base AS node-base
 
