@@ -17,6 +17,11 @@ on:
         required: false
         type: boolean
         default: false
+      image_tags:
+        description: Comma-separated tags to publish for every runtime image
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -132,6 +137,7 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
           IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+          IMAGE_TAGS: ${{ inputs.image_tags }}
         with:
           source: ./runtime
           files: |
@@ -190,6 +196,7 @@ jobs:
           CI_RUN_ID: ${{ github.run_id }}
           BUILD_VERSION: ${{ steps.version.outputs.version }}
           IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+          IMAGE_TAGS: ${{ inputs.image_tags }}
           BUILD_METADATA: ${{ steps.publish.outputs.metadata }}
         run: >
           .github/scripts/write-release-source-manifest.sh
@@ -222,6 +229,7 @@ jobs:
           COVERAGE: ${{ steps.coverage.outputs.coverage }}
 
           OWNER: ${{ github.repository_owner }}
+          IMAGE_TAGS: ${{ inputs.image_tags }}
           BUILD_METADATA: ${{ steps.publish.outputs.metadata }}
 
         run: .github/scripts/render-ci-summary.sh > "$GITHUB_STEP_SUMMARY"

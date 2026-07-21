@@ -33,6 +33,9 @@ if [[ -z "${BUILD_METADATA:-}" ]]; then
   exit 1
 fi
 
+PUBLISHED_TAGS="${IMAGE_TAGS:-dev-latest,${VERSION}}"
+export PUBLISHED_TAGS
+
 extract_digest() {
   local target="$1"
   local variable="$2"
@@ -81,6 +84,7 @@ required=(
   BRANCH
   COMMIT
   VERSION
+  PUBLISHED_TAGS
 
   UNIT_TESTS
   INTEGRATION_TESTS

@@ -7,6 +7,7 @@ jq -e \
   --arg ci_run_id "$CI_RUN_ID" \
   --arg build_version "$BUILD_VERSION" \
   --arg image_prefix "$IMAGE_PREFIX" \
+  --arg image_tags "$IMAGE_TAGS" \
   '
     def image($target; $repository):
       .[$target]["containerimage.digest"]
@@ -18,6 +19,7 @@ jq -e \
       source_sha: $source_sha,
       ci_run_id: $ci_run_id,
       build_version: $build_version,
+      image_tags: $image_tags,
       images: {
         runtime: image("runtime"; $image_prefix),
         codex: image("codex"; $image_prefix + "-codex"),
