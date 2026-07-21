@@ -59,8 +59,6 @@ Each variant includes `mipe-runtime` and the following components:
 | `codex-web`   | `python3`, `codex`, `node`, `chromium`, `playwright-mcp`       |
 | `claude-web`  | `python3`, `claude-code`, `node`, `chromium`, `playwright-mcp` |
 
-For a complete list of components and their versions, inspect the SBOM attached to the image.
-
 ## Quickstart
 
 **Requirements:**
