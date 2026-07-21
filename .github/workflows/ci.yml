@@ -49,11 +49,20 @@ jobs:
           echo "version=$(bash runtime/scripts/get-go-build-version.sh)" >> "${GITHUB_OUTPUT}"
 
       - name: Run tests with coverage
+        id: coverage
         working-directory: runtime
         run: |
           mkdir -p build/reports
+
           go test -coverprofile=build/reports/coverage.out -v ./...
-          go tool cover -func=build/reports/coverage.out
+
+          go tool cover -func=build/reports/coverage.out \
+            | tee build/reports/coverage.txt
+
+          coverage="$(
+            awk '/^total:/ { print $3 }' build/reports/coverage.txt
+          )"
+          echo "coverage=$coverage" >> "${GITHUB_OUTPUT}"
 
       - name: Build test image
         uses: docker/bake-action@v7
@@ -121,6 +130,7 @@ jobs:
             web-base.cache-to=type=gha,scope=web-base,mode=max
 
       - name: Build and push dev images
+        id: publish
         uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
@@ -182,3 +192,18 @@ jobs:
           files: runtime/build/reports/coverage.out
           disable_search: true
           fail_ci_if_error: true
+
+      - name: Generate CI summary
+        env:
+          BRANCH: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+          VERSION: ${{ steps.version.outputs.version }}
+
+          UNIT_TESTS: PASS
+          INTEGRATION_TESTS: PASS
+          COVERAGE: ${{ steps.coverage.outputs.coverage }}
+
+          OWNER: ${{ github.repository_owner }}
+          BUILD_METADATA: ${{ steps.publish.outputs.metadata }}
+
+        run: .github/scripts/render-ci-summary.sh > "$GITHUB_STEP_SUMMARY"
