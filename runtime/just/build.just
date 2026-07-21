@@ -23,6 +23,19 @@ build-compare target:
     just build-tagged-image {{target}} local-b && \
     diffoci diff docker://local-a docker://local-b || test $? -eq 1
 
+# Show latest available package versions
+[arg("target", help="Docker image to inspect")]
+show-versions target:
+	@docker run --rm {{target}} bash -eu -c '\
+		apt-get update >/dev/null; \
+		apt-cache policy \
+			chromium \
+			temurin-21-jdk \
+			python3 \
+			bash \
+			gosu \
+			ca-certificates'
+
 [private]
 build-tagged-image target tag:
     @VERSION=$(bash scripts/get-go-build-version.sh) \
