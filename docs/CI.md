@@ -59,15 +59,36 @@ Changes rebuild only affected image families:
 
 ## Publishing
 
-Only pushes to `dev` publish images. CI authenticates to `ghcr.io` with GitHub-provided credentials and publishes under `ghcr.io/<owner>/mipe-runtime`. Docker bake adds registry tags without changing local image tags: runtime gets `dev-latest` and its build-version tag, while agent images add their agent and toolchain suffix.
+Only pushes to `dev` publish images. CI authenticates to `ghcr.io` with GitHub-provided credentials and publishes under `ghcr.io/<owner>/mipe-runtime`.
 
-Publishing rewrites timestamps in exported layers. Without a fixed `SOURCE_DATE_EPOCH`, that would give unchanged files a new timestamp on every build or commit, changing layer digests for no useful reason. Fixed epoch keeps those timestamps stable. Together with pinned build inputs from Bake and generated-cache cleanup, unchanged layers keep same digest and GHCR can reuse existing blobs instead of receiving large duplicate uploads.
+Publishing rewrites timestamps in exported layers. Without a fixed `SOURCE_DATE_EPOCH`, that would give unchanged files a new timestamp on every build or commit, changing layer digests for no useful reason. Fixed epoch keeps those timestamps stable. 
 
-## Build Version
+Together with pinned build inputs from Bake and generated-cache cleanup, unchanged layers keep the same digest and GHCR can reuse existing blobs instead of receiving large duplicate uploads.
 
-CI computes binary version using a local script. Hash includes `go.mod`, `go.sum`, and production Go files under `cmd/` and `internal/`.
+## Versioning
 
-Tests do not contribute to version hash and are excluded from Docker build context. Test-only changes still run checks but do not rebuild runtime binary layer. Production Go source or module changes produce a new version and invalidate layers that depend on binary.
+CI uses three complementary identifiers to describe a build. The build version identifies the runtime source revision and is embedded into the binary, for example:
+
+```text
+dev-4a8d2c1
+```
+
+Image tags provide convenient registry references for pulling images. They may move over time as newer builds are published, for example:
+
+```text
+ghcr.io/<owner>/mipe-runtime:dev-latest
+ghcr.io/<owner>/mipe-runtime:dev-4a8d2c1
+```
+
+Image digests uniquely identify the published OCI image contents. Unlike tags, digests are immutable and always refer to exactly one published image, for example:
+
+```text
+ghcr.io/<owner>/mipe-runtime@sha256:abc123...
+```
+
+Build version is computed by a local script. Hash includes `go.mod`, `go.sum`, and production Go files under `cmd/` and `internal/`.
+
+Tests do not contribute to the build version and are excluded from the Docker build context. Test-only changes still run checks but do not rebuild the runtime binary layer. Production Go source or module changes produce a new version and invalidate layers that depend on the binary.
 
 ## Triggering
 

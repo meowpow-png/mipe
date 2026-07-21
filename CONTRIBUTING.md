@@ -35,6 +35,6 @@ Major versions represent a platform compatibility generation. Components within 
 
 ## Releases
 
-Components are released independently as they evolve. A release should only include components that have changed. Each release is assigned a Semantic Version.
+Components are released independently as they evolve. A release includes only components that have changed and is assigned a Semantic Version. Container image tags and digests identify the published artifacts for that release but are not component versions.
 
-A roadmap milestone is considered complete once all required component releases are available. Components that are unaffected by a milestone do not receive a new release.
+A roadmap milestone is considered complete once all required component releases are available. Components unaffected by a milestone do not receive a new release.
