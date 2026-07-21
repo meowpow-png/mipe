@@ -84,13 +84,12 @@ flowchart TD
 
 ### Versions
 
-`docker-bake.hcl` defines the default Node.js, Codex, Claude, and Playwright MCP versions. Override one for a local build with:
+`docker-bake.hcl` is the source of truth for all image component versions. Dockerfiles receive them as explicit build arguments and provide no fallback values, so every Bake target resolves a fully specified build.
+
+Override a version for a local build by setting its matching Bake variable:
 
 ```bash
-CODEX_VERSION=0.144.5 just build-images codex codex-java
-CLAUDE_VERSION=2.1.211 just build-images claude claude-java
-NODE_VERSION=22.23.1 just build-images codex claude codex-java claude-java codex-web claude-web
-PLAYWRIGHT_MCP_VERSION=0.0.78 just build-images codex-web claude-web
+<VERSION_VARIABLE>=<version> just build-images <target>...
 ```
 
 To inspect the resolved targets, versions, and dependencies before building, run:

@@ -61,7 +61,7 @@ Changes rebuild only affected image families:
 
 Only pushes to `dev` publish images. CI authenticates to `ghcr.io` with GitHub-provided credentials and publishes under `ghcr.io/<owner>/mipe-runtime`. Docker bake adds registry tags without changing local image tags: runtime gets `dev-latest` and its build-version tag, while agent images add their agent and toolchain suffix.
 
-Publishing rewrites timestamps in exported layers. Without a fixed `SOURCE_DATE_EPOCH`, that would give unchanged files a new timestamp on every build or commit, changing layer digests for no useful reason. Fixed epoch keeps those timestamps stable. Together with deterministic package installs and generated-cache cleanup, unchanged layers keep same digest and GHCR can reuse existing blobs instead of receiving large duplicate uploads.
+Publishing rewrites timestamps in exported layers. Without a fixed `SOURCE_DATE_EPOCH`, that would give unchanged files a new timestamp on every build or commit, changing layer digests for no useful reason. Fixed epoch keeps those timestamps stable. Together with pinned build inputs from Bake and generated-cache cleanup, unchanged layers keep same digest and GHCR can reuse existing blobs instead of receiving large duplicate uploads.
 
 ## Build Version
 
