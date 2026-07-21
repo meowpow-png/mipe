@@ -1,4 +1,4 @@
-ARG NODE_VERSION
+ARG NODE_VERSION=22.23.1
 
 FROM golang:1.26-bookworm AS runtime-builder
 
