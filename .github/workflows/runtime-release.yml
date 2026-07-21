@@ -61,11 +61,11 @@ jobs:
 
       - name: Publish GitHub release
         id: publish
-        if: ${{ false }}
-        run: |
-          # Create the GitHub Release for the runtime/vX.Y.Z tag.
-          # Use the matching changelog section as the release notes and attach
-          # the release manifest and any SBOM or provenance artifacts.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+        run: .github/scripts/publish-github-release.sh
 
       - name: Verify published release
         id: verify
