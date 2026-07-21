@@ -7,6 +7,16 @@ on:
         description: Push runtime images and record their immutable digests
         required: true
         type: boolean
+      provenance:
+        description: Generate BuildKit provenance for published runtime images
+        required: false
+        type: boolean
+        default: false
+      sbom:
+        description: Generate BuildKit SBOMs for published runtime images
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -135,8 +145,8 @@ jobs:
             claude
             claude-java
             claude-web
-          provenance: false
-          sbom: false
+          provenance: ${{ inputs.provenance }}
+          sbom: ${{ inputs.sbom }}
           push: ${{ inputs.publish }}
           set: |
             runtime.output=type=image,rewrite-timestamp=true
