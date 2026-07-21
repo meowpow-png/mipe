@@ -6,6 +6,7 @@ on:
     branches: [ master, dev ]
     paths:
       - .github/workflows/ci.yml
+      - .github/scripts/write-release-source-manifest.sh
       - runtime/cmd/**
       - runtime/internal/**
       - runtime/integration/**
@@ -185,6 +186,27 @@ jobs:
             claude-web.cache-from=type=gha,scope=web-base
             claude-web.cache-from=type=gha,scope=node-base
             claude-web.cache-from=type=gha,scope=runtime
+
+      - name: Write release source manifest
+        if: github.ref == 'refs/heads/dev'
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          CI_RUN_ID: ${{ github.run_id }}
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+          IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+          BUILD_METADATA: ${{ steps.publish.outputs.metadata }}
+        run: >
+          .github/scripts/write-release-source-manifest.sh
+          > runtime/build/reports/release-source.json
+
+      - name: Upload release source manifest
+        if: github.ref == 'refs/heads/dev'
+        uses: actions/upload-artifact@v7
+        with:
+          name: runtime-release-source
+          path: runtime/build/reports/release-source.json
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v6
