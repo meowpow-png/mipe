@@ -8,6 +8,7 @@ if [[ ! "$RELEASE_TAG" =~ ^runtime/v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0
 fi
 
 release_version="${RELEASE_TAG#runtime/v}"
+changelog_version="runtime-${release_version}"
 source_sha="$(git rev-parse "${RELEASE_TAG}^{commit}")"
 
 git fetch --no-tags origin +refs/heads/dev:refs/remotes/origin/dev
@@ -16,10 +17,10 @@ if ! git merge-base --is-ancestor "$source_sha" origin/dev; then
   exit 1
 fi
 
-changelog_pattern="^## \[${release_version//./\\.}\] - [0-9]{4}-[0-9]{2}-[0-9]{2}$"
-changelog_entries="$(grep -Ec "$changelog_pattern" runtime/CHANGELOG.md || true)"
+changelog_pattern="^## \[${changelog_version//./\\.}\] - [0-9]{4}-[0-9]{2}-[0-9]{2}$"
+changelog_entries="$(grep -Ec "$changelog_pattern" CHANGELOG.md || true)"
 if [[ "$changelog_entries" -ne 1 ]]; then
-  echo "runtime/CHANGELOG.md must contain exactly one dated entry for $release_version." >&2
+  echo "CHANGELOG.md must contain exactly one dated entry for $changelog_version." >&2
   exit 1
 fi
 
