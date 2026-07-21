@@ -1,0 +1,63 @@
+name: Release Runtime
+
+on:
+  push:
+    tags:
+      - runtime/v*
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing runtime release tag to validate and publish
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+  packages: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Validate release tag and source
+        id: validate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: bash .github/scripts/validate-release-source.sh
+
+      - name: Resolve development image digests
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_RUN_ID: ${{ steps.validate.outputs.ci_run_id }}
+          SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
+        run: bash .github/scripts/resolve-release-source.sh
+
+      - name: Generate release summary
+        if: ${{ always() && steps.validate.outcome == 'success' && steps.resolve.outcome == 'success' }}
+        env:
+          RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+          SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
+          SOURCE_CI_RUN_ID: ${{ steps.validate.outputs.ci_run_id }}
+          REPOSITORY: ${{ github.repository }}
+
+          VALIDATE_STATUS: ${{ steps.validate.outcome }}
+          RESOLVE_STATUS: ${{ steps.resolve.outcome }}
+          PROMOTE_STATUS: ${{ steps.promote.outcome }}
+          ATTEST_STATUS: ${{ steps.attest.outcome }}
+          MANIFEST_STATUS: ${{ steps.manifest.outcome }}
+          PUBLISH_STATUS: ${{ steps.publish.outcome }}
+          VERIFY_STATUS: ${{ steps.verify.outcome }}
+        run: .github/scripts/render-release-summary.sh > "$GITHUB_STEP_SUMMARY"
