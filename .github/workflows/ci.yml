@@ -5,10 +5,7 @@ on:
   push:
     branches: [ main, dev ]
     paths:
-      - .github/workflows/ci.yml
-      - .github/workflows/runtime-build.yml
-      - .github/workflows/runtime-release.yml
-      - .github/workflows/runtime-rc.yml
+      - .github/workflows/**
       - .github/scripts/**
       - .github/templates/**
       - runtime/cmd/**
