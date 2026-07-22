@@ -28,63 +28,10 @@ eval "$(
     '
 )"
 
-if [[ ! -f "${RELEASE_SOURCE_MANIFEST:-}" ]]; then
-  printf 'Missing release source manifest.\n' >&2
-  exit 1
-fi
-
-PUBLISHED_TAGS="$(jq -er '.image_tags | select(type == "string" and length > 0)' "$RELEASE_SOURCE_MANIFEST")"
-export PUBLISHED_TAGS
-
-extract_digest() {
-  local target="$1"
-  local variable="$2"
-  local digest
-
-  if ! digest="$(
-    jq -er \
-      --arg target "$target" \
-      '.images[$target].digest // empty
-       | select(type == "string" and test("^sha256:[0-9a-f]{64}$"))' \
-      "$RELEASE_SOURCE_MANIFEST"
-  )"; then
-    printf 'Missing or invalid image digest for Bake target %s.\n' "$target" >&2
-    exit 1
-  fi
-
-  printf -v "$variable" '%s' "$digest"
-  export "$variable"
-}
-
-targets=(
-  runtime
-  codex
-  codex-java
-  codex-web
-  claude
-  claude-java
-  claude-web
-)
-
-variables=(
-  RUNTIME_DIGEST
-  CODEX_DIGEST
-  CODEX_JAVA_DIGEST
-  CODEX_WEB_DIGEST
-  CLAUDE_DIGEST
-  CLAUDE_JAVA_DIGEST
-  CLAUDE_WEB_DIGEST
-)
-
-for index in "${!targets[@]}"; do
-  extract_digest "${targets[$index]}" "${variables[$index]}"
-done
-
 required=(
   BRANCH
   COMMIT
   VERSION
-  PUBLISHED_TAGS
 
   UNIT_TESTS
   INTEGRATION_TESTS
@@ -97,16 +44,6 @@ required=(
   TEMURIN_21_JDK_VERSION
   CHROMIUM_VERSION
   PLAYWRIGHT_MCP_VERSION
-
-  RUNTIME_DIGEST
-  CODEX_DIGEST
-  CODEX_JAVA_DIGEST
-  CODEX_WEB_DIGEST
-  CLAUDE_DIGEST
-  CLAUDE_JAVA_DIGEST
-  CLAUDE_WEB_DIGEST
-
-  OWNER
 )
 
 missing=()

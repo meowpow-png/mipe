@@ -35,11 +35,143 @@ jobs:
   runtime-build:
     name: Build and Publish Runtime RC
     needs: validate
-    uses: ./.github/workflows/runtime-build.yml
-    with:
-      publish: true
-      provenance: true
-      sbom: true
-      cache: false
-      image_tags: ${{ needs.validate.outputs.image_tag }}
-      build_version: ${{ needs.validate.outputs.release_version }}
+    runs-on: ubuntu-latest
+    env:
+      BUILDKIT_PROGRESS: plain
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          cache: true
+          go-version-file: runtime/go.mod
+          cache-dependency-path: runtime/go.sum
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          buildkitd-flags: --debug
+
+      - name: Run tests with coverage
+        id: coverage
+        working-directory: runtime
+        run: |
+          mkdir -p build/reports
+          go test -coverprofile=build/reports/coverage.out -v ./...
+          go tool cover -func=build/reports/coverage.out | tee build/reports/coverage.txt
+          echo "coverage=$(awk '/^total:/ { print $3 }' build/reports/coverage.txt)" >> "${GITHUB_OUTPUT}"
+
+      - name: Build test image
+        uses: docker/bake-action@v7
+        env:
+          VERSION: ${{ needs.validate.outputs.release_version }}
+        with:
+          source: ./runtime
+          targets: |
+            runtime
+            test
+          provenance: false
+          sbom: false
+          no-cache: true
+          load: true
+          set: |
+            runtime.output=type=cacheonly
+            test.output=type=docker
+
+      - name: Run integration tests
+        working-directory: runtime
+        run: MIPE_INTEGRATION=1 go test -v ./integration/...
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build base images
+        uses: docker/bake-action@v7
+        env:
+          VERSION: ${{ needs.validate.outputs.release_version }}
+        with:
+          source: ./runtime
+          targets: |
+            node-base
+            java-base
+            web-base
+          provenance: false
+          sbom: false
+          no-cache: true
+          set: |
+            node-base.output=type=cacheonly
+            java-base.output=type=cacheonly
+            web-base.output=type=cacheonly
+
+      - name: Build and publish runtime images
+        id: publish
+        uses: docker/bake-action@v7
+        env:
+          VERSION: ${{ needs.validate.outputs.release_version }}
+          IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+          IMAGE_TAGS: ${{ needs.validate.outputs.image_tag }}
+        with:
+          source: ./runtime
+          files: |
+            docker-bake.hcl
+            docker-bake-ci.hcl
+          targets: |
+            runtime
+            codex
+            codex-java
+            codex-web
+            claude
+            claude-java
+            claude-web
+          provenance: true
+          sbom: true
+          no-cache: true
+          push: true
+          set: |
+            runtime.output=type=image,rewrite-timestamp=true
+            codex.output=type=image,rewrite-timestamp=true
+            codex-java.output=type=image,rewrite-timestamp=true
+            codex-web.output=type=image,rewrite-timestamp=true
+            claude.output=type=image,rewrite-timestamp=true
+            claude-java.output=type=image,rewrite-timestamp=true
+            claude-web.output=type=image,rewrite-timestamp=true
+
+      - name: Write release source manifest
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          CI_RUN_ID: ${{ github.run_id }}
+          BUILD_VERSION: ${{ needs.validate.outputs.release_version }}
+          IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/mipe-runtime
+          IMAGE_TAGS: ${{ needs.validate.outputs.image_tag }}
+          RUNTIME_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata).runtime['containerimage.digest'] }}
+          CODEX_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata).codex['containerimage.digest'] }}
+          CODEX_JAVA_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata)['codex-java']['containerimage.digest'] }}
+          CODEX_WEB_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata)['codex-web']['containerimage.digest'] }}
+          CLAUDE_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata).claude['containerimage.digest'] }}
+          CLAUDE_JAVA_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata)['claude-java']['containerimage.digest'] }}
+          CLAUDE_WEB_DIGEST: ${{ fromJSON(steps.publish.outputs.metadata)['claude-web']['containerimage.digest'] }}
+        run: .github/scripts/write-release-source-manifest.sh > runtime/build/reports/release-source.json
+
+      - name: Upload release source manifest
+        uses: actions/upload-artifact@v7
+        with:
+          name: runtime-release-source
+          path: runtime/build/reports/release-source.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          files: runtime/build/reports/coverage.out
+          disable_search: true
+          fail_ci_if_error: true
