@@ -49,8 +49,4 @@ The final CI runs confirmed the result: runtime, Node, Java, and Web layers were
 
 ## References
 
-- [CI Docker Build Caching](004-note-ci-docker-build-caching.md)
-- [OCI Layer Reproducibility and CI Cache Misses](005-note-oci-layer-reproducibility.md)
 - [APT Layer Reproducibility Solutions](006-note-apt-layer-reproducibility-solutions.md)
-- [BuildKit reproducibility documentation](https://github.com/moby/buildkit/blob/master/docs/build-repro.md)
-- [Docker cache backends](https://docs.docker.com/build/cache/backends/)

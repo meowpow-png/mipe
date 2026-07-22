@@ -43,11 +43,7 @@ The important design rule is to make every published layer deterministic indepen
 
 ## References
 
-- [CI Docker Build Caching](004-note-ci-docker-build-caching.md)
-- [OCI Layer Reproducibility and CI Cache Misses](005-note-oci-layer-reproducibility.md)
-- [APT Layer Reproducibility Solutions](006-note-apt-layer-reproducibility-solutions.md)
 - [BuildKit Cache Graph Alignment](007-note-buildkit-cache-graph-alignment.md)
-- [BuildKit reproducibility documentation](https://github.com/moby/buildkit/blob/master/docs/build-repro.md)
 - [Docker BuildKit configuration](https://docs.docker.com/build/buildkit/configure/)
 - [Docker buildx build documentation](https://docs.docker.com/reference/cli/docker/buildx/build/)
 - [OCI Distribution Specification](https://github.com/opencontainers/distribution-spec/blob/main/spec.md)

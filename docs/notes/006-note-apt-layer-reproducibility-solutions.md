@@ -73,7 +73,6 @@ No APT option was found that replaces the same-layer removal of the generated lo
 
 ## References
 
-- [CI Docker Build Caching](004-note-ci-docker-build-caching.md)
 - [OCI Layer Reproducibility and CI Cache Misses](005-note-oci-layer-reproducibility.md)
 - [BuildKit reproducibility documentation](https://github.com/moby/buildkit/blob/master/docs/build-repro.md)
 - [Docker reproducible builds with GitHub Actions](https://docs.docker.com/build/ci/github-actions/reproducible-builds/)
