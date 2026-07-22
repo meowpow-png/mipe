@@ -40,6 +40,16 @@ jobs:
           go tool cover -func=build/reports/coverage.out | tee build/reports/coverage.txt
           echo "coverage=$(awk '/^total:/ { print $3 }' build/reports/coverage.txt)" >> "${GITHUB_OUTPUT}"
 
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: runtime-code-coverage
+          path: |
+            runtime/build/reports/coverage.out
+            runtime/build/reports/coverage.txt
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Upload coverage to Codecov
         id: codecov
         uses: codecov/codecov-action@v6
