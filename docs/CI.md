@@ -108,7 +108,7 @@ flowchart LR
     digest --> latest["Stable image tag\nlatest"]
 ```
 
-The release also creates a GitHub Release named `Runtime vX.Y.Z`. Its notes are the matching `CHANGELOG.md` section. Publication then confirms that both stable image tags resolve to the expected digest and that the GitHub Release exists. See [Contributing](../CONTRIBUTING.md#releasing-runtime) for the contributor release procedure.
+The release also creates a GitHub Release named `Runtime vX.Y.Z`. Its notes are the matching `CHANGELOG.md` section. Publication then confirms that both stable image tags resolve to the expected digest and that the GitHub Release exists. See [Contributing](../CONTRIBUTING.md#releases) for the contributor release procedure.
 
 ## Versioning
 
