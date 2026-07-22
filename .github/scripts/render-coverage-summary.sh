@@ -9,7 +9,6 @@ required=(
   BRANCH
   COMMIT
   COVERAGE
-  CODECOV_STATUS
 )
 
 missing=()
@@ -26,11 +25,4 @@ if ((${#missing[@]})); then
   exit 1
 fi
 
-case "${CODECOV_STATUS,,}" in
-  success) CODECOV_STATUS_DISPLAY='✅' ;;
-  failure) CODECOV_STATUS_DISPLAY='❌' ;;
-  *) CODECOV_STATUS_DISPLAY="${CODECOV_STATUS}" ;;
-esac
-
-export CODECOV_STATUS_DISPLAY
 envsubst < "${TEMPLATE}"
