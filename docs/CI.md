@@ -92,6 +92,6 @@ Tests do not contribute to the build version and are excluded from the Docker bu
 
 ## Triggering
 
-CI supports manual runs and pushes to `master` or `dev`. Pushes run only when changes affect CI configuration or runtime build inputs: runtime commands, internal code, integration tests, Go modules, Docker files, hooks, Bake files, or Compose configuration.
+CI supports manual runs and pushes to `main` or `dev`. Pushes run only when changes affect CI configuration or runtime build inputs: runtime commands, internal code, integration tests, Go modules, Docker files, hooks, Bake files, or Compose configuration.
 
 Path filtering avoids image builds for unrelated repository changes. Manual dispatch remains available for cache checks, publishing validation, and other CI investigations.
