@@ -65,7 +65,7 @@ jobs:
           auth: ${{ secrets.GIST_TOKEN }}
           gistID: 9d82a498aa63b2b7b872629c4cd6759c
           filename: mipe-runtime-coverage.json
-          label: runtime coverage
+          label: coverage
           message: ${{ steps.coverage.outputs.coverage }}
           color: ${{ steps.coverage.outputs.color }}
 
