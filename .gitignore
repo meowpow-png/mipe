@@ -1,8 +1,10 @@
 # IntelliJ IDEA
 .idea/
+*.iml
 
 # Obsidian
 .obsidian/
 
-# Module files
-*.iml
+# Workspace
+**/.codex/
+**/.mipe/

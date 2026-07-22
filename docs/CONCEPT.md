@@ -12,37 +12,20 @@ This project is simply giving that shared foundation its own home. Instead of re
 
 ## Core Idea
 
-The core idea is to separate the infrastructure required to run Codex from the parts that belong to an individual project.
+The core idea is simple: everything that can be shared across projects should live in one place, while everything that makes a project unique should stay with the project itself.
 
-The reusable pieces, such as the container image, runtime initialization, permission handling, persistent state, and common tasks and hooks, should live in one place instead of being copied into every repository.
+That allows me to improve the shared foundation over time without copying the same changes into every repository, while keeping each project free to define its own context, requirements, and workflow.
 
-Each project should only describe its own context by defining the workspace, providing project-specific instructions, and extending the shared behavior where needed.
+As I use Mipe across more projects, I expect the shared foundation to grow naturally. New functionality should exist because multiple projects benefit from it, not because it might be useful someday.
 
-As I use Codex Devkit across more projects, I expect the shared foundation to grow naturally. New functionality should exist because multiple projects benefit from it, not because it might be useful someday.
+## Evolution
 
-## Design Goals
+While developing Mipe, I started looking beyond the runtime itself and at the broader workflow of AI-assisted software development.
 
-The goal is to provide a solid foundation that can be reused across projects without getting in the way. I'm keeping the scope small and focused on making Codex easier to use.
+It became clear that preparing a development environment is only one part of the experience. Starting a session is important, but so is understanding what happened during it and being able to revisit that work afterwards. The runtime remains the foundation, but it is no longer the entire project.
 
-A few ideas should guide the project:
+That shift expands the vision from a reusable development kit into a platform for AI-assisted software engineering. In addition to providing a shared foundation for development sessions, Mipe will aim to help developers observe, preserve, and build upon the work produced during those sessions.
 
-- Prefer sensible defaults over endless configuration
-- Keep the runtime and the consuming project responsible for different things
-- Don't add abstractions until multiple projects actually need them
-- Choose simple solutions over clever ones
-- Build from real experience, not anticipated use cases
+Mipe will follow a local-first approach. Developers should be able to use it entirely on their own machine, while optional cloud capabilities will extend the local experience without becoming a requirement.
 
-Ultimately, Codex Devkit should reduce the effort required to bring Codex into a new project while remaining small enough to understand and maintain.
-
-## Open Questions
-
-There are several design decisions that I intentionally want to leave open until I gain more experience using it.
-
-Some of the questions I'm exploring are:
-
-- Where should the boundary between the runtime and the consuming project be?
-- Which tasks and hooks should be shared by default?
-- How should project-specific extensions integrate with the shared runtime?
-- What belongs in the runtime, and what belongs in the project's `.codex` directory?
-
-These are questions I'll revisit as the project evolves.
+This direction represents the current vision rather than a fixed destination and will continue to evolve through experimentation and practical experience.

@@ -1,0 +1,95 @@
+name: Runtime Release
+
+on:
+  push:
+    tags:
+      - 'runtime/v*'
+      - '!runtime/v*-*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing runtime release tag to validate and publish
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+  packages: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    name: Publish Runtime Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Validate release tag and source
+        id: validate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: bash .github/scripts/validate-release-source.sh
+
+      - name: Resolve release-candidate image digests
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_RUN_ID: ${{ steps.validate.outputs.candidate_run_id }}
+          SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
+        run: bash .github/scripts/resolve-release-source.sh
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Promote release images
+        id: promote
+        env:
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+          RELEASE_SOURCE_MANIFEST: ${{ steps.resolve.outputs.release_source_manifest }}
+        run: .github/scripts/promote-release-images.sh
+
+      - name: Publish GitHub release
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+        run: .github/scripts/publish-github-release.sh
+
+      - name: Verify published release
+        id: verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+          RELEASE_SOURCE_MANIFEST: ${{ steps.resolve.outputs.release_source_manifest }}
+        run: .github/scripts/verify-published-release.sh
+
+      - name: Generate release summary
+        if: ${{ always() && steps.validate.outcome == 'success' && steps.resolve.outcome == 'success' }}
+        env:
+          RELEASE_TAG: ${{ steps.validate.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.validate.outputs.release_version }}
+          SOURCE_SHA: ${{ steps.validate.outputs.source_sha }}
+          SOURCE_CANDIDATE_TAG: ${{ steps.validate.outputs.candidate_tag }}
+          SOURCE_RC_RUN_ID: ${{ steps.validate.outputs.candidate_run_id }}
+          REPOSITORY: ${{ github.repository }}
+
+          VALIDATE_STATUS: ${{ steps.validate.outcome }}
+          RESOLVE_STATUS: ${{ steps.resolve.outcome }}
+          PROMOTE_STATUS: ${{ steps.promote.outcome }}
+          PUBLISH_STATUS: ${{ steps.publish.outcome }}
+          VERIFY_STATUS: ${{ steps.verify.outcome }}
+        run: .github/scripts/render-release-summary.sh > "$GITHUB_STEP_SUMMARY"

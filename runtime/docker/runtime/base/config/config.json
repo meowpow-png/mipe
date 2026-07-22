@@ -1,0 +1,6 @@
+{
+  "agent_name": "mipe",
+  "user_home": "/home/dev",
+  "runtime_home": "/opt/mipe",
+  "workspace": "/workspace"
+}

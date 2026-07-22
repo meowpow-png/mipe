@@ -1,0 +1,9 @@
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[[hooks.PreToolUse]]
+matcher = "^Bash$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python3 /opt/mipe/hooks/prevent_repo_scan.py"

@@ -1,0 +1,7 @@
+{
+  "agent_name": "codex",
+  "user_home": "/home/dev",
+  "agent_home": "/home/dev/.codex",
+  "runtime_home": "/opt/mipe",
+  "workspace": "/workspace"
+}

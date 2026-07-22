@@ -1,0 +1,7 @@
+{
+  "agent_name": "claude",
+  "user_home": "/home/dev",
+  "agent_home": "/home/dev/.claude",
+  "runtime_home": "/opt/mipe",
+  "workspace": "/workspace"
+}

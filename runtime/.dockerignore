@@ -1,0 +1,14 @@
+*
+!go.mod
+!go.sum
+!cmd/
+!cmd/**
+!hooks/
+!hooks/**
+!internal/
+!internal/**
+**/*_test.go
+!templates/
+!templates/**
+!docker/
+!docker/**

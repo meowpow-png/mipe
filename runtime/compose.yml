@@ -1,0 +1,70 @@
+name: mipe
+
+x-runtime: &runtime
+  pull_policy: never
+  working_dir: /workspace
+  environment:
+    LOCAL_UID: "${LOCAL_UID:-1000}"
+    LOCAL_GID: "${LOCAL_GID:-1000}"
+    MIPE_DEBUG: "${MIPE_DEBUG:-1}"
+  volumes:
+    - .:/workspace:Z
+
+x-codex: &codex
+  <<: *runtime
+  volumes:
+    - codex-home:/home/dev/.codex
+    - .:/workspace:Z
+
+x-codex-web: &codex-web
+  <<: *runtime
+  volumes:
+    - codex-web-home:/home/dev/web
+    - .:/workspace:Z
+
+x-claude: &claude
+  <<: *runtime
+  volumes:
+    - claude-home:/home/dev
+    - .:/workspace:Z
+
+x-claude-web: &claude-web
+  <<: *runtime
+  volumes:
+    - claude-web-home:/home/dev/web
+    - .:/workspace:Z
+
+services:
+  mipe:
+    <<: *runtime
+    image: mipe-runtime:local
+
+  codex:
+    <<: *codex
+    image: mipe-runtime-codex:local
+
+  codex-java:
+    <<: *codex
+    image: mipe-runtime-codex-java:local
+
+  codex-web:
+    <<: *codex-web
+    image: mipe-runtime-codex-web:local
+
+  claude:
+    <<: *claude
+    image: mipe-runtime-claude:local
+
+  claude-java:
+    <<: *claude
+    image: mipe-runtime-claude-java:local
+
+  claude-web:
+    <<: *claude-web
+    image: mipe-runtime-claude-web:local
+
+volumes:
+  codex-home:
+  codex-web-home:
+  claude-home:
+  claude-web-home:
