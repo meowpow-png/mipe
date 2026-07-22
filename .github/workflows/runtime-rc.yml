@@ -109,13 +109,13 @@ jobs:
           sbom: true
           push: true
           set: |
-            runtime.output=type=image,rewrite-timestamp=true
-            codex.output=type=image,rewrite-timestamp=true
-            codex-java.output=type=image,rewrite-timestamp=true
-            codex-web.output=type=image,rewrite-timestamp=true
-            claude.output=type=image,rewrite-timestamp=true
-            claude-java.output=type=image,rewrite-timestamp=true
-            claude-web.output=type=image,rewrite-timestamp=true
+            runtime.output=type=image,push=true,rewrite-timestamp=true
+            codex.output=type=image,push=true,rewrite-timestamp=true
+            codex-java.output=type=image,push=true,rewrite-timestamp=true
+            codex-web.output=type=image,push=true,rewrite-timestamp=true
+            claude.output=type=image,push=true,rewrite-timestamp=true
+            claude-java.output=type=image,push=true,rewrite-timestamp=true
+            claude-web.output=type=image,push=true,rewrite-timestamp=true
 
       - name: Write release source manifest
         env:
