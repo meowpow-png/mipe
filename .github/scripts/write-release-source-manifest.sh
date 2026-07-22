@@ -32,12 +32,36 @@ repositories=(
 
 digests=()
 
+resolve_digest() {
+  local reference="$1"
+  local attempt=1
+  local delay=1
+  local digest
+
+  while ((attempt <= 5)); do
+    if digest="$(
+      docker buildx imagetools inspect "$reference" --format '{{json .Manifest}}' \
+        | jq -er '.digest | select(type == "string" and test("^sha256:[0-9a-f]{64}$"))'
+    )"; then
+      printf '%s' "$digest"
+      return 0
+    fi
+    if ((attempt == 5)); then
+      break
+    fi
+    echo "Image $reference is not visible in GHCR yet; retrying in ${delay}s." >&2
+    sleep "$delay"
+    ((attempt += 1))
+    ((delay *= 2))
+  done
+
+  echo "Image $reference did not become visible in GHCR after $attempt attempts." >&2
+  return 1
+}
+
 for index in "${!targets[@]}"; do
   reference="${repositories[$index]}:${image_tag}"
-  digest="$(
-    docker buildx imagetools inspect "$reference" --format '{{json .Manifest}}' \
-      | jq -er '.digest | select(type == "string" and test("^sha256:[0-9a-f]{64}$"))'
-  )"
+  digest="$(resolve_digest "$reference")"
   digests+=("$digest")
 done
 
