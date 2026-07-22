@@ -1,7 +1,7 @@
 # Mipe
 
 [![CI](https://github.com/meowpow-png/mipe/actions/workflows/ci.yml/badge.svg)](https://github.com/meowpow-png/mipe/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/meowpow-png/9d82a498aa63b2b7b872629c4cd6759c/raw/mipe-runtime-coverage.json)](https://github.com/meowpow-png/mipe/actions/workflows/runtime-coverage.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/meowpow-png/9d82a498aa63b2b7b872629c4cd6759c/raw/mipe-runtime-coverage.json&cacheSeconds=300)](https://github.com/meowpow-png/mipe/actions/workflows/runtime-coverage.yml)
 ![Go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white)
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI-Codex-412991?logo=openai&logoColor=white)
 ![Anthropic Claude](https://img.shields.io/badge/Anthropic-Claude-D97757?logo=anthropic&logoColor=white)
