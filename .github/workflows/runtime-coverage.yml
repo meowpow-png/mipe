@@ -1,6 +1,7 @@
 name: Runtime Code Coverage
 
 on:
+  workflow_dispatch:
   push:
     branches: [ dev, main, 'release/**' ]
     paths:
