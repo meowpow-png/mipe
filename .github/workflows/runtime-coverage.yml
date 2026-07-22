@@ -1,0 +1,45 @@
+name: Runtime Code Coverage
+
+on:
+  push:
+    branches: [ dev, main ]
+    paths:
+      - .github/workflows/runtime-coverage.yml
+      - runtime/cmd/**
+      - runtime/internal/**
+      - runtime/go.mod
+      - runtime/go.sum
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    name: Report Runtime Code Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          cache: true
+          go-version-file: runtime/go.mod
+          cache-dependency-path: runtime/go.sum
+
+      - name: Generate coverage report
+        working-directory: runtime
+        run: |
+          mkdir -p build/reports
+          go test -coverprofile=build/reports/coverage.out -v ./...
+          go tool cover -func=build/reports/coverage.out | tee build/reports/coverage.txt
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: runtime/build/reports/coverage.out
+          disable_search: true
+          fail_ci_if_error: true
