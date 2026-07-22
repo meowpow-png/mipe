@@ -12,10 +12,10 @@
 
 ## Release Stages
 
-| Stage                             | Status             |
-|-----------------------------------|--------------------|
-| Validate release tag and source   | ${VALIDATE_STATUS} |
-| Resolve release-candidate digests | ${RESOLVE_STATUS}  |
-| Promote release images            | ${PROMOTE_STATUS}  |
-| Publish GitHub release            | ${PUBLISH_STATUS}  |
-| Verify published release          | ${VERIFY_STATUS}   |
+| Stage                             | Status                     |
+|-----------------------------------|----------------------------|
+| Validate release tag and source   | ${VALIDATE_STATUS_DISPLAY} |
+| Resolve release-candidate digests | ${RESOLVE_STATUS_DISPLAY}  |
+| Promote release images            | ${PROMOTE_STATUS_DISPLAY}  |
+| Publish GitHub release            | ${PUBLISH_STATUS_DISPLAY}  |
+| Verify published release          | ${VERIFY_STATUS_DISPLAY}   |

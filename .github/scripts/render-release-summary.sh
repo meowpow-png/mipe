@@ -34,4 +34,20 @@ if ((${#missing[@]})); then
   exit 1
 fi
 
+status_marker() {
+  case "${1,,}" in
+    success) printf '✅' ;;
+    failure) printf '❌' ;;
+    skipped) printf '⏭️' ;;
+    cancelled) printf '🚫' ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+for variable in VALIDATE_STATUS RESOLVE_STATUS PROMOTE_STATUS PUBLISH_STATUS VERIFY_STATUS; do
+  display_variable="${variable}_DISPLAY"
+  printf -v "$display_variable" '%s' "$(status_marker "${!variable}")"
+  export "$display_variable"
+done
+
 envsubst < "$TEMPLATE"

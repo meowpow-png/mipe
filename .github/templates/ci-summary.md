@@ -10,11 +10,11 @@
 
 ## Verification
 
-| Check             | Result               |
-|-------------------|----------------------|
-| Unit Tests        | ${UNIT_TESTS}        |
-| Integration Tests | ${INTEGRATION_TESTS} |
-| Coverage          | `${COVERAGE}`        |
+| Check             | Result                       |
+|-------------------|------------------------------|
+| Unit Tests        | ${UNIT_TESTS_DISPLAY}        |
+| Integration Tests | ${INTEGRATION_TESTS_DISPLAY} |
+| Coverage          | `${COVERAGE}`                |
 
 ## Published Images
 

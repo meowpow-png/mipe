@@ -123,4 +123,18 @@ if ((${#missing[@]})); then
   exit 1
 fi
 
+status_marker() {
+  case "${1,,}" in
+    success|pass) printf '✅' ;;
+    failure|fail) printf '❌' ;;
+    skipped) printf '⏭️' ;;
+    cancelled) printf '🚫' ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+UNIT_TESTS_DISPLAY="$(status_marker "$UNIT_TESTS")"
+INTEGRATION_TESTS_DISPLAY="$(status_marker "$INTEGRATION_TESTS")"
+export UNIT_TESTS_DISPLAY INTEGRATION_TESTS_DISPLAY
+
 envsubst < "$TEMPLATE"
