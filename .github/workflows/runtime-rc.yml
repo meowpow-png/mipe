@@ -67,16 +67,11 @@ jobs:
           VERSION: ${{ needs.validate.outputs.release_version }}
         with:
           source: ./runtime
-          targets: |
-            runtime
-            test
+          targets: test
           provenance: false
           sbom: false
           no-cache: true
           load: true
-          set: |
-            runtime.output=type=cacheonly
-            test.output=type=docker
 
       - name: Run integration tests
         working-directory: runtime
@@ -88,24 +83,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build base images
-        uses: docker/bake-action@v7
-        env:
-          VERSION: ${{ needs.validate.outputs.release_version }}
-        with:
-          source: ./runtime
-          targets: |
-            node-base
-            java-base
-            web-base
-          provenance: false
-          sbom: false
-          no-cache: true
-          set: |
-            node-base.output=type=cacheonly
-            java-base.output=type=cacheonly
-            web-base.output=type=cacheonly
 
       - name: Build and publish runtime images
         id: publish
@@ -129,7 +106,6 @@ jobs:
             claude-web
           provenance: true
           sbom: true
-          no-cache: true
           push: true
           set: |
             runtime.output=type=image,rewrite-timestamp=true
