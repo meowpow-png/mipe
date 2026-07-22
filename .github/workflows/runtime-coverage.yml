@@ -30,16 +30,29 @@ jobs:
           cache-dependency-path: runtime/go.sum
 
       - name: Generate coverage report
+        id: coverage
         working-directory: runtime
         run: |
           mkdir -p build/reports
           go test -coverprofile=build/reports/coverage.out -v ./...
           go tool cover -func=build/reports/coverage.out | tee build/reports/coverage.txt
+          echo "coverage=$(awk '/^total:/ { print $3 }' build/reports/coverage.txt)" >> "${GITHUB_OUTPUT}"
 
       - name: Upload coverage to Codecov
+        id: codecov
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: runtime/build/reports/coverage.out
           disable_search: true
           fail_ci_if_error: true
+
+      - name: Generate coverage summary
+        if: ${{ always() }}
+        env:
+          MODULE: Runtime
+          BRANCH: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+          COVERAGE: ${{ steps.coverage.outputs.coverage || 'unavailable' }}
+          CODECOV_STATUS: ${{ steps.codecov.outcome }}
+        run: .github/scripts/render-coverage-summary.sh > "$GITHUB_STEP_SUMMARY"
