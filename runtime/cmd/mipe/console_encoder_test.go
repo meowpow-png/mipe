@@ -68,3 +68,56 @@ func TestConsoleEncoder_FormatsFieldsInEmissionOrder(t *testing.T) {
 		t.Fatalf("output = %q, want fields in emission order", output)
 	}
 }
+
+func TestConsoleEncoder_FormatsWarningWithStack(t *testing.T) {
+	t.Parallel()
+
+	encoded, err := newConsoleEncoder(false).EncodeEntry(zapcore.Entry{
+		Level:   zapcore.WarnLevel,
+		Message: "warning",
+		Stack:   "stack trace",
+	}, nil)
+	if err != nil {
+		t.Fatalf("EncodeEntry() error = %v", err)
+	}
+	defer encoded.Free()
+
+	if got, want := encoded.String(), "⚠ Warning\nstack trace\n"; got != want {
+		t.Fatalf("encoded output = %q, want %q", got, want)
+	}
+}
+
+func TestConsoleEncoder_ClonePreservesMode(t *testing.T) {
+	t.Parallel()
+
+	original := newConsoleEncoder(true).(*consoleEncoder)
+	clone := original.Clone().(*consoleEncoder)
+
+	if !clone.debug {
+		t.Fatal("clone debug mode = false, want true")
+	}
+	encoded, err := clone.EncodeEntry(zapcore.Entry{Level: zapcore.InfoLevel, Message: "message"}, nil)
+	if err != nil {
+		t.Fatalf("EncodeEntry() error = %v", err)
+	}
+	defer encoded.Free()
+
+	if got, want := encoded.String(), "INFO  Message\n"; got != want {
+		t.Fatalf("encoded output = %q, want %q", got, want)
+	}
+}
+
+func TestConsoleHelpers_HandleEmptyValues(t *testing.T) {
+	t.Parallel()
+
+	if got := sentenceCase(""); got != "" {
+		t.Fatalf("sentenceCase(\"\") = %q, want empty string", got)
+	}
+
+	output := consoleBufferPool.Get()
+	defer output.Free()
+	appendConsoleFields(output, nil)
+	if got := output.String(); got != "" {
+		t.Fatalf("appendConsoleFields(nil) wrote %q, want empty string", got)
+	}
+}
