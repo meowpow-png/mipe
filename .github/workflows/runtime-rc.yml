@@ -57,14 +57,9 @@ jobs:
         with:
           buildkitd-flags: --debug
 
-      - name: Run tests with coverage
-        id: coverage
+      - name: Run unit tests
         working-directory: runtime
-        run: |
-          mkdir -p build/reports
-          go test -coverprofile=build/reports/coverage.out -v ./...
-          go tool cover -func=build/reports/coverage.out | tee build/reports/coverage.txt
-          echo "coverage=$(awk '/^total:/ { print $3 }' build/reports/coverage.txt)" >> "${GITHUB_OUTPUT}"
+        run: go test -v ./...
 
       - name: Build test image
         uses: docker/bake-action@v7
@@ -168,10 +163,3 @@ jobs:
           path: runtime/build/reports/release-source.json
           if-no-files-found: error
           retention-days: 90
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
-        with:
-          files: runtime/build/reports/coverage.out
-          disable_search: true
-          fail_ci_if_error: true
