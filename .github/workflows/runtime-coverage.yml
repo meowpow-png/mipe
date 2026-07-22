@@ -2,7 +2,7 @@ name: Runtime Code Coverage
 
 on:
   push:
-    branches: [ dev, main ]
+    branches: [ dev, main, 'release/**' ]
     paths:
       - .github/workflows/runtime-coverage.yml
       - runtime/cmd/**

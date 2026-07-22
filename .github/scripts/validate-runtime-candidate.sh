@@ -10,12 +10,17 @@ fi
 candidate_version="${BASH_REMATCH[1]}"
 image_tag="v${candidate_version}"
 release_version="${candidate_version%-rc.*}"
+release_branch="release/runtime-v${release_version}"
 changelog_version="runtime-${release_version}"
 source_sha="$(git rev-parse "${RUNTIME_CANDIDATE_TAG}^{commit}")"
 
-git fetch --no-tags origin +refs/heads/dev:refs/remotes/origin/dev
-if ! git merge-base --is-ancestor "$source_sha" origin/dev; then
-  echo "Runtime candidate tag $RUNTIME_CANDIDATE_TAG must point to a commit reachable from dev." >&2
+if ! git fetch --no-tags origin "+refs/heads/${release_branch}:refs/remotes/origin/${release_branch}"; then
+  echo "Release branch $release_branch does not exist." >&2
+  exit 1
+fi
+
+if ! git merge-base --is-ancestor "$source_sha" "origin/${release_branch}"; then
+  echo "Runtime candidate tag $RUNTIME_CANDIDATE_TAG must point to a commit reachable from $release_branch." >&2
   exit 1
 fi
 

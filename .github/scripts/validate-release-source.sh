@@ -8,12 +8,17 @@ if [[ ! "$RELEASE_TAG" =~ ^runtime/v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0
 fi
 
 release_version="${RELEASE_TAG#runtime/v}"
+release_branch="release/runtime-v${release_version}"
 changelog_version="runtime-${release_version}"
 source_sha="$(git rev-parse "${RELEASE_TAG}^{commit}")"
 
-git fetch --no-tags origin +refs/heads/dev:refs/remotes/origin/dev
-if ! git merge-base --is-ancestor "$source_sha" origin/dev; then
-  echo "Release tag $RELEASE_TAG must point to a commit reachable from dev." >&2
+if ! git fetch --no-tags origin "+refs/heads/${release_branch}:refs/remotes/origin/${release_branch}"; then
+  echo "Release branch $release_branch does not exist." >&2
+  exit 1
+fi
+
+if ! git merge-base --is-ancestor "$source_sha" "origin/${release_branch}"; then
+  echo "Release tag $RELEASE_TAG must point to a commit reachable from $release_branch." >&2
   exit 1
 fi
 
