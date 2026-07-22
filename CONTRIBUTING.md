@@ -38,3 +38,29 @@ Major versions represent a platform compatibility generation. Components within 
 Components are released independently as they evolve. A release includes only components that have changed and is assigned a Semantic Version. Container image tags and digests identify the published artifacts for that release but are not component versions.
 
 A roadmap milestone is considered complete once all required component releases are available. Components unaffected by a milestone do not receive a new release.
+
+### Runtime
+
+Runtime releases are prepared on `dev`. Start by committing the completed root changelog entry for the version being released:
+
+```text
+## [runtime-X.Y.Z] - YYYY-MM-DD
+```
+
+Create an annotated release candidate tag on that commit, then push the branch and tag together:
+
+```bash
+git tag -a runtime/vX.Y.Z-rc.1 -m "Runtime vX.Y.Z RC 1"
+git push --atomic origin dev refs/tags/runtime/vX.Y.Z-rc.1
+```
+
+Wait for the release candidate to pass. It builds and tests the images that will become the stable release. Then create the stable tag on the exact candidate commit and push it:
+
+```bash
+git tag -a runtime/vX.Y.Z -m "Runtime vX.Y.Z" runtime/vX.Y.Z-rc.1^{commit}
+git push origin refs/tags/runtime/vX.Y.Z
+```
+
+If the candidate needs a fix, make a new commit on `dev` and create a new candidate tag such as `runtime/vX.Y.Z-rc.2`. Do not move or reuse existing tags.
+
+See [Continuous Integration](docs/CI.md#releases) for the release pipeline and published image behavior.

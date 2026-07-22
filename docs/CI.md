@@ -59,11 +59,56 @@ Changes rebuild only affected image families:
 
 ## Publishing
 
-Only pushes to `dev` publish images. CI authenticates to `ghcr.io` with GitHub-provided credentials and publishes under `ghcr.io/<owner>/mipe-runtime`.
+Pushes to `dev` publish development images. Release-candidate tags publish candidate images; stable releases promote those images without rebuilding them. CI authenticates to `ghcr.io` with GitHub-provided credentials and publishes under `ghcr.io/<owner>/mipe-runtime`.
 
 Publishing rewrites timestamps in exported layers. Without a fixed `SOURCE_DATE_EPOCH`, that would give unchanged files a new timestamp on every build or commit, changing layer digests for no useful reason. Fixed epoch keeps those timestamps stable. 
 
 Together with pinned build inputs from Bake and generated-cache cleanup, unchanged layers keep the same digest and GHCR can reuse existing blobs instead of receiving large duplicate uploads.
+
+## Releasing
+
+Runtime releases are promoted from a tested release candidate; they are never rebuilt for publication. This ensures the images users receive are the exact images that passed the candidate build, including their SBOM and provenance.
+
+```mermaid
+flowchart TD
+    commit["Release commit on dev"] --> rcTag["Tag runtime/vX.Y.Z-rc.N"]
+    rcTag --> rcBuild["Build, test, publish candidate images"]
+    rcBuild --> rcImages["Candidate images\nvX.Y.Z-rc.N"]
+    rcImages --> approval{"Candidate approved?"}
+    approval -->|no| fix["New fix commit on dev\nand a new RC tag"]
+    fix --> rcTag
+    approval -->|yes| stableTag["Tag the same commit\nruntime/vX.Y.Z"]
+    stableTag --> promote["Promote the tested image digests"]
+    promote --> release["Publish GitHub Release\nand verify image tags"]
+```
+
+The candidate and stable Git tags point to the same commit, ensuring stable publication uses the exact candidate artifact.
+
+### Release Candidates
+
+A candidate tag such as `runtime/v0.1.0-rc.1` builds and publishes every runtime image with the corresponding candidate image tag:
+
+```text
+ghcr.io/<owner>/mipe-runtime-codex:v0.1.0-rc.1
+```
+
+The runtime inside those images is built as the intended final version (`0.1.0`). The `-rc.1` suffix is only the temporary registry tag used while the candidate is being evaluated.
+
+### Stable publication
+
+After a candidate succeeds, its matching stable tag triggers publication. Stable publication verifies the candidate, then applies two tags to each already-published image digest:
+
+- `vX.Y.Z` — immutable versioned reference
+- `latest` — current stable runtime release
+
+```mermaid
+flowchart LR
+    candidate["Candidate image\nvX.Y.Z-rc.N"] --> digest["Immutable image digest\nwith SBOM and provenance"]
+    digest --> versioned["Stable image tag\nvX.Y.Z"]
+    digest --> latest["Stable image tag\nlatest"]
+```
+
+The release also creates a GitHub Release named `Runtime vX.Y.Z`. Its notes are the matching `CHANGELOG.md` section. Publication then confirms that both stable image tags resolve to the expected digest and that the GitHub Release exists. See [Contributing](../CONTRIBUTING.md#releasing-runtime) for the contributor release procedure.
 
 ## Versioning
 
@@ -80,18 +125,20 @@ ghcr.io/<owner>/mipe-runtime:dev-latest
 ghcr.io/<owner>/mipe-runtime:dev-4a8d2c1
 ```
 
+Release candidates use a final runtime build version such as `0.1.0`, while their image tags remain candidate-specific, such as `v0.1.0-rc.1`. Stable publication adds `v0.1.0` and `latest` to that same image digest.
+
 Image digests uniquely identify the published OCI image contents. Unlike tags, digests are immutable and always refer to exactly one published image, for example:
 
 ```text
 ghcr.io/<owner>/mipe-runtime@sha256:abc123...
 ```
 
-Build version is computed by a local script. Hash includes `go.mod`, `go.sum`, and production Go files under `cmd/` and `internal/`.
+Development build version is computed by a local script. Its hash includes `go.mod`, `go.sum`, and production Go files under `cmd/` and `internal/`. Release candidates instead use their intended Semantic Version.
 
 Tests do not contribute to the build version and are excluded from the Docker build context. Test-only changes still run checks but do not rebuild the runtime binary layer. Production Go source or module changes produce a new version and invalidate layers that depend on the binary.
 
 ## Triggering
 
-CI supports manual runs and pushes to `main` or `dev`. Pushes run only when changes affect CI configuration or runtime build inputs: runtime commands, internal code, integration tests, Go modules, Docker files, hooks, Bake files, or Compose configuration.
+The development CI pipeline supports manual runs and pushes to `main` or `dev`. Pushes run only when changes affect CI configuration or runtime build inputs: runtime commands, internal code, integration tests, Go modules, Docker files, hooks, Bake files, or Compose configuration. Release pipelines are triggered by runtime candidate and stable tags.
 
 Path filtering avoids image builds for unrelated repository changes. Manual dispatch remains available for cache checks, publishing validation, and other CI investigations.
