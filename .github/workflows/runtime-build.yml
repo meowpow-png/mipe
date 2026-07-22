@@ -17,6 +17,11 @@ on:
         required: false
         type: boolean
         default: false
+      cache:
+        description: Enable BuildKit cache imports and exports
+        required: false
+        type: boolean
+        default: true
       image_tags:
         description: Comma-separated tags to publish for every runtime image
         required: false
@@ -89,6 +94,7 @@ jobs:
             test
           provenance: false
           sbom: false
+          no-cache: ${{ !inputs.cache }}
           load: true
           set: |
             runtime.output=type=cacheonly
@@ -125,6 +131,7 @@ jobs:
             web-base
           provenance: false
           sbom: false
+          no-cache: ${{ !inputs.cache }}
           set: |
             node-base.output=type=cacheonly
             node-base.cache-from=type=gha,scope=node-base
@@ -165,6 +172,7 @@ jobs:
             claude-web
           provenance: ${{ inputs.provenance }}
           sbom: ${{ inputs.sbom }}
+          no-cache: ${{ !inputs.cache }}
           push: ${{ inputs.publish }}
           set: |
             runtime.output=type=image,rewrite-timestamp=true

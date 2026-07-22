@@ -38,5 +38,6 @@ jobs:
       publish: true
       provenance: true
       sbom: true
+      cache: false
       image_tags: ${{ needs.validate.outputs.image_tag }}
       build_version: ${{ needs.validate.outputs.release_version }}
