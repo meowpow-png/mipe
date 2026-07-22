@@ -1,4 +1,4 @@
-name: Release Runtime
+name: Runtime Release
 
 on:
   push:
@@ -21,6 +21,7 @@ permissions:
 
 jobs:
   release:
+    name: Publish Runtime Release
     runs-on: ubuntu-latest
 
     steps:

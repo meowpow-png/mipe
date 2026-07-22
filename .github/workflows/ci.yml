@@ -1,4 +1,4 @@
-name: CI
+name: Runtime CI
 
 on:
   workflow_dispatch:
@@ -28,6 +28,7 @@ permissions:
 
 jobs:
   runtime-build:
+    name: Build and Test Runtime
     uses: ./.github/workflows/runtime-build.yml
     with:
       publish: ${{ github.ref == 'refs/heads/dev' }}

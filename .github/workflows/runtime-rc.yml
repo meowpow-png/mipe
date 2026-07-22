@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   validate:
+    name: Validate Release Candidate
     runs-on: ubuntu-latest
     outputs:
       candidate_version: ${{ steps.validate.outputs.candidate_version }}
@@ -32,6 +33,7 @@ jobs:
         run: .github/scripts/validate-runtime-candidate.sh
 
   runtime-build:
+    name: Build and Publish Runtime RC
     needs: validate
     uses: ./.github/workflows/runtime-build.yml
     with:

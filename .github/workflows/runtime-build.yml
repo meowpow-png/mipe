@@ -35,6 +35,7 @@ on:
 
 jobs:
   build:
+    name: Build and Test Runtime
     runs-on: ubuntu-latest
     env:
       BUILDKIT_PROGRESS: plain
