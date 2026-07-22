@@ -1,7 +1,7 @@
 # Mipe
 
 [![CI](https://github.com/meowpow-png/mipe/actions/workflows/ci.yml/badge.svg)](https://github.com/meowpow-png/mipe/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/meowpow-png/mipe/branch/dev/graph/badge.svg?token=MbG8tNgD2G)](https://codecov.io/github/meowpow-png/mipe)
+[![codecov](https://codecov.io/github/meowpow-png/mipe/graph/badge.svg?token=MbG8tNgD2G)](https://codecov.io/github/meowpow-png/mipe)
 ![Go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white)
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI-Codex-412991?logo=openai&logoColor=white)
 ![Anthropic Claude](https://img.shields.io/badge/Anthropic-Claude-D97757?logo=anthropic&logoColor=white)
